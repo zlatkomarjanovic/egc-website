@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp -R webflow-export/css public/css)",
+      "Bash(cp -R webflow-export/js public/js)",
+      "Bash(cp -R webflow-export/fonts public/fonts)",
+      "Bash(cp -R webflow-export/images public/images)",
+      "Bash(cp -R webflow-export/videos public/videos)",
+      "Bash(npm install *)",
+      "Bash(sed -n '323,340p' css/egc-staging*.css)",
+      "Bash(sed -n '3053,3062p' css/egc-staging*.css)",
+      "Bash(node scripts/generate-pages.mjs)",
+      "Bash(node -e ' *)",
+      "Bash(perl -0777 -ne 'if\\(/<form[^>]*email-form.*?<\\\\/form>/s\\){ $f=$&; while\\($f=~/<\\(input|select|textarea\\)[^>]*>/g\\){ print \"$&\\\\n\"; } }' newsletter.html)",
+      "Bash(perl -0777 -ne 'while\\(/<form[^>]*>\\(.*?\\)<\\\\/form>/sg\\){ $f=$1; if\\($f=~/input/\\){ while\\($f=~/<\\(input|select|textarea\\)\\\\b[^>]*>/g\\){ my $t=$&; print \"$t\\\\n\" if $t!~/fs-cc|w-checkbox-input/; } print \"------\\\\n\"; } }' newsletter.html)",
+      "Bash(awk '/id=\"email-form\"/{f=1} f{print NR\": \"$0} /\\\\/form>/{if\\(f\\){f=0; exit}}' about-us/insights.html)",
+      "Bash(grep -vE '^[0-9]+: *$')",
+      "Bash(awk '/id=\"email-form\"/{f=1} f{print} /\\\\/form>/{if\\(f\\){f=0; exit}}' about-us/insights.html)",
+      "Bash(npm run *)",
+      "Bash(curl -s -D - -o /dev/null http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"css: %{http_code}  type=%{content_type}\\\\n\" http://localhost:3000/css/webflow.css)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(kill 9591)",
+      "Bash(pkill -f \"next-server\")",
+      "Bash(pkill -f \"next start\")",
+      "Bash(lsof -ti:3000)",
+      "Bash(xargs kill -9)",
+      "Bash(echo \"port 3000 free: $\\(lsof -ti:3000)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(node -e 'const c=require\\(\"./app/content.json\"\\); const m=c.bodyHtml.match\\(/[^\"]*image[^\"]*33[^\"]*/g\\)||[]; console.log\\(m.slice\\(0,4\\).join\\(\"\\\\n\"\\)\\)')",
+      "Bash(node scripts/fix-asset-names.mjs)",
+      "Bash(git init *)",
+      "Bash(git config *)",
+      "Bash(git branch *)",
+      "Bash(git add *)",
+      "Bash(mv *.csv cms-data/)",
+      "Bash(git rm *)",
+      "Bash(grep -c \"\\\\.csv$\")"
+    ]
+  }
+}
