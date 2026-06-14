@@ -35,7 +35,9 @@
       "Bash(git add *)",
       "Bash(mv *.csv cms-data/)",
       "Bash(git rm *)",
-      "Bash(grep -c \"\\\\.csv$\")"
+      "Bash(grep -c \"\\\\.csv$\")",
+      "Bash(git commit -q -m ' *)",
+      "Bash(git commit *)"
     ]
   }
 }
