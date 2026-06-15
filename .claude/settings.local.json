@@ -37,7 +37,15 @@
       "Bash(git rm *)",
       "Bash(grep -c \"\\\\.csv$\")",
       "Bash(git commit -q -m ' *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(echo \"freed: $\\(lsof -ti:3000)",
+      "Bash(grep -oE 'location.pathname[^<]{0,40}')",
+      "Bash(grep -oE \"addEventListener\\\\\\(.scroll.[^\\)]{0,40}\" js/webflow.js)",
+      "Bash(node -e 'const c=require\\(\"./app/content.json\"\\); console.log\\(\"rootClass:\", JSON.stringify\\(c.rootClass\\)\\); console.log\\(\"bodyHtml starts:\", c.bodyHtml.slice\\(0,70\\)\\);')",
+      "Bash(node -e 'const c=require\\(\"./app/content.json\"\\); console.log\\(\"home rootClass:\", JSON.stringify\\(c.rootClass\\)\\); console.log\\(\"body starts:\", c.bodyHtml.slice\\(0,60\\)\\);')",
+      "Bash(node -e 'const c=require\\(\"./app/contact/content.json\"\\); console.log\\(\"contact rootClass:\", JSON.stringify\\(c.rootClass\\)\\);')",
+      "Bash(echo \"cleared .next, port free: $\\(lsof -ti:3000)",
+      "Read(//tmp/**)"
     ]
   }
 }

@@ -203,6 +203,27 @@ function extractHead(head) {
   return { headExtras: combined, scripts };
 }
 
+/**
+ * If the body has a single wrapper element (Webflow's .page-wrapper), return its
+ * class + inner HTML so the host div can stand in for it. Otherwise fall back to
+ * the whole body inner HTML rendered in a display:contents passthrough.
+ */
+function extractRoot(body) {
+  const elementChildren = body.childNodes.filter((n) => n.nodeType === 1);
+  if (elementChildren.length === 1) {
+    const root = elementChildren[0];
+    const cls = root.getAttribute("class") || "";
+    const style = root.getAttribute("style");
+    // Only hoist when the wrapper carries nothing but a class (true for .page-wrapper).
+    const attrs = Object.keys(root.attributes || {});
+    const onlyClass = attrs.every((a) => a === "class");
+    if (cls && !style && onlyClass) {
+      return { rootClass: cls, bodyHtml: root.innerHTML };
+    }
+  }
+  return { rootClass: "", bodyHtml: body.innerHTML };
+}
+
 function pageTemplate() {
   return `import type { Metadata } from "next";
 import WebflowPage from "@/components/WebflowPage";
@@ -215,12 +236,16 @@ export default function Page() {
     <WebflowPage
       headExtras={content.headExtras}
       bodyHtml={content.bodyHtml}
+      rootClass={content.rootClass}
       scripts={content.scripts}
     />
   );
 }
 `;
 }
+
+/** route -> Webflow page id (data-wf-page); required for webflow.js IX2 binding. */
+const routeToPageId = {};
 
 function generate() {
   let count = 0;
@@ -240,6 +265,9 @@ function generate() {
     const head = doc.querySelector("head");
     const body = doc.querySelector("body");
 
+    const wfPageId = doc.querySelector("html")?.getAttribute("data-wf-page");
+    if (wfPageId) routeToPageId[route] = wfPageId;
+
     const metadata = buildMetadata(head, route);
     const { headExtras, scripts } = extractHead(head);
 
@@ -249,7 +277,11 @@ function generate() {
       const type = (s.getAttribute("type") || "").toLowerCase();
       const src = s.getAttribute("src");
       const content = s.innerHTML || "";
-      if (src) continue;
+      if (src) {
+        // jQuery + webflow.js are loaded by the root layout; drop them here.
+        if (/jquery|webflow\.js/i.test(src)) s.remove();
+        continue;
+      }
       if (content.includes("w-mod-")) {
         s.remove();
         continue;
@@ -262,9 +294,12 @@ function generate() {
 
     rewriteDom(body, fileDir);
 
-    const bodyHtml = body.innerHTML;
+    // Make our injected host BE the .page-wrapper so the DOM matches the original
+    // exactly (body > .page-wrapper > ...). An extra wrapper level breaks
+    // webflow.js IX2 scroll-into-view position math, leaving content hidden.
+    const { rootClass, bodyHtml } = extractRoot(body);
 
-    const content = { metadata, headExtras, bodyHtml, scripts };
+    const content = { metadata, headExtras, bodyHtml, rootClass, scripts };
 
     const outDir = route === "/" ? APP : path.join(APP, route.replace(/^\//, ""));
     fs.mkdirSync(outDir, { recursive: true });
@@ -277,7 +312,15 @@ function generate() {
     console.log(`✓ ${route}  (${(bodyHtml.length / 1024).toFixed(0)}kb, ${scripts.length} script${scripts.length === 1 ? "" : "s"})`);
   }
   generateNotFound();
-  console.log(`\nGenerated ${count} pages (+ not-found).`);
+
+  // Emit the route -> data-wf-page map consumed by the root layout so webflow.js
+  // can bind IX2 interactions correctly (without it, animations stay hidden).
+  fs.mkdirSync(path.join(ROOT, "lib"), { recursive: true });
+  fs.writeFileSync(
+    path.join(ROOT, "lib", "wf-pages.json"),
+    JSON.stringify(routeToPageId, null, 2)
+  );
+  console.log(`\nGenerated ${count} pages (+ not-found). Mapped ${Object.keys(routeToPageId).length} page ids.`);
 }
 
 /** Build app/not-found.tsx from the Webflow 404 page. */
@@ -293,7 +336,11 @@ function generateNotFound() {
   const { headExtras, scripts } = extractHead(head);
   for (const s of body.querySelectorAll("script")) {
     const type = (s.getAttribute("type") || "").toLowerCase();
-    if (s.getAttribute("src")) continue;
+    const src = s.getAttribute("src");
+    if (src) {
+      if (/jquery|webflow\.js/i.test(src)) s.remove();
+      continue;
+    }
     const content = s.innerHTML || "";
     if (content.includes("w-mod-")) { s.remove(); continue; }
     if (type === "" || type === "text/javascript" || type === "application/javascript") {
@@ -302,7 +349,8 @@ function generateNotFound() {
     }
   }
   rewriteDom(body, "");
-  const content = { headExtras, bodyHtml: body.innerHTML, scripts };
+  const { rootClass, bodyHtml } = extractRoot(body);
+  const content = { headExtras, bodyHtml, rootClass, scripts };
   fs.writeFileSync(path.join(APP, "not-found.content.json"), JSON.stringify(content, null, 0));
   fs.writeFileSync(
     path.join(APP, "not-found.tsx"),
@@ -314,6 +362,7 @@ export default function NotFound() {
     <WebflowPage
       headExtras={content.headExtras}
       bodyHtml={content.bodyHtml}
+      rootClass={content.rootClass}
       scripts={content.scripts}
     />
   );

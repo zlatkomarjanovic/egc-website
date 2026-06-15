@@ -2,6 +2,7 @@
   "extends": "next/core-web-vitals",
   "ignorePatterns": ["webflow-export/**", "public/**", "scripts/**"],
   "rules": {
-    "@next/next/no-css-tags": "off"
+    "@next/next/no-css-tags": "off",
+    "@next/next/no-sync-scripts": "off"
   }
 }

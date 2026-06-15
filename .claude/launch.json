@@ -1,6 +1,8 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "egc", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 3000 }
+    { "name": "egc", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 3000 },
+    { "name": "egc-prod", "runtimeExecutable": "npm", "runtimeArgs": ["run", "start"], "port": 3000 },
+    { "name": "egc-original", "runtimeExecutable": "npx", "runtimeArgs": ["serve", "-l", "4100", "webflow-export"], "port": 4100 }
   ]
 }

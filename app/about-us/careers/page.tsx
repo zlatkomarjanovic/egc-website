@@ -9,6 +9,7 @@ export default function Page() {
     <WebflowPage
       headExtras={content.headExtras}
       bodyHtml={content.bodyHtml}
+      rootClass={content.rootClass}
       scripts={content.scripts}
     />
   );

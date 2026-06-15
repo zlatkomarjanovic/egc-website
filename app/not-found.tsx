@@ -6,6 +6,7 @@ export default function NotFound() {
     <WebflowPage
       headExtras={content.headExtras}
       bodyHtml={content.bodyHtml}
+      rootClass={content.rootClass}
       scripts={content.scripts}
     />
   );
