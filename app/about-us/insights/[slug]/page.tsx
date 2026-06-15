@@ -17,12 +17,12 @@ export const revalidate = 60;
 type PostParam = { slug: string };
 
 type Post = {
-  title: string;
-  excerpt?: string;
+  name: string;
+  postSummary?: string;
   publishedAt?: string;
-  coverImage?: unknown;
-  body?: PortableTextBlock[];
-  author?: { name?: string; role?: string } | null;
+  mainImage?: unknown;
+  postBody?: PortableTextBlock[];
+  author?: { name?: string; position?: string } | null;
 };
 
 export async function generateStaticParams(): Promise<PostParam[]> {
@@ -39,8 +39,8 @@ export async function generateMetadata({
   const post = await sanityFetch<Post>(postBySlugQuery, { slug });
   if (!post) return { title: "Not found" };
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: post.name,
+    description: post.postSummary,
     alternates: { canonical: `/about-us/insights/${slug}` },
   };
 }
@@ -54,7 +54,7 @@ export default async function InsightPostPage({
   const post = await sanityFetch<Post>(postBySlugQuery, { slug });
   if (!post) notFound();
 
-  const cover = urlForImage(post.coverImage as never);
+  const cover = urlForImage(post.mainImage as never);
 
   return (
     <main className="section_blog-post">
@@ -62,11 +62,11 @@ export default async function InsightPostPage({
         <div className="container-medium">
           <div className="padding-vertical padding-xxlarge">
             <header className="margin-bottom margin-large">
-              <h1 className="heading-style-h1">{post.title}</h1>
+              <h1 className="heading-style-h1">{post.name}</h1>
               {post.author?.name ? (
                 <p className="text-size-medium">
                   By {post.author.name}
-                  {post.author.role ? `, ${post.author.role}` : ""}
+                  {post.author.position ? `, ${post.author.position}` : ""}
                   {post.publishedAt
                     ? ` · ${new Date(post.publishedAt).toLocaleDateString()}`
                     : ""}
@@ -75,10 +75,10 @@ export default async function InsightPostPage({
             </header>
             {cover ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={cover} alt={post.title} className="margin-bottom margin-large" style={{ width: "100%", borderRadius: 12 }} />
+              <img src={cover} alt={post.name} className="margin-bottom margin-large" style={{ width: "100%", borderRadius: 12 }} />
             ) : null}
             <article className="text-rich-text w-richtext">
-              <PortableText value={post.body} />
+              <PortableText value={post.postBody} />
             </article>
           </div>
         </div>

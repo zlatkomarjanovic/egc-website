@@ -1,53 +1,67 @@
 import { groq } from "next-sanity";
 
-/** Example GROQ queries. Extend/adjust once the CSV-defined structure is final. */
+/** GROQ queries aligned with the CSV-modeled schema. Extend as routes are built. */
 
 export const postSlugsQuery = groq`*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`;
 
 export const allPostsQuery = groq`
-  *[_type == "post" && defined(slug.current)] | order(publishedAt desc) {
+  *[_type == "post" && defined(slug.current)] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
-    title,
+    name,
     "slug": slug.current,
-    excerpt,
+    postSummary,
     publishedAt,
     featured,
-    coverImage,
-    "author": author->{ name, "slug": slug.current, image, role },
-    "categories": categories[]->{ title, "slug": slug.current },
-    "tags": tags[]->{ title, "slug": slug.current }
+    blogPageFeature,
+    minutesToRead,
+    mainImage,
+    thumbnailImage,
+    "author": author->{ name, "slug": slug.current, picture, position },
+    "category": category->{ name, "slug": slug.current, color },
+    "tags": tags[]->{ name, "slug": slug.current }
   }
 `;
 
 export const postBySlugQuery = groq`
   *[_type == "post" && slug.current == $slug][0] {
     _id,
-    title,
+    name,
     "slug": slug.current,
-    excerpt,
+    postSummary,
+    postBody,
+    mainImage,
     publishedAt,
-    coverImage,
-    body,
-    "author": author->{ name, "slug": slug.current, image, role, bio, linkedin },
-    "categories": categories[]->{ title, "slug": slug.current },
-    "tags": tags[]->{ title, "slug": slug.current }
+    minutesToRead,
+    metaTitle,
+    metaDescription,
+    "author": author->{ name, "slug": slug.current, picture, position, bio, linkedin },
+    "coAuthors": coAuthors[]->{ name, "slug": slug.current, picture, position },
+    "category": category->{ name, "slug": slug.current },
+    "tags": tags[]->{ name, "slug": slug.current }
   }
 `;
 
 export const teamByGroupQuery = groq`
-  *[_type == "teamMember" && group == $group] | order(order asc, name asc) {
+  *[_type == "teamMember" && group == $group] | order(sortOrder asc, name asc) {
     _id, name, "slug": slug.current, role, photo, bio, linkedin
   }
 `;
 
 export const openJobsQuery = groq`
-  *[_type == "job" && open == true] | order(postedAt desc) {
-    _id, title, "slug": slug.current, department, location, type, postedAt, applyUrl
+  *[_type == "job"] | order(_createdAt desc) {
+    _id, name, "slug": slug.current, jobTitle, organization, location, type, applicationDeadline, applicationLink
   }
 `;
 
 export const jobBySlugQuery = groq`
   *[_type == "job" && slug.current == $slug][0] {
-    _id, title, department, location, type, postedAt, applyUrl, description
+    _id, name, jobTitle, coverImage, excerpt, organization, location, type,
+    applicationDeadline, startDate, endDate, detailedInstructions, applicationLink
+  }
+`;
+
+export const featuredAlumniQuery = groq`
+  *[_type == "alumniSpotlight" && featured == true] | order(sortNumber asc) {
+    _id, name, "slug": slug.current, alumniName, ventureName, oneLiner, profilePicture, country
   }
 `;

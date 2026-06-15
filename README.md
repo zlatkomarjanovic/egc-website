@@ -94,11 +94,31 @@ The forms and headers are hardened against common attacks:
    `RESEND_API_KEY` + `CONTACT_TO_EMAIL` for the contact form).
 4. Deploy. Point your domain at the Vercel project.
 
-## Connecting Sanity (later)
+## Sanity CMS
+
+The schema in `sanity/schemaTypes/` is modeled directly from the Webflow CSV
+exports (`/cms-data`, gitignored — contains personal data). Collections:
+`category`, `tag`, `areaOfExpertise`, `author`, `mentor`, `boldFellow`,
+`teamMember`, `post`, `job`, `partner`, `partnerSpotlight`, `alumniSpotlight`,
+`testimonial` — with the real reference relationships (e.g. `post.author`,
+`post.category`, `post.tags`, `mentor.primaryExpertise`).
+
+### Connect (later)
 
 1. Create a Sanity project (`npm create sanity@latest` or sanity.io).
 2. Set `NEXT_PUBLIC_SANITY_PROJECT_ID` and `NEXT_PUBLIC_SANITY_DATASET`.
-3. Visit `/studio` to edit content. The starter schema in
-   `sanity/schemaTypes/` is a first draft — refine it from the CSV exports, then
-   extend the GROQ queries and add detail routes following the
-   `about-us/insights/[slug]` example.
+3. Visit `/studio` to edit content.
+
+### Import the existing content from the CSVs
+
+```bash
+node scripts/import-to-sanity.mjs                 # CSVs -> cms-data/import.ndjson
+npx sanity dataset import cms-data/import.ndjson production
+```
+
+The importer resolves slug references + multi-references, converts Webflow
+rich-text HTML to Portable Text, and uploads Webflow CDN images as Sanity assets
+automatically. Document ids are `${type}.${slug}` so it's safe to re-run.
+
+Then extend the GROQ queries in `sanity/lib/queries.ts` and add detail routes
+following the `app/about-us/insights/[slug]` example to render CMS content.
