@@ -20,35 +20,31 @@ while forms, security, SEO and a future CMS are handled the Next.js way.
 ## Project layout
 
 ```
-app/                     Next.js routes
-  layout.tsx             Document shell: CSS, jQuery, webflow.js, Finsweet, FormEnhancer
-  page.tsx + content.json  Each page = a uniform wrapper + its extracted HTML/metadata
-  api/contact/route.ts   Secure contact-form endpoint (Resend)
-  api/newsletter/route.ts  Provider-ready newsletter endpoint (Kit)
-  studio/[[...tool]]/    Embedded Sanity Studio at /studio
-  about-us/insights/[slug]/  Example Sanity-backed detail route
-components/
-  WebflowPage.tsx        Renders a ported page (injects HTML, runs inline scripts)
-  FormEnhancer.tsx       Intercepts Webflow forms -> posts securely to the API
-  InlineScripts.tsx      Safely runs each page's custom Webflow code
-  PortableText.tsx       Sanity rich-text renderer
-lib/
-  security.ts            CSRF/origin check, HTML escaping, header-injection guard
-  rate-limit.ts          Per-IP rate limiting (in-memory, or Upstash if configured)
-sanity/                  Client, env, schema (starter), GROQ queries, image URLs
-public/                  All static assets (images, fonts, videos, css, js)
-scripts/
-  generate-pages.mjs     Regenerates app/ routes from the Webflow export
-  fix-asset-names.mjs     Fixes Webflow's exported-filename mismatches
-webflow-export/          Original Webflow export, kept as the source of truth
+studio/                  Standalone Sanity Studio (http://localhost:3333)
+  schemaTypes/             EGC content model (from Webflow CSV exports)
+web/                     Next.js marketing site (http://localhost:3000)
+  app/                   Routes + API handlers
+  components/            WebflowPage, forms, Portable Text, insights UI
+  lib/                   Security, CMS CSV fallback, Webflow page map
+  sanity/                Sanity client, GROQ queries, image URLs
+  public/                Static assets (images, css, js)
+cms-data/                Webflow CSV exports (local only, gitignored)
+scripts/                 Page generator, CSV → Sanity import pipeline
+webflow-export/          Original Webflow export (source of truth)
 ```
 
 ## Local development
 
 ```bash
 npm install
-cp .env.example .env.local   # optional; site runs without any keys
-npm run dev                  # http://localhost:3000
+cp .env.example .env.local          # set Sanity + email keys
+cp .env.local web/.env.local        # web app reads env from its folder
+
+# Terminal 1 — Next.js site
+npm run dev:web                     # http://localhost:3000
+
+# Terminal 2 — Sanity Studio (standalone)
+npm run dev:studio                  # http://localhost:3333
 ```
 
 Other scripts:

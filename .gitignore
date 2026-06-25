@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+**/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -7,6 +8,9 @@
 # next.js
 /.next/
 /out/
+web/.next/
+web/out/
+studio/dist/
 
 # production
 /build
@@ -29,6 +33,10 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# agent tooling (local only)
+.agents/
+skills-lock.json
 
 # typescript
 *.tsbuildinfo

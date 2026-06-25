@@ -1,0 +1,26 @@
+{
+  "name": "egc-studio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Standalone Sanity Studio for EGC",
+  "scripts": {
+    "dev": "/usr/local/bin/node ../node_modules/sanity/bin/sanity dev",
+    "build": "/usr/local/bin/node ../node_modules/sanity/bin/sanity build",
+    "deploy": "/usr/local/bin/node ../node_modules/sanity/bin/sanity deploy",
+    "schema:deploy": "/usr/local/bin/node ../node_modules/sanity/bin/sanity schema deploy"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "dependencies": {
+    "@sanity/vision": "^3.99.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "sanity": "^3.99.0",
+    "styled-components": "^6.4.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "typescript": "^5.7.3"
+  }
+}

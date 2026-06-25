@@ -17,7 +17,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const SRC = path.join(ROOT, "webflow-export");
-const APP = path.join(ROOT, "app");
+const APP = path.join(ROOT, "web", "app");
 
 /** Pages to generate: source html (relative to webflow-export) -> route path. */
 const PAGES = [
