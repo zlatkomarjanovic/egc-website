@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getPostSlugs } from "@/lib/cms";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://egcnyc.org";
 
@@ -31,10 +32,19 @@ const ROUTES = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  return ROUTES.map((route) => ({
+  const staticEntries = ROUTES.map((route) => ({
     url: `${SITE_URL}${route}`,
     lastModified: now,
-    changeFrequency: route === "/" ? "weekly" : "monthly",
+    changeFrequency: route === "/" ? ("weekly" as const) : ("monthly" as const),
     priority: route === "/" ? 1 : 0.7,
   }));
+
+  const postEntries = getPostSlugs().map((slug) => ({
+    url: `${SITE_URL}/about-us/insights/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  return [...staticEntries, ...postEntries];
 }
