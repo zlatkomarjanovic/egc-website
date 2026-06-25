@@ -58,16 +58,26 @@ node scripts/fix-asset-names.mjs   # reconcile asset filenames after re-generati
 
 ## Environment variables
 
-All optional — see [`.env.example`](.env.example). The site builds and runs with
-none of them (contact submissions are logged server-side; CMS routes 404).
+Copy [`.env.example`](.env.example) to `.env.local` and `web/.env.local`:
+
+```bash
+cp .env.example .env.local
+cp .env.local web/.env.local
+# Paste SANITY_API_TOKEN from https://www.sanity.io/manage/project/nn9xx2r4/api
+```
 
 | Variable | Purpose |
 | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Canonical URLs, sitemap, CSRF allow-list |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | **`nn9xx2r4`** — EGC Sanity project |
+| `NEXT_PUBLIC_SANITY_DATASET` | **`production`** |
+| `NEXT_PUBLIC_SANITY_API_VERSION` | **`2024-10-01`** |
+| `SANITY_API_TOKEN` | Read/write token (required for CMS on site + imports) |
 | `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL` | Contact-form email |
 | `KIT_API_KEY`, `KIT_FORM_ID` | Newsletter (ConvertKit/Kit) |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET` | Sanity CMS |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Production rate limiting |
+
+Without `NEXT_PUBLIC_SANITY_PROJECT_ID`, CMS-backed pages fall back to local CSV/static data.
 
 ## Security
 
@@ -85,36 +95,40 @@ The forms and headers are hardened against common attacks:
 ## Deploying to Vercel
 
 1. Push this repo to GitHub.
-2. In Vercel, **Import** the repo (framework auto-detected as Next.js).
-3. Add the environment variables you want (at minimum `NEXT_PUBLIC_SITE_URL`, and
-   `RESEND_API_KEY` + `CONTACT_TO_EMAIL` for the contact form).
-4. Deploy. Point your domain at the Vercel project.
+2. In Vercel, **Import** the repo (uses root `vercel.json` → builds `web/` workspace).
+3. **Required** environment variables (Vercel → Settings → Environment Variables):
+
+   | Key | Value |
+   | --- | --- |
+   | `NEXT_PUBLIC_SITE_URL` | `https://egcnyc.org` |
+   | `NEXT_PUBLIC_SANITY_PROJECT_ID` | `nn9xx2r4` |
+   | `NEXT_PUBLIC_SANITY_DATASET` | `production` |
+   | `NEXT_PUBLIC_SANITY_API_VERSION` | `2024-10-01` |
+   | `SANITY_API_TOKEN` | Your Editor token from Sanity dashboard |
+
+   Copy the token from your local `.env.local` — it is **not** stored in git.
+
+4. Redeploy after adding env vars.
 
 ## Sanity CMS
 
-The schema in `sanity/schemaTypes/` is modeled directly from the Webflow CSV
-exports (`/cms-data`, gitignored — contains personal data). Collections:
-`category`, `tag`, `areaOfExpertise`, `author`, `mentor`, `boldFellow`,
-`teamMember`, `post`, `job`, `partner`, `partnerSpotlight`, `alumniSpotlight`,
-`testimonial` — with the real reference relationships (e.g. `post.author`,
-`post.category`, `post.tags`, `mentor.primaryExpertise`).
+**Project:** `nn9xx2r4` · **Org:** `oVUjX2dez` · **Studio:** https://egc-content.sanity.studio/
 
-### Connect (later)
+Schema lives in `studio/schemaTypes/` (modeled from Webflow CSV exports). The Next.js
+app reads content via `web/sanity/` GROQ queries when `NEXT_PUBLIC_SANITY_PROJECT_ID` is set.
 
-1. Create a Sanity project (`npm create sanity@latest` or sanity.io).
-2. Set `NEXT_PUBLIC_SANITY_PROJECT_ID` and `NEXT_PUBLIC_SANITY_DATASET`.
-3. Visit `/studio` to edit content.
+Collections: `category`, `tag`, `author`, `mentor`, `boldFellow`, `teamMember`, `post`,
+`job`, `partner`, `partnerSpotlight`, `alumniSpotlight`, `testimonial`.
 
-### Import the existing content from the CSVs
+### Local Studio
 
 ```bash
-node scripts/import-to-sanity.mjs                 # CSVs -> cms-data/import.ndjson
-npx sanity dataset import cms-data/import.ndjson production
+npm run dev:studio    # http://localhost:3333
+npm run deploy:studio # https://egc-content.sanity.studio/
 ```
 
-The importer resolves slug references + multi-references, converts Webflow
-rich-text HTML to Portable Text, and uploads Webflow CDN images as Sanity assets
-automatically. Document ids are `${type}.${slug}` so it's safe to re-run.
+### Import / sync CMS data
 
-Then extend the GROQ queries in `sanity/lib/queries.ts` and add detail routes
-following the `app/about-us/insights/[slug]` example to render CMS content.
+```bash
+npm run push:sanity   # CSVs → Sanity (uses .env.local tokens)
+```

@@ -10,7 +10,10 @@ import { createClient } from "@sanity/client";
 import { sanityImport } from "@sanity/import";
 
 const ROOT = process.cwd();
-const ENV_FILE = path.join(ROOT, ".env.local");
+const ENV_FILES = [
+  path.join(ROOT, ".env.local"),
+  path.join(ROOT, "web", ".env.local"),
+];
 const NDJSON = path.join(ROOT, "cms-data", "import.ndjson");
 
 function loadEnvFile(file) {
@@ -26,7 +29,7 @@ function loadEnvFile(file) {
   }
 }
 
-loadEnvFile(ENV_FILE);
+for (const file of ENV_FILES) loadEnvFile(file);
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
