@@ -49,6 +49,9 @@ export type CmsJob = {
   type?: string;
   applicationDeadline?: string;
   applicationLink?: string;
+  coverImage?: string;
+  startDate?: string;
+  endDate?: string;
 };
 
 export type CmsPartner = {
@@ -79,6 +82,12 @@ export type CmsAlumniSpotlight = {
   country?: string;
   featured: boolean;
   whyStarted?: string;
+  fundraised?: string;
+  trends?: string;
+  biggestChallenge?: string;
+  adviceFirstTime?: string;
+  whatDrives?: string;
+  extraNote?: string;
   videoLink?: string;
   sortNumber?: number;
 };

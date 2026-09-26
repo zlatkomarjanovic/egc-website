@@ -1,0 +1,47 @@
+import { getSiteUrl } from "@/lib/seo";
+
+export function GET() {
+  const site = getSiteUrl();
+  const body = `# Entrepreneurs for Global Change (EGC)
+
+> EGC is a New York City nonprofit that helps aspiring young founders from emerging ecosystems turn ideas into startups. Programs include BOLD Fellowship, BOLD Regional Workshops, BOLD Summit, Scale 2.0, LeapX, and a University Partnership Program.
+
+Site: ${site}
+Contact: info@egcnyc.org
+Phone: +1 347-990-2142
+Address: 1412 Broadway, Floor 21, New York, NY 10018
+
+## Main pages
+- [${site}/](${site}/): Homepage
+- [${site}/about-us/mission-and-vision](${site}/about-us/mission-and-vision): Mission and vision
+- [${site}/about-us/egc-our-team](${site}/about-us/egc-our-team): Team
+- [${site}/about-us/insights](${site}/about-us/insights): Insights and articles
+- [${site}/programs/bold-fellowship/general](${site}/programs/bold-fellowship/general): BOLD Fellowship
+- [${site}/programs/bold-regional-workshops](${site}/programs/bold-regional-workshops): Regional workshops
+- [${site}/programs/bold-summit](${site}/programs/bold-summit): BOLD Summit
+- [${site}/programs/scale-2-0](${site}/programs/scale-2-0): Scale 2.0 incubator
+- [${site}/programs/leapx](${site}/programs/leapx): LeapX AI bootcamp
+- [${site}/programs/university-partnership-program](${site}/programs/university-partnership-program): University partnership
+- [${site}/partners](${site}/partners): Partners
+- [${site}/become-an-egc-mentor](${site}/become-an-egc-mentor): Mentorship
+- [${site}/contact](${site}/contact): Contact
+- [${site}/legal/privacy-policy](${site}/legal/privacy-policy): Privacy policy
+- [${site}/legal/terms-of-service](${site}/legal/terms-of-service): Terms of service
+
+## Articles
+Article URLs use ${site}/post/{slug}. The listing lives at ${site}/about-us/insights.
+
+## Careers
+Open roles live at ${site}/careers/{slug}. The listing lives at ${site}/about-us/careers.
+
+## Alumni
+Founder stories live at ${site}/alumni-spotlight/{slug}.
+`;
+
+  return new Response(body, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, max-age=3600",
+    },
+  });
+}

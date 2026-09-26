@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
 import { injectAlumniSpotlightSlider, loadAlumniSpotlightsForFellowship } from "@/lib/cms";
+import { alumniPath, breadcrumbJsonLd, collectionJsonLd } from "@/lib/seo";
 import content from "./content.json";
 
-export const metadata: Metadata = content.metadata as unknown as Metadata;
+export const metadata: Metadata = {
+  ...(content.metadata as Metadata),
+  description:
+    "BOLD Fellowship Serbia is an EGC entrepreneurship program for young founders building startups in Serbia. Hear from alumni and apply when applications open.",
+};
 export const revalidate = 60;
 
 export default async function Page() {
@@ -11,11 +17,31 @@ export default async function Page() {
   const bodyHtml = injectAlumniSpotlightSlider(content.bodyHtml, alumni);
 
   return (
-    <WebflowPage
-      headExtras={content.headExtras}
-      bodyHtml={bodyHtml}
-      rootClass={content.rootClass}
-      scripts={content.scripts}
-    />
+    <>
+      <JsonLd
+        data={collectionJsonLd(
+          "BOLD Fellows",
+          "/programs/bold-fellowship/serbia",
+          "Stories from BOLD Fellowship alumni.",
+          alumni.map((person) => ({
+            name: person.alumniName || person.name,
+            path: alumniPath(person.slug),
+          }))
+        )}
+      />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "BOLD Fellowship", path: "/programs/bold-fellowship/general" },
+          { name: "Serbia", path: "/programs/bold-fellowship/serbia" },
+        ])}
+      />
+      <WebflowPage
+        headExtras={content.headExtras}
+        bodyHtml={bodyHtml}
+        rootClass={content.rootClass}
+        scripts={content.scripts}
+      />
+    </>
   );
 }

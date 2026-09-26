@@ -5,12 +5,13 @@ import { groq } from "next-sanity";
 export const postSlugsQuery = groq`*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`;
 
 export const allPostsQuery = groq`
-  *[_type == "post" && defined(slug.current)] | order(coalesce(sortOrder, 999999) asc, coalesce(publishedAt, _createdAt) desc) {
+  *[_type == "post" && defined(slug.current)] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     name,
     "slug": slug.current,
     postSummary,
     publishedAt,
+    "_createdAt": _createdAt,
     featured,
     blogPageFeature,
     minutesToRead,
@@ -59,7 +60,8 @@ export const openJobsQuery = groq`
     location,
     type,
     applicationDeadline,
-    applicationLink
+    applicationLink,
+    coverImage
   }
 `;
 
@@ -86,10 +88,50 @@ export const allMentorsQuery = groq`
   }
 `;
 
+export const jobSlugsQuery = groq`*[_type == "job" && defined(slug.current)]{ "slug": slug.current }`;
+
 export const jobBySlugQuery = groq`
   *[_type == "job" && slug.current == $slug][0] {
-    _id, name, jobTitle, coverImage, excerpt, organization, location, type,
-    applicationDeadline, startDate, endDate, detailedInstructions, applicationLink
+    _id,
+    name,
+    "slug": slug.current,
+    jobTitle,
+    coverImage,
+    excerpt,
+    organization,
+    location,
+    type,
+    applicationDeadline,
+    startDate,
+    endDate,
+    detailedInstructions,
+    applicationLink
+  }
+`;
+
+export const alumniSlugsQuery = groq`*[_type == "alumniSpotlight" && defined(slug.current)]{ "slug": slug.current }`;
+
+export const alumniBySlugQuery = groq`
+  *[_type == "alumniSpotlight" && slug.current == $slug][0] {
+    _id,
+    name,
+    "slug": slug.current,
+    alumniName,
+    ventureName,
+    oneLiner,
+    profilePicture,
+    profilePictureAlt,
+    country,
+    featured,
+    whyStarted,
+    fundraised,
+    trends,
+    biggestChallenge,
+    adviceFirstTime,
+    whatDrives,
+    extraNote,
+    videoLink,
+    sortNumber
   }
 `;
 

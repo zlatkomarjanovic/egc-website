@@ -46,6 +46,16 @@ const nextConfig = {
       { protocol: "https", hostname: "cdn.prod.website-files.com" },
     ],
   },
+  trailingSlash: false,
+  async redirects() {
+    return [
+      {
+        source: "/about-us/insights/:slug",
+        destination: "/post/:slug",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

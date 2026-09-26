@@ -46,8 +46,7 @@ function replaceListItems(bodyHtml: string, listClass: string, itemsHtml: string
 }
 
 function jobHref(job: CmsJob): string {
-  if (job.applicationLink) return job.applicationLink;
-  return "#";
+  return `/careers/${job.slug}`;
 }
 
 function jobItemHtml(job: CmsJob): string {
@@ -190,20 +189,18 @@ function alumniDescription(alumni: CmsAlumniSpotlight): string {
 }
 
 function alumniLink(alumni: CmsAlumniSpotlight): string {
-  if (alumni.videoLink) return alumni.videoLink;
-  return "#";
+  return `/alumni-spotlight/${alumni.slug}`;
 }
 
 function alumniCardInnerHtml(alumni: CmsAlumniSpotlight): string {
   const href = escapeHtml(alumniLink(alumni));
-  const external = /^https?:\/\//.test(alumni.videoLink || "") ? ' target="_blank" rel="noopener noreferrer"' : "";
   const image = escapeHtml(alumni.profilePicture || PLACEHOLDER_ALUMNI);
   const alt = escapeHtml(alumni.profilePictureAlt || alumniDisplayName(alumni));
   const name = escapeHtml(alumniDisplayName(alumni));
   const venture = escapeHtml(alumni.ventureName || "");
   const description = escapeHtml(alumniDescription(alumni));
 
-  return `<a href="${href}" class="video-item w-inline-block"${external}>
+  return `<a href="${href}" class="video-item w-inline-block">
     <div class="layout179_image-wrapper"><img alt="${alt}" loading="lazy" src="${image}" class="img-100"></div>
     <div class="margin-bottom margin-xsmall">
       <div class="margin-bottom margin-small">
@@ -211,10 +208,10 @@ function alumniCardInnerHtml(alumni: CmsAlumniSpotlight): string {
         <p class="text-color-egc">${venture}</p>
       </div>
       <div class="margin-bottom margin-small">
-        <p class="text-color-egc">${description}</p>
+        <p class="text-color-egc alumni-excerpt">${description}</p>
       </div>
       <div class="team-link">
-        <div>View Story</div>
+        <div>Read more</div>
       </div>
     </div>
   </a>`;

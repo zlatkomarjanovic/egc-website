@@ -51,6 +51,10 @@ export type SanityJob = {
   type?: string;
   applicationDeadline?: string;
   applicationLink?: string;
+  coverImage?: SanityImage;
+  startDate?: string;
+  endDate?: string;
+  detailedInstructions?: unknown;
 };
 
 export type SanityPartner = {
@@ -81,6 +85,12 @@ export type SanityAlumniSpotlight = {
   country?: string;
   featured?: boolean;
   whyStarted?: string;
+  fundraised?: string;
+  trends?: string;
+  biggestChallenge?: string;
+  adviceFirstTime?: string;
+  whatDrives?: string;
+  extraNote?: string;
   videoLink?: string;
   sortNumber?: number;
 };
@@ -109,6 +119,7 @@ export type SanityPostListItem = {
   slug: string;
   postSummary?: string;
   publishedAt?: string;
+  createdAt?: string;
   featured?: boolean;
   blogPageFeature?: boolean;
   minutesToRead?: number;
@@ -165,6 +176,7 @@ export function sanityPostToCmsPost(post: SanityPostListItem): CmsPost {
     minutesToRead: post.minutesToRead,
     sortOrder: post.sortOrder,
     publishedAt: post.publishedAt,
+    createdAt: post.createdAt,
     author: adaptAuthor(post.author),
     coAuthors: [],
     category: adaptCategory(post.category),
@@ -201,6 +213,9 @@ export function sanityJobToCmsJob(job: SanityJob): CmsJob {
     type: job.type,
     applicationDeadline: job.applicationDeadline,
     applicationLink: job.applicationLink,
+    coverImage: imageUrl(job.coverImage) || "/images/egc-careers-cover.png",
+    startDate: job.startDate,
+    endDate: job.endDate,
   };
 }
 
@@ -245,6 +260,12 @@ export function sanityAlumniToCmsAlumni(alumni: SanityAlumniSpotlight): CmsAlumn
     country: alumni.country,
     featured: Boolean(alumni.featured),
     whyStarted: alumni.whyStarted,
+    fundraised: alumni.fundraised,
+    trends: alumni.trends,
+    biggestChallenge: alumni.biggestChallenge,
+    adviceFirstTime: alumni.adviceFirstTime,
+    whatDrives: alumni.whatDrives,
+    extraNote: alumni.extraNote,
     videoLink: alumni.videoLink,
     sortNumber: alumni.sortNumber,
   };

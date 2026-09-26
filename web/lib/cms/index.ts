@@ -1,8 +1,13 @@
 export { getAllPosts, getCategoriesWithPosts, getFeaturedPosts, getPostBySlug, getPostSlugs, getRelatedPosts } from "./posts";
-export { getAllJobs } from "./jobs";
+export { getAllJobs, getJobBySlug, getJobSlugs } from "./jobs";
 export { getAllPartners, getPartnersByType } from "./partners";
 export { getAllMentors } from "./mentors";
-export { getAllAlumniSpotlights, getFeaturedAlumniSpotlights } from "./alumni-spotlights";
+export {
+  getAllAlumniSpotlights,
+  getAlumniBySlug,
+  getAlumniSlugs,
+  getFeaturedAlumniSpotlights,
+} from "./alumni-spotlights";
 export { getAllTestimonials } from "./testimonials";
 export {
   loadAlumniSpotlightsForFellowship,
@@ -19,8 +24,9 @@ export {
 } from "./collection-html";
 export type { CmsAuthor, CmsCategory, CmsPost, CmsTag } from "./types";
 export { buildInsightsBodyHtml } from "./insights-html";
-export { splitInsightsShell } from "./shell";
+export { splitInsightsShell, splitNavAndFooter } from "./shell";
 export {
+  sanityAlumniToCmsAlumni,
   sanityJobToCmsJob,
   sanityMentorToCmsMentor,
   sanityPartnerToCmsPartner,

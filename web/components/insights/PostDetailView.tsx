@@ -46,7 +46,7 @@ function RelatedPostCard({ post }: { post: CmsPost }) {
 
   return (
     <div role="listitem" className="blog37_item w-dyn-item">
-      <Link href={`/about-us/insights/${post.slug}`} className="blog37_item-link w-inline-block">
+      <Link href={`/post/${post.slug}`} className="blog37_item-link w-inline-block">
         <div className="margin-bottom margin-small">
           <div className="blog37_image-wrapper">
             {/* eslint-disable-next-line @next/next/no-img-element */}

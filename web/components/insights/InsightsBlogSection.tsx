@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CmsCategory, CmsPost } from "@/lib/cms/types";
 import {
   authorImage,
@@ -25,7 +25,7 @@ function FeaturedPostCard({ post }: { post: CmsPost }) {
 
   return (
     <div role="listitem" className="blog21_featured-item w-dyn-item">
-      <Link href={`/about-us/insights/${post.slug}`} className="blog21_featured-item-link w-inline-block">
+      <Link href={`/post/${post.slug}`} className="blog21_featured-item-link w-inline-block">
         <div className="blog21_featured-image-wrapper">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -80,7 +80,7 @@ function PostListCard({ post }: { post: CmsPost }) {
 
   return (
     <div role="listitem" className="blog21_item w-dyn-item">
-      <Link href={`/about-us/insights/${post.slug}`} className="blog21_item-link w-inline-block">
+      <Link href={`/post/${post.slug}`} className="blog21_item-link w-inline-block">
         <div className="margin-bottom margin-small">
           <div className="blog21_image-wrapper">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -137,6 +137,8 @@ export default function InsightsBlogSection({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [page, setPage] = useState(1);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const filterRef = useRef<HTMLDivElement>(null);
 
   const sortedCategories = useMemo(
     () =>
@@ -150,12 +152,22 @@ export default function InsightsBlogSection({
     const query = searchQuery.trim().toLowerCase();
 
     return posts.filter((post) => {
+      const categorySlug = (post.category?.slug || "").toLowerCase();
+      const categoryName = (post.category?.name || "").toLowerCase();
       const matchesCategory =
-        selectedCategory === "all" || post.category?.slug === selectedCategory;
+        selectedCategory === "all" ||
+        categorySlug === selectedCategory ||
+        categoryName === selectedCategory.replace(/-/g, " ");
       if (!matchesCategory) return false;
       if (!query) return true;
 
-      const haystack = [post.name, post.postSummary, post.category?.name, post.author?.name]
+      const haystack = [
+        post.name,
+        post.postSummary,
+        post.category?.name,
+        post.author?.name,
+        ...post.tags.map((tag) => tag.name),
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -180,6 +192,36 @@ export default function InsightsBlogSection({
     setSelectedCategory(value);
     setPage(1);
   }
+
+  useEffect(() => {
+    const input = searchRef.current;
+    if (!input) return;
+
+    const syncSearch = () => updateSearch(input.value);
+    const onInput = () => syncSearch();
+
+    const onPointerDown = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const button = target.closest<HTMLButtonElement>("[data-insights-category]");
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      updateCategory(button.dataset.insightsCategory || "all");
+    };
+
+    input.addEventListener("input", onInput);
+    input.addEventListener("keyup", onInput);
+    window.addEventListener("pointerdown", onPointerDown, true);
+    const poll = window.setInterval(syncSearch, 250);
+
+    return () => {
+      input.removeEventListener("input", onInput);
+      input.removeEventListener("keyup", onInput);
+      window.removeEventListener("pointerdown", onPointerDown, true);
+      window.clearInterval(poll);
+    };
+  }, []);
 
   return (
     <header id="blog-header-21" className="section_blog21">
@@ -219,8 +261,12 @@ export default function InsightsBlogSection({
 
               <div className="blog21_content">
                 <div className="category-filter-menu">
-                  <div className="form-block insights-filter">
-                    <div id="insights-filter-form">
+                  <div className="form-block insights-filter" ref={filterRef}>
+                    <div
+                      id="insights-filter-form"
+                      onClick={(event) => event.stopPropagation()}
+                      onKeyDown={(event) => event.stopPropagation()}
+                    >
                       <div className="margin-bottom margin-medium">
                         <div className="search-wrap">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -231,15 +277,15 @@ export default function InsightsBlogSection({
                             className="search-icon"
                           />
                           <input
-                            className="search-box w-input"
+                            ref={searchRef}
+                            className="search-box insights-search-input"
                             maxLength={256}
                             name="insights-search"
                             placeholder="Search..."
-                            type="search"
+                            type="text"
                             autoComplete="off"
                             aria-label="Search insights"
-                            value={searchQuery}
-                            onChange={(event) => updateSearch(event.target.value)}
+                            defaultValue=""
                           />
                         </div>
                       </div>
@@ -252,16 +298,16 @@ export default function InsightsBlogSection({
                           <div role="listitem" className="categories-item w-dyn-item">
                             <button
                               type="button"
-                              className="finsweet-radio w-radio insights-filter-btn"
+                              className="finsweet-radio insights-filter-btn"
+                              data-insights-category="all"
                               aria-pressed={selectedCategory === "all"}
-                              onClick={() => updateCategory("all")}
                             >
                               <span
-                                className={`w-form-formradioinput w-form-formradioinput--inputType-custom finsweet-radio-btn w-radio-input${
-                                  selectedCategory === "all" ? " w--redirected-checked" : ""
+                                className={`finsweet-radio-btn insights-filter-dot${
+                                  selectedCategory === "all" ? " is-active" : ""
                                 }`}
                               />
-                              <span className="finsweet-radio-label w-form-label">All</span>
+                              <span className="finsweet-radio-label">All</span>
                             </button>
                           </div>
                           {sortedCategories.map((category) => (
@@ -272,18 +318,16 @@ export default function InsightsBlogSection({
                             >
                               <button
                                 type="button"
-                                className="finsweet-radio w-radio insights-filter-btn"
+                                className="finsweet-radio insights-filter-btn"
+                                data-insights-category={category.slug}
                                 aria-pressed={selectedCategory === category.slug}
-                                onClick={() => updateCategory(category.slug)}
                               >
                                 <span
-                                  className={`w-form-formradioinput w-form-formradioinput--inputType-custom finsweet-radio-btn w-radio-input${
-                                    selectedCategory === category.slug
-                                      ? " w--redirected-checked"
-                                      : ""
+                                  className={`finsweet-radio-btn insights-filter-dot${
+                                    selectedCategory === category.slug ? " is-active" : ""
                                   }`}
                                 />
-                                <span className="finsweet-radio-label w-form-label">
+                                <span className="finsweet-radio-label">
                                   {category.name}
                                 </span>
                               </button>

@@ -37,3 +37,11 @@ export function getAllAlumniSpotlights(): CmsAlumniSpotlight[] {
 export function getFeaturedAlumniSpotlights(): CmsAlumniSpotlight[] {
   return getAllAlumniSpotlights().filter((item) => item.featured);
 }
+
+export function getAlumniBySlug(slug: string): CmsAlumniSpotlight | undefined {
+  return getAllAlumniSpotlights().find((item) => item.slug === slug);
+}
+
+export function getAlumniSlugs(): string[] {
+  return getAllAlumniSpotlights().map((item) => item.slug);
+}

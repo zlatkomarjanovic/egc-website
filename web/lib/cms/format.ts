@@ -88,11 +88,11 @@ export function pickFeaturedPost(posts: CmsPost[]): CmsPost[] {
 }
 
 export function sortCmsPosts(a: CmsPost, b: CmsPost): number {
-  const orderA = a.sortOrder ?? Number.MAX_SAFE_INTEGER;
-  const orderB = b.sortOrder ?? Number.MAX_SAFE_INTEGER;
-  if (orderA !== orderB) return orderA - orderB;
-
   const dateA = parseWebflowDate(postDateValue(a))?.getTime() ?? 0;
   const dateB = parseWebflowDate(postDateValue(b))?.getTime() ?? 0;
-  return dateB - dateA;
+  if (dateA !== dateB) return dateB - dateA;
+
+  const orderA = a.sortOrder ?? Number.MAX_SAFE_INTEGER;
+  const orderB = b.sortOrder ?? Number.MAX_SAFE_INTEGER;
+  return orderA - orderB;
 }

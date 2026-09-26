@@ -47,3 +47,45 @@
 .w-video.w-embed .youtube-embed {
   border: 0;
 }
+
+.alumni-spotlight-page .section_layout236 {
+  overflow: hidden;
+}
+
+.section_hero .fade-out {
+  opacity: 1 !important;
+}
+
+.alumni-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  min-height: 6.4em;
+  line-height: 1.6;
+}
+
+.grid-testimonials-homebtm .alumni-ite,
+.grid-testimonials-homebtm .video-item {
+  height: 100%;
+}
+
+.insights-filter-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.insights-filter-dot.is-active {
+  background-color: var(--base-color-brand--egc-blue, #469db8);
+  border-color: var(--base-color-brand--egc-blue, #469db8);
+}
+
+.insights-filter-btn {
+  display: flex;
+  align-items: center;
+}

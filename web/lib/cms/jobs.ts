@@ -1,6 +1,8 @@
 import { readCsvRows } from "./parse-csv";
 import type { CmsJob } from "./types";
 
+export const DEFAULT_CAREERS_COVER = "/images/egc-careers-cover.png";
+
 const bool = (value?: string) => String(value).toLowerCase() === "true";
 
 let cache: CmsJob[] | null = null;
@@ -20,7 +22,16 @@ export function getAllJobs(): CmsJob[] {
       type: row.Type || undefined,
       applicationDeadline: row["Application Deadline"] || undefined,
       applicationLink: row["Application Link"] || undefined,
+      coverImage: row["Cover Image"] || DEFAULT_CAREERS_COVER,
     }));
 
   return cache;
+}
+
+export function getJobBySlug(slug: string): CmsJob | undefined {
+  return getAllJobs().find((job) => job.slug === slug);
+}
+
+export function getJobSlugs(): string[] {
+  return getAllJobs().map((job) => job.slug);
 }

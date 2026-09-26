@@ -65,8 +65,54 @@ export function fixImageQuality(html: string): string {
     .replace(/\ssizes="[^"]*"/gi, "");
 }
 
+/** Add a real logo alt without changing image size or source. */
+export function fixLogoAlt(html: string): string {
+  return html.replace(
+    /alt(\s+src="\/images\/path12\.svg")/gi,
+    'alt="Entrepreneurs for Global Change"$1'
+  );
+}
+
+/** Drop the IX2 fade-out on hero copy so the heading stays visible. */
+export function disableHeroFadeOut(html: string): string {
+  return html.replace(
+    /<div([^>]*\bclass="[^"]*\bfade-out\b[^"]*"[^>]*)>/gi,
+    (_full, attrs: string) => {
+      const next = attrs
+        .replace(/\sdata-w-id="[^"]*"/i, "")
+        .replace(/\sstyle="[^"]*"/i, "");
+      return `<div${next} style="opacity:1">`;
+    }
+  );
+}
+
+/** Give each Scale 2.0 timeline card a distinct, matching icon. */
+export function fixScaleTimelineIcons(html: string): string {
+  if (!html.includes("Program Timeline")) return html;
+
+  return html
+    .replace(
+      /(<div class="step"><img src="\/images\/Group-104720-1\.svg" loading="lazy" )alt>/,
+      '$1alt="Application launch">'
+    )
+    .replace(
+      /<div class="step"><img src="\/images\/Group-104720-2\.svg" loading="lazy" alt>\s*<div class="heading-style-h6 text-color-white">Application Closing Date<\/div>/,
+      '<div class="step"><img src="/images/Group-104720-4.svg" loading="lazy" alt="Application closing date">\n                      <div class="heading-style-h6 text-color-white">Application Closing Date</div>'
+    )
+    .replace(
+      /(<div class="step"><img src="\/images\/Group-104720-3\.svg" loading="lazy" )alt>\s*<div class="heading-style-h6 text-color-white">Boot-camp Program Croatia<\/div>/,
+      '$1alt="Croatia boot-camp">\n                      <div class="heading-style-h6 text-color-white">Boot-camp Program Croatia</div>'
+    )
+    .replace(
+      /<div class="step"><img src="\/images\/Group-104720-3\.svg" loading="lazy" alt>\s*<div class="heading-style-h6 text-color-white">NYC program<\/div>/,
+      '<div class="step"><img src="/images/Group-104720-2.svg" loading="lazy" alt="New York City program">\n                      <div class="heading-style-h6 text-color-white">NYC program</div>'
+    );
+}
+
 export function applyWebflowHtmlFixups(html: string): string {
-  return fixImageQuality(fixEmbedlyVideos(html));
+  return fixScaleTimelineIcons(
+    disableHeroFadeOut(fixLogoAlt(fixImageQuality(fixEmbedlyVideos(html))))
+  );
 }
 
 export { slugify };

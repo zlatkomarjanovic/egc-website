@@ -9,7 +9,7 @@ import {
 } from "./format";
 
 function postHref(slug: string): string {
-  return `/about-us/insights/${slug}`;
+  return `/post/${slug}`;
 }
 
 function featuredPostHtml(post: CmsPost): string {
