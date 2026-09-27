@@ -16,6 +16,8 @@ export function isSameOrigin(request: Request): boolean {
       /* ignore malformed env */
     }
   }
+  allowed.add("www.egcnyc.org");
+  allowed.add("egcnyc.org");
   allowed.add(host);
 
   if (origin) {

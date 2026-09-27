@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
+import { contentPageMetadata } from "@/lib/page-meta";
 import { websiteJsonLd } from "@/lib/seo";
 import content from "./content.json";
 
-export const metadata: Metadata = content.metadata as unknown as Metadata;
+export const metadata = contentPageMetadata("/", content.metadata);
 export const revalidate = 60;
 
 export default async function Page() {

@@ -59,8 +59,9 @@ export default function AlumniSpotlightView({
                   <div className="max-width-xlarge align-center">
                     <div className="margin-bottom margin-medium">
                       <div className="meet_fellow">
-                        <h2 className="heading-style-h2">Meet&nbsp;</h2>
-                        <h2 className="heading-style-h2 text-highlight">{firstName(alumni)}</h2>
+                        <h1 className="heading-style-h2">
+                          Meet&nbsp;<span className="text-highlight">{firstName(alumni)}</span>
+                        </h1>
                       </div>
                     </div>
                     <div className="w-layout-grid fellow-grid">

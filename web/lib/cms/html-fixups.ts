@@ -1,3 +1,5 @@
+import { applySeoHtmlFixups } from "./seo-html-fixups";
+
 function slugify(value: string): string {
   return value
     .toLowerCase()
@@ -192,10 +194,12 @@ export function reshapeBoardDirectors(html: string): string {
 }
 
 export function applyWebflowHtmlFixups(html: string): string {
-  return reshapeBoardDirectors(
-    hideOurTeamLinks(
-      fixScaleTimelineIcons(
-        disableHeroFadeOut(fixLogoAlt(fixImageQuality(fixEmbedlyVideos(html))))
+  return applySeoHtmlFixups(
+    reshapeBoardDirectors(
+      hideOurTeamLinks(
+        fixScaleTimelineIcons(
+          disableHeroFadeOut(fixLogoAlt(fixImageQuality(fixEmbedlyVideos(html))))
+        )
       )
     )
   );

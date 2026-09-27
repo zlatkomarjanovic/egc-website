@@ -1,14 +1,10 @@
-import type { Metadata } from "next";
 import WebflowPage from "@/components/WebflowPage";
+import { contentPageMetadata } from "@/lib/page-meta";
 import content from "./content.json";
 
-export const metadata: Metadata = {
-  ...(content.metadata as Metadata),
-  title: "EGC Newsletter | Entrepreneurs for Global Change",
-  description:
-    "Follow EGC updates on youth entrepreneurship programs, alumni stories, and upcoming fellowships.",
-  robots: { index: false, follow: true },
-};
+export const metadata = contentPageMetadata("/newsletter", content.metadata, {
+  noIndex: true,
+});
 
 export default function Page() {
   return (

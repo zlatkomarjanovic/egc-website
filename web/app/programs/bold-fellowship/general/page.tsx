@@ -1,31 +1,20 @@
-import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
 import { injectAlumniSpotlightSlider, loadAlumniSpotlightsForFellowship } from "@/lib/cms";
-import { alumniPath, breadcrumbJsonLd, collectionJsonLd, educationalProgramJsonLd } from "@/lib/seo";
+import { BOLD_PROGRAM_FAQS, contentPageMetadata, PAGE_META } from "@/lib/page-meta";
+import {
+  alumniPath,
+  breadcrumbJsonLd,
+  collectionJsonLd,
+  educationalProgramJsonLd,
+  faqPageJsonLd,
+} from "@/lib/seo";
 import content from "./content.json";
 
-const TITLE = "BOLD Fellowship for Entrepreneurship | EGC Program";
-const DESCRIPTION =
-  "The BOLD Fellowship for Entrepreneurship is an EGC and U.S. Department of State program for young founders in Bosnia and Herzegovina, North Macedonia, and Serbia.";
+const PATH = "/programs/bold-fellowship/general";
+const DESCRIPTION = PAGE_META[PATH].description;
 
-export const metadata: Metadata = {
-  ...(content.metadata as Metadata),
-  title: TITLE,
-  description: DESCRIPTION,
-  openGraph: {
-    ...(content.metadata as Metadata).openGraph,
-    title: TITLE,
-    description: DESCRIPTION,
-    type: "website",
-  },
-  twitter: {
-    ...(content.metadata as Metadata).twitter,
-    card: "summary_large_image",
-    title: TITLE,
-    description: DESCRIPTION,
-  },
-};
+export const metadata = contentPageMetadata(PATH, content.metadata);
 export const revalidate = 60;
 
 export default async function Page() {
@@ -37,15 +26,18 @@ export default async function Page() {
       <JsonLd
         data={educationalProgramJsonLd({
           name: "BOLD Fellowship for Entrepreneurship",
-          path: "/programs/bold-fellowship/general",
+          path: PATH,
           description: DESCRIPTION,
           location: "Western Balkans",
+          timeToComplete: "P6M",
+          educationalProgramMode: "blended",
         })}
       />
+      <JsonLd data={faqPageJsonLd(PATH, BOLD_PROGRAM_FAQS)} />
       <JsonLd
         data={collectionJsonLd(
           "Hear more from the BOLD Fellows",
-          "/programs/bold-fellowship/general",
+          PATH,
           DESCRIPTION,
           alumni.map((person) => ({
             name: person.alumniName || person.name,
@@ -56,7 +48,8 @@ export default async function Page() {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "BOLD Fellowship", path: "/programs/bold-fellowship/general" },
+          { name: "Programs", path: "/programs" },
+          { name: "BOLD Fellowship", path: PATH },
         ])}
       />
       <WebflowPage

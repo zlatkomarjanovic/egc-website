@@ -53,6 +53,13 @@
     }
 
     if (search) {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var initial = params.get("q");
+        if (initial && !search.value) search.value = initial;
+      } catch (err) {
+        /* ignore */
+      }
       search.addEventListener("input", apply);
       search.addEventListener("keyup", apply);
       search.addEventListener("search", apply);

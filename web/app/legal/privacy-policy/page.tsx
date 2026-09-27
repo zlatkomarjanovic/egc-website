@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import WebflowPage from "@/components/WebflowPage";
+import { contentPageMetadata } from "@/lib/page-meta";
 import content from "./content.json";
 
-export const metadata: Metadata = content.metadata as unknown as Metadata;
+export const metadata = contentPageMetadata("/legal/privacy-policy", content.metadata);
 
 export default function Page() {
   return (

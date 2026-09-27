@@ -59,6 +59,16 @@ const nextConfig = {
         destination: "/about-us/egc-board-of-directors",
         permanent: true,
       },
+      {
+        source: "/mentorship",
+        destination: "/become-an-egc-mentor",
+        permanent: true,
+      },
+      {
+        source: "/mentorship/:path*",
+        destination: "/become-an-egc-mentor",
+        permanent: true,
+      },
     ];
   },
   async headers() {
@@ -66,6 +76,24 @@ const nextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
+      },
+      {
+        source: "/sitemap.xml",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, must-revalidate",
+          },
+        ],
+      },
+      {
+        source: "/robots.txt",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, must-revalidate",
+          },
+        ],
       },
       {
         // Long-lived caching for the immutable Webflow assets.

@@ -14,6 +14,12 @@ const components: PortableTextComponents = {
       return <img src={url} alt={value?.alt || ""} loading="lazy" className="rich-text_image" />;
     },
   },
+  block: {
+    h1: ({ children }) => <h2 className="heading-style-h2">{children}</h2>,
+    h2: ({ children }) => <h2 className="heading-style-h2">{children}</h2>,
+    h3: ({ children }) => <h3 className="heading-style-h3">{children}</h3>,
+    h4: ({ children }) => <h4 className="heading-style-h4">{children}</h4>,
+  },
   marks: {
     link: ({ children, value }) => {
       const href = value?.href || "#";

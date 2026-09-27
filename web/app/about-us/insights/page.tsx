@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import InlineScripts from "@/components/InlineScripts";
 import JsonLd from "@/components/JsonLd";
 import { buildInsightsBlogSection } from "@/lib/cms/insights-html";
@@ -16,33 +15,17 @@ import {
 } from "@/lib/cms";
 import { sortCmsPosts } from "@/lib/cms/format";
 import { applyWebflowHtmlFixups } from "@/lib/cms/html-fixups";
+import { stripSeoHeadExtras } from "@/lib/cms/seo-html-fixups";
+import { contentPageMetadata, PAGE_META } from "@/lib/page-meta";
 import { breadcrumbJsonLd, collectionJsonLd, postPath } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/client";
 import { isSanityConfigured } from "@/sanity/env";
 import { allPostsQuery } from "@/sanity/lib/queries";
 import content from "./content.json";
 
-const INSIGHTS_TITLE = "EGC Insights | Youth Entrepreneurship Articles";
-const INSIGHTS_DESCRIPTION =
-  "Articles from Entrepreneurs for Global Change on youth entrepreneurship, startup programs, and founder stories from emerging ecosystems.";
+const INSIGHTS_DESCRIPTION = PAGE_META["/about-us/insights"].description;
 
-export const metadata: Metadata = {
-  ...(content.metadata as Metadata),
-  title: INSIGHTS_TITLE,
-  description: INSIGHTS_DESCRIPTION,
-  openGraph: {
-    ...(content.metadata as Metadata).openGraph,
-    title: INSIGHTS_TITLE,
-    description: INSIGHTS_DESCRIPTION,
-    type: "website",
-  },
-  twitter: {
-    ...(content.metadata as Metadata).twitter,
-    card: "summary_large_image",
-    title: INSIGHTS_TITLE,
-    description: INSIGHTS_DESCRIPTION,
-  },
-};
+export const metadata = contentPageMetadata("/about-us/insights", content.metadata);
 export const revalidate = 60;
 
 export default async function Page() {
@@ -91,7 +74,7 @@ export default async function Page() {
       {content.headExtras ? (
         <div
           style={{ display: "contents" }}
-          dangerouslySetInnerHTML={{ __html: content.headExtras }}
+          dangerouslySetInnerHTML={{ __html: stripSeoHeadExtras(content.headExtras) }}
         />
       ) : null}
       <InlineScripts scripts={content.scripts} />

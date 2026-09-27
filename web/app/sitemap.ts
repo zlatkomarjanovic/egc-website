@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getAlumniSlugs, getJobSlugs, getPostSlugs } from "@/lib/cms";
+import { getAlumniSlugs, getAllPosts, getJobSlugs, getPostSlugs } from "@/lib/cms";
 import { absoluteUrl } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/client";
 import { isSanityConfigured } from "@/sanity/env";
 import {
   alumniSlugsQuery,
+  allPostsQuery,
   jobSlugsQuery,
   postSlugsQuery,
 } from "@/sanity/lib/queries";
@@ -15,25 +16,28 @@ const ROUTES: {
   priority: number;
 }[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
+  { path: "/about-us", changeFrequency: "monthly", priority: 0.7 },
   { path: "/about-us/mission-and-vision", changeFrequency: "yearly", priority: 0.8 },
   { path: "/about-us/egc-board-of-directors", changeFrequency: "yearly", priority: 0.4 },
-  { path: "/contact", changeFrequency: "yearly", priority: 0.6 },
+  { path: "/about-us/egc-advisory-board", changeFrequency: "yearly", priority: 0.4 },
+  { path: "/about-us/careers", changeFrequency: "weekly", priority: 0.6 },
+  { path: "/about-us/insights", changeFrequency: "weekly", priority: 0.8 },
+  { path: "/programs", changeFrequency: "monthly", priority: 0.8 },
   { path: "/programs/bold-fellowship/general", changeFrequency: "monthly", priority: 0.8 },
   { path: "/programs/bold-fellowship/serbia", changeFrequency: "monthly", priority: 0.6 },
   { path: "/programs/bold-fellowship/bosnia-and-herzegovina", changeFrequency: "monthly", priority: 0.6 },
   { path: "/programs/bold-fellowship/north-macedonia", changeFrequency: "monthly", priority: 0.6 },
   { path: "/programs/bold-regional-workshops", changeFrequency: "monthly", priority: 0.7 },
   { path: "/programs/bold-summit", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/legal/terms-of-service", changeFrequency: "yearly", priority: 0.3 },
-  { path: "/legal/privacy-policy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/programs/university-partnership-program", changeFrequency: "monthly", priority: 0.6 },
   { path: "/programs/scale-2-0", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/partners", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/about-us/careers", changeFrequency: "weekly", priority: 0.6 },
-  { path: "/become-an-egc-mentor", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/about-us/insights", changeFrequency: "weekly", priority: 0.8 },
   { path: "/programs/leapx", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/about-us/egc-advisory-board", changeFrequency: "yearly", priority: 0.4 },
+  { path: "/alumni", changeFrequency: "weekly", priority: 0.7 },
+  { path: "/partners", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/become-an-egc-mentor", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/contact", changeFrequency: "yearly", priority: 0.6 },
+  { path: "/legal/terms-of-service", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/legal/privacy-policy", changeFrequency: "yearly", priority: 0.3 },
 ];
 
 async function slugsFor(
@@ -55,18 +59,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route.priority,
   }));
 
-  const [postSlugs, jobSlugs, alumniSlugs] = await Promise.all([
-    slugsFor(postSlugsQuery, getPostSlugs),
+  const [postRows, jobSlugs, alumniSlugs] = await Promise.all([
+    isSanityConfigured
+      ? sanityFetch<Array<{ slug: string; publishedAt?: string; _createdAt?: string }>>(
+          allPostsQuery,
+          {},
+          []
+        )
+      : Promise.resolve(
+          getAllPosts().map((post) => ({
+            slug: post.slug,
+            publishedAt: post.publishedAt,
+            _createdAt: post.createdAt,
+          }))
+        ),
     slugsFor(jobSlugsQuery, getJobSlugs),
     slugsFor(alumniSlugsQuery, getAlumniSlugs),
   ]);
 
-  const postEntries = postSlugs.map((slug) => ({
-    url: absoluteUrl(`/post/${slug}`),
-    lastModified: now,
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  const posts: Array<{ slug: string; publishedAt?: string; _createdAt?: string }> =
+    postRows?.length
+      ? postRows
+      : (await slugsFor(postSlugsQuery, getPostSlugs)).map((slug) => ({ slug }));
+
+  const postEntries = posts
+    .filter((post) => post.slug)
+    .map((post) => ({
+      url: absoluteUrl(`/post/${post.slug}`),
+      lastModified: post.publishedAt || post._createdAt || now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
 
   const jobEntries = jobSlugs.map((slug) => ({
     url: absoluteUrl(`/careers/${slug}`),

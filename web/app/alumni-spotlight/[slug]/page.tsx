@@ -8,6 +8,7 @@ import {
   getAlumniSlugs,
 } from "@/lib/cms/alumni-spotlights";
 import { applyWebflowHtmlFixups } from "@/lib/cms/html-fixups";
+import { stripSeoHeadExtras } from "@/lib/cms/seo-html-fixups";
 import { splitNavAndFooter } from "@/lib/cms/shell";
 import {
   sanityAlumniToCmsAlumni,
@@ -15,10 +16,10 @@ import {
 } from "@/lib/cms/adapt-sanity";
 import {
   alumniJsonLd,
+  alumniMetaDescription,
   alumniPath,
   breadcrumbJsonLd,
-  DEFAULT_DESCRIPTION,
-  SITE_NAME,
+  routeMetadata,
 } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/client";
 import { isSanityConfigured } from "@/sanity/env";
@@ -73,31 +74,13 @@ export async function generateMetadata({
   if (!alumni) return { title: "Not found", robots: { index: false, follow: false } };
 
   const name = alumni.alumniName || alumni.name;
-  const title = `${name} | Alumni Spotlight | EGC`;
-  const description = alumni.oneLiner || alumni.whyStarted || DEFAULT_DESCRIPTION;
-  const canonical = alumniPath(slug);
-
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    openGraph: {
-      type: "website",
-      title,
-      description,
-      url: canonical,
-      siteName: SITE_NAME,
-      images: alumni.profilePicture
-        ? [{ url: alumni.profilePicture, alt: alumni.profilePictureAlt || name }]
-        : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: alumni.profilePicture ? [alumni.profilePicture] : undefined,
-    },
-  };
+  return routeMetadata({
+    path: alumniPath(slug),
+    title: `${name} | Alumni Spotlight`,
+    description: alumniMetaDescription(alumni),
+    image: alumni.profilePicture,
+    imageAlt: alumni.profilePictureAlt || name,
+  });
 }
 
 export default async function AlumniSpotlightPage({
@@ -129,7 +112,7 @@ export default async function AlumniSpotlightPage({
       {content.headExtras ? (
         <div
           style={{ display: "contents" }}
-          dangerouslySetInnerHTML={{ __html: content.headExtras }}
+          dangerouslySetInnerHTML={{ __html: stripSeoHeadExtras(content.headExtras) }}
         />
       ) : null}
       <InlineScripts scripts={content.scripts} />

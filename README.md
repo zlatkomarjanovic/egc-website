@@ -1,6 +1,6 @@
 # EGC Website
 
-The [Entrepreneurs for Global Change](https://egcnyc.org) website, migrated from
+The [Entrepreneurs for Global Change](https://www.egcnyc.org) website, migrated from
 Webflow to **Next.js (App Router)** and ready to deploy on **Vercel**.
 
 It is a *faithful* port: the original Webflow markup, CSS and interactions
@@ -100,7 +100,7 @@ The forms and headers are hardened against common attacks:
 
    | Key | Value |
    | --- | --- |
-   | `NEXT_PUBLIC_SITE_URL` | `https://egcnyc.org` |
+   | `NEXT_PUBLIC_SITE_URL` | `https://www.egcnyc.org` |
    | `NEXT_PUBLIC_SANITY_PROJECT_ID` | `nn9xx2r4` |
    | `NEXT_PUBLIC_SANITY_DATASET` | `production` |
    | `NEXT_PUBLIC_SANITY_API_VERSION` | `2024-10-01` |

@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
+import { contentPageMetadata, PAGE_META } from "@/lib/page-meta";
 import {
   breadcrumbJsonLd,
   educationalProgramJsonLd,
@@ -8,28 +8,10 @@ import {
 } from "@/lib/seo";
 import content from "./content.json";
 
-const SCALE_TITLE = "Scale 2.0 | Fully Funded Startup Incubator for Croatian Founders";
-const SCALE_DESCRIPTION =
-  "Scale 2.0 is EGC's fully funded incubator for early-stage Croatian founders. The program includes a Vodnjan bootcamp, a New York City week, and a SHIFT pitch, with no equity taken.";
+const PATH = "/programs/scale-2-0";
+const DESCRIPTION = PAGE_META[PATH].description;
 
-export const metadata: Metadata = {
-  ...(content.metadata as Metadata),
-  title: SCALE_TITLE,
-  description: SCALE_DESCRIPTION,
-  alternates: { canonical: "/programs/scale-2-0" },
-  openGraph: {
-    ...(content.metadata as Metadata).openGraph,
-    title: SCALE_TITLE,
-    description: SCALE_DESCRIPTION,
-    type: "website",
-  },
-  twitter: {
-    ...(content.metadata as Metadata).twitter,
-    card: "summary_large_image",
-    title: SCALE_TITLE,
-    description: SCALE_DESCRIPTION,
-  },
-};
+export const metadata = contentPageMetadata(PATH, content.metadata);
 
 const SCALE_FAQS = [
   {
@@ -60,16 +42,19 @@ export default function Page() {
       <JsonLd
         data={educationalProgramJsonLd({
           name: "Scale 2.0",
-          path: "/programs/scale-2-0",
-          description: SCALE_DESCRIPTION,
+          path: PATH,
+          description: DESCRIPTION,
           location: "Croatia and New York City",
+          timeToComplete: "P3W",
+          educationalProgramMode: "blended",
         })}
       />
-      <JsonLd data={faqPageJsonLd("/programs/scale-2-0", SCALE_FAQS)} />
+      <JsonLd data={faqPageJsonLd(PATH, SCALE_FAQS)} />
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Scale 2.0", path: "/programs/scale-2-0" },
+          { name: "Programs", path: "/programs" },
+          { name: "Scale 2.0", path: PATH },
         ])}
       />
       <WebflowPage

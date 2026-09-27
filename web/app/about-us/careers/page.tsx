@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
 import { injectCareersList } from "@/lib/cms/collection-html";
-import { DEFAULT_CAREERS_COVER, getAllJobs } from "@/lib/cms/jobs";
+import { getAllJobs } from "@/lib/cms/jobs";
 import {
   sanityJobToCmsJob,
   type SanityJob,
 } from "@/lib/cms/adapt-sanity";
+import { contentPageMetadata, PAGE_META } from "@/lib/page-meta";
 import {
   breadcrumbJsonLd,
   careerPath,
@@ -17,30 +17,9 @@ import { isSanityConfigured } from "@/sanity/env";
 import { openJobsQuery } from "@/sanity/lib/queries";
 import content from "./content.json";
 
-const CAREERS_TITLE = "EGC Careers | Jobs at Entrepreneurs for Global Change";
-const CAREERS_DESCRIPTION =
-  "Open roles at Entrepreneurs for Global Change in New York. Join the team supporting young founders across emerging startup ecosystems.";
+const CAREERS_DESCRIPTION = PAGE_META["/about-us/careers"].description;
 
-export const metadata: Metadata = {
-  ...(content.metadata as Metadata),
-  title: CAREERS_TITLE,
-  description: CAREERS_DESCRIPTION,
-  alternates: { canonical: "/about-us/careers" },
-  openGraph: {
-    ...(content.metadata as Metadata).openGraph,
-    title: CAREERS_TITLE,
-    description: CAREERS_DESCRIPTION,
-    type: "website",
-    images: [{ url: DEFAULT_CAREERS_COVER, alt: "EGC careers team" }],
-  },
-  twitter: {
-    ...(content.metadata as Metadata).twitter,
-    card: "summary_large_image",
-    title: CAREERS_TITLE,
-    description: CAREERS_DESCRIPTION,
-    images: [DEFAULT_CAREERS_COVER],
-  },
-};
+export const metadata = contentPageMetadata("/about-us/careers", content.metadata);
 export const revalidate = 60;
 
 export default async function Page() {

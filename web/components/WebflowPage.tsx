@@ -1,5 +1,6 @@
 import InlineScripts from "./InlineScripts";
 import { applyWebflowHtmlFixups } from "@/lib/cms/html-fixups";
+import { stripSeoHeadExtras } from "@/lib/cms/seo-html-fixups";
 
 type WebflowPageProps = {
   /** Per-page <style> blocks, JSON-LD and consent-gated (fs-cc) scripts from the original <head>. */
@@ -28,6 +29,7 @@ export default function WebflowPage({
   scripts,
 }: WebflowPageProps) {
   const fixedBodyHtml = applyWebflowHtmlFixups(bodyHtml);
+  const safeHeadExtras = headExtras ? stripSeoHeadExtras(headExtras) : "";
 
   return (
     <>
@@ -37,10 +39,10 @@ export default function WebflowPage({
           : { style: { display: "contents" } })}
         dangerouslySetInnerHTML={{ __html: fixedBodyHtml }}
       />
-      {headExtras ? (
+      {safeHeadExtras ? (
         <div
           style={{ display: "contents" }}
-          dangerouslySetInnerHTML={{ __html: headExtras }}
+          dangerouslySetInnerHTML={{ __html: safeHeadExtras }}
         />
       ) : null}
       <InlineScripts scripts={scripts} />

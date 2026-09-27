@@ -6,6 +6,7 @@ import CareerDetailView from "@/components/careers/CareerDetailView";
 import PortableText from "@/components/PortableText";
 import { getJobBySlug, getJobSlugs } from "@/lib/cms/jobs";
 import { applyWebflowHtmlFixups } from "@/lib/cms/html-fixups";
+import { stripSeoHeadExtras } from "@/lib/cms/seo-html-fixups";
 import { splitNavAndFooter } from "@/lib/cms/shell";
 import {
   sanityJobToCmsJob,
@@ -14,9 +15,9 @@ import {
 import {
   breadcrumbJsonLd,
   careerPath,
-  DEFAULT_DESCRIPTION,
   jobJsonLd,
-  SITE_NAME,
+  jobMetaDescription,
+  routeMetadata,
 } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/client";
 import { isSanityConfigured } from "@/sanity/env";
@@ -60,34 +61,14 @@ export async function generateMetadata({
   const loaded = await loadJob(slug);
   if (!loaded) return { title: "Not found", robots: { index: false, follow: false } };
 
-  const title = `${loaded.job.jobTitle || loaded.job.name} | EGC Careers`;
-  const description = loaded.job.excerpt || DEFAULT_DESCRIPTION;
-  const canonical = careerPath(slug);
-
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    openGraph: {
-      type: "website",
-      title,
-      description,
-      url: canonical,
-      siteName: SITE_NAME,
-      images: [
-        {
-          url: loaded.job.coverImage || "/images/egc-careers-cover.png",
-          alt: title,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [loaded.job.coverImage || "/images/egc-careers-cover.png"],
-    },
-  };
+  const title = loaded.job.jobTitle || loaded.job.name;
+  return routeMetadata({
+    path: careerPath(slug),
+    title: `${title} | Careers`,
+    description: jobMetaDescription(loaded.job),
+    image: loaded.job.coverImage || "/images/egc-careers-cover.png",
+    imageAlt: title,
+  });
 }
 
 export default async function CareerDetailPage({
@@ -126,7 +107,7 @@ export default async function CareerDetailPage({
       {content.headExtras ? (
         <div
           style={{ display: "contents" }}
-          dangerouslySetInnerHTML={{ __html: content.headExtras }}
+          dangerouslySetInnerHTML={{ __html: stripSeoHeadExtras(content.headExtras) }}
         />
       ) : null}
       <InlineScripts scripts={content.scripts} />

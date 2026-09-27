@@ -1,15 +1,20 @@
-import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
 import { injectAlumniSpotlightSlider, loadAlumniSpotlightsForFellowship } from "@/lib/cms";
-import { alumniPath, breadcrumbJsonLd, collectionJsonLd } from "@/lib/seo";
+import { BOLD_PROGRAM_FAQS, contentPageMetadata, PAGE_META } from "@/lib/page-meta";
+import {
+  alumniPath,
+  breadcrumbJsonLd,
+  collectionJsonLd,
+  educationalProgramJsonLd,
+  faqPageJsonLd,
+} from "@/lib/seo";
 import content from "./content.json";
 
-export const metadata: Metadata = {
-  ...(content.metadata as Metadata),
-  description:
-    "BOLD Fellowship Bosnia and Herzegovina is an EGC entrepreneurship program for young founders. Hear from alumni and learn how the fellowship works.",
-};
+const PATH = "/programs/bold-fellowship/bosnia-and-herzegovina";
+const DESCRIPTION = PAGE_META[PATH].description;
+
+export const metadata = contentPageMetadata(PATH, content.metadata);
 export const revalidate = 60;
 
 export default async function Page() {
@@ -19,10 +24,21 @@ export default async function Page() {
   return (
     <>
       <JsonLd
+        data={educationalProgramJsonLd({
+          name: "BOLD Fellowship Bosnia and Herzegovina",
+          path: PATH,
+          description: DESCRIPTION,
+          location: "Bosnia and Herzegovina",
+          timeToComplete: "P6M",
+          educationalProgramMode: "blended",
+        })}
+      />
+      <JsonLd data={faqPageJsonLd(PATH, BOLD_PROGRAM_FAQS)} />
+      <JsonLd
         data={collectionJsonLd(
           "BOLD Fellows",
-          "/programs/bold-fellowship/bosnia-and-herzegovina",
-          "Stories from BOLD Fellowship alumni.",
+          PATH,
+          DESCRIPTION,
           alumni.map((person) => ({
             name: person.alumniName || person.name,
             path: alumniPath(person.slug),
@@ -32,11 +48,9 @@ export default async function Page() {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
+          { name: "Programs", path: "/programs" },
           { name: "BOLD Fellowship", path: "/programs/bold-fellowship/general" },
-          {
-            name: "Bosnia and Herzegovina",
-            path: "/programs/bold-fellowship/bosnia-and-herzegovina",
-          },
+          { name: "Bosnia and Herzegovina", path: PATH },
         ])}
       />
       <WebflowPage

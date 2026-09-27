@@ -1,16 +1,38 @@
-import type { Metadata } from "next";
+import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
+import { contentPageMetadata, PAGE_META } from "@/lib/page-meta";
+import { breadcrumbJsonLd, educationalProgramJsonLd } from "@/lib/seo";
 import content from "./content.json";
 
-export const metadata: Metadata = content.metadata as unknown as Metadata;
+const PATH = "/programs/leapx";
+export const metadata = contentPageMetadata(PATH, content.metadata);
 
 export default function Page() {
   return (
-    <WebflowPage
-      headExtras={content.headExtras}
-      bodyHtml={content.bodyHtml}
-      rootClass={content.rootClass}
-      scripts={content.scripts}
-    />
+    <>
+      <JsonLd
+        data={educationalProgramJsonLd({
+          name: "LeapX AI Startup Bootcamp",
+          path: PATH,
+          description: PAGE_META[PATH].description,
+          location: "Online and Canary Islands",
+          timeToComplete: "P5W",
+          educationalProgramMode: "blended",
+        })}
+      />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Programs", path: "/programs" },
+          { name: "LeapX", path: PATH },
+        ])}
+      />
+      <WebflowPage
+        headExtras={content.headExtras}
+        bodyHtml={content.bodyHtml}
+        rootClass={content.rootClass}
+        scripts={content.scripts}
+      />
+    </>
   );
 }

@@ -32,12 +32,12 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/studio", "/api/"],
       },
       {
-        userAgent: ["Google-Extended", "CCBot", "Bytespider"],
+        userAgent: ["Google-Extended", "CCBot", "Bytespider", "Amazonbot", "meta-externalagent"],
         allow: "/",
         disallow: ["/studio", "/api/"],
       },
     ],
     sitemap: `${site}/sitemap.xml`,
-    host: site,
+    host: "https://www.egcnyc.org",
   };
 }

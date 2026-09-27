@@ -11,6 +11,7 @@ import {
 } from "@/lib/cms";
 import { sortCmsPosts } from "@/lib/cms/format";
 import { applyWebflowHtmlFixups } from "@/lib/cms/html-fixups";
+import { stripSeoHeadExtras } from "@/lib/cms/seo-html-fixups";
 import {
   sanityPostDetailToCmsPost,
   sanityPostToCmsPost,
@@ -116,7 +117,7 @@ export default async function InsightPostPage({
         {content.headExtras ? (
           <div
             style={{ display: "contents" }}
-            dangerouslySetInnerHTML={{ __html: content.headExtras }}
+            dangerouslySetInnerHTML={{ __html: stripSeoHeadExtras(content.headExtras) }}
           />
         ) : null}
         <InlineScripts scripts={content.scripts} />
@@ -145,7 +146,7 @@ export default async function InsightPostPage({
       {content.headExtras ? (
         <div
           style={{ display: "contents" }}
-          dangerouslySetInnerHTML={{ __html: content.headExtras }}
+          dangerouslySetInnerHTML={{ __html: stripSeoHeadExtras(content.headExtras) }}
         />
       ) : null}
       <InlineScripts scripts={content.scripts} />

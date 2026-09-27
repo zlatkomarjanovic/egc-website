@@ -4,11 +4,13 @@ import JsonLd from "@/components/JsonLd";
 import wfPages from "@/lib/wf-pages.json";
 import {
   DEFAULT_DESCRIPTION,
+  DEFAULT_OG_ALT,
   DEFAULT_OG_IMAGE,
   DEFAULT_TITLE,
   SITE_NAME,
   getSiteUrl,
   organizationJsonLd,
+  websiteJsonLd,
 } from "@/lib/seo";
 
 const WF_SITE_ID = "6a2ed7db57ccd44542c25786";
@@ -27,9 +29,9 @@ export const metadata: Metadata = {
   category: "Nonprofit",
   referrer: "strict-origin-when-cross-origin",
   formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
+    email: true,
+    address: true,
+    telephone: true,
   },
   robots: {
     index: true,
@@ -49,7 +51,7 @@ export const metadata: Metadata = {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
     url: getSiteUrl(),
-    images: [{ url: DEFAULT_OG_IMAGE, alt: SITE_NAME }],
+    images: [{ url: DEFAULT_OG_IMAGE, alt: DEFAULT_OG_ALT, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
@@ -103,6 +105,7 @@ export default function RootLayout({
       </head>
       <body>
         <JsonLd data={organizationJsonLd()} />
+        <JsonLd data={websiteJsonLd()} />
         {children}
 
         {/* Scripts are plain tags (not next/script) loaded at the end of <body>,
