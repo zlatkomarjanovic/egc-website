@@ -50,22 +50,34 @@ export function fixEmbedlyVideos(html: string): string {
 }
 
 const SHARP_IMAGE_SWAPS: Record<string, string> = {
-  "/images/image-16_1image-16.webp": "/images/IMG_6315-1.jpg",
-  "/images/image-38-1_1image-38-1.webp": "/images/Copy_of_IMG_4440.jpg",
-  "/images/image-39_1image-39.webp": "/images/Copy-of-IMG-20250615-WA0001.jpg",
+  "/images/image-16_1image-16.webp": "/images/IMG_6315-1-p-1600.jpg",
+  "/images/image-38-1_1image-38-1.webp": "/images/Copy_of_IMG_4440-p-1600.jpg",
+  "/images/image-39_1image-39.webp": "/images/Copy-of-IMG-20250615-WA0001-p-1600.jpg",
+  "/images/IMG_6315-1.jpg": "/images/IMG_6315-1-p-1600.jpg",
+  "/images/Copy_of_IMG_4440.jpg": "/images/Copy_of_IMG_4440-p-1600.jpg",
+  "/images/Copy-of-IMG-20250615-WA0001.jpg": "/images/Copy-of-IMG-20250615-WA0001-p-1600.jpg",
+  "/images/pexels-life-of-pix-7613.jpg": "/images/pexels-life-of-pix-7613-p-1600.jpg",
+  "/images/WhatsApp-Image-2024-09-03-at-11.46.56.jpeg":
+    "/images/WhatsApp-Image-2024-09-03-at-11.46.56-p-1600.jpeg",
 };
 
-function upgradeCompressedSrc(src: string): string {
-  return src.replace(
-    /-p-(?:500|800|1080|1600|2000|2600|3200|130x130q80)(?=\.[a-z0-9]+(?:\.webp)?$)/i,
-    ""
-  );
-}
+const IMAGE_DIMENSIONS: Record<string, [number, number]> = {
+  "/images/IMG_6315-1-p-1600.jpg": [1600, 1067],
+  "/images/Copy_of_IMG_4440-p-1600.jpg": [1600, 1067],
+  "/images/Copy-of-IMG-20250615-WA0001-p-1600.jpg": [1600, 1067],
+  "/images/pexels-life-of-pix-7613-p-1600.jpg": [1600, 1067],
+  "/images/WhatsApp-Image-2024-09-03-at-11.46.56-p-1600.jpeg": [1600, 1067],
+};
 
 function sharpSrc(src: string): string {
   const normalized = src.startsWith("images/") ? `/${src}` : src;
-  const upgraded = upgradeCompressedSrc(normalized);
-  return SHARP_IMAGE_SWAPS[upgraded] || SHARP_IMAGE_SWAPS[normalized] || SHARP_IMAGE_SWAPS[src] || upgraded;
+  if (SHARP_IMAGE_SWAPS[normalized]) return SHARP_IMAGE_SWAPS[normalized];
+  const original = normalized.replace(
+    /-p-(?:500|800|1080|130x130q80|1600|2000|2600|3200)(?=\.[a-z0-9]+(?:\.webp)?$)/i,
+    ""
+  );
+  if (SHARP_IMAGE_SWAPS[original]) return SHARP_IMAGE_SWAPS[original];
+  return SHARP_IMAGE_SWAPS[src] || normalized;
 }
 
 function largestFromSrcset(srcset: string): string | null {
@@ -97,7 +109,12 @@ export function fixImageQuality(html: string): string {
     .replace(/\ssrcset="[^"]*"/gi, "")
     .replace(/\ssizes="[^"]*"/gi, "")
     .replace(/<img([^>]*?)\ssrc="([^"]+)"([^>]*)>/gi, (_match, before, src, after) => {
-      return `<img${before} src="${sharpSrc(src)}"${after}>`;
+      const next = sharpSrc(src);
+      const size = IMAGE_DIMENSIONS[next];
+      let attrs = `${before} src="${next}"${after}`;
+      if (size && !/\bwidth=/i.test(attrs)) attrs += ` width="${size[0]}"`;
+      if (size && !/\bheight=/i.test(attrs)) attrs += ` height="${size[1]}"`;
+      return `<img${attrs}>`;
     });
 }
 
@@ -344,6 +361,10 @@ export function fixFooterJunk(html: string): string {
     .replace(
       /mailto:info@egcnyc\.org\?subject=Hello(?:%20|\s)there(?:%20|\s)\{name\}(?:%20|\s)here/gi,
       "mailto:info@egcnyc.org?subject=Hello%20from%20the%20EGC%20website"
+    )
+    .replace(
+      /<a href="#" class="link-footer">♥<\/a>/g,
+      '<a href="/" class="link-footer" aria-label="Entrepreneurs for Global Change homepage">EGC</a>'
     )
     .replace(/href="tel:\+?1?[-.\s()]*347[-.\s]*990[-.\s]*2142"/gi, 'href="tel:+13479902142"')
     .replace(/\?displayConfirmation=true(?=&|"|'|$)/gi, "")

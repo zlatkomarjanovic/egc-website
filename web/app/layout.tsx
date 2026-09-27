@@ -10,6 +10,7 @@ import {
   DEFAULT_TITLE,
   SITE_NAME,
   getSiteUrl,
+  founderJsonLd,
   organizationJsonLd,
   websiteJsonLd,
 } from "@/lib/seo";
@@ -82,7 +83,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-wf-site={WF_SITE_ID}>
+    <html lang="en-US" data-wf-site={WF_SITE_ID}>
       <head>
         {/* Webflow CSS — order matters; same precedence preserves it. */}
         <link rel="stylesheet" href="/css/normalize.css" precedence="default" />
@@ -92,7 +93,7 @@ export default function RootLayout({
           href="/css/egc-staging-27323bfac8974ca5bc4feec8fe4.webflow.css"
           precedence="default"
         />
-        <link rel="stylesheet" href="/css/cms-overrides.css?v=reads-11" precedence="default" />
+        <link rel="stylesheet" href="/css/cms-overrides.css?v=reads-12" precedence="default" />
         {/* Set the per-route data-wf-page on <html> synchronously, before webflow.js
             runs. Without it webflow.js can't bind IX2 interactions and the scroll-in
             reveal animations stay stuck at their hidden initial state. A raw inline
@@ -113,6 +114,7 @@ export default function RootLayout({
       </head>
       <body>
         <JsonLd data={organizationJsonLd()} />
+        <JsonLd data={founderJsonLd()} />
         <JsonLd data={websiteJsonLd()} />
         {children}
 

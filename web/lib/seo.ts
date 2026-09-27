@@ -10,7 +10,7 @@ export const SITE_SHORT_NAME = "EGC";
 export const PRODUCTION_SITE_URL = "https://www.egcnyc.org";
 export const SITE_HOST = "www.egcnyc.org";
 export const DEFAULT_TITLE =
-  "Entrepreneurs for Global Change | Youth Entrepreneurship Programs";
+  "EGC | Youth Entrepreneurship Programs for Founders";
 export const DEFAULT_DESCRIPTION =
   "EGC helps young founders from emerging ecosystems start and grow ventures through the BOLD Fellowship, LeapX, workshops, and NYC programs.";
 export const DEFAULT_OG_IMAGE = "/images/egc-og-default.png";
@@ -215,8 +215,13 @@ export function routeMetadata({
     description: finalDescription,
     metadataBase: new URL(getSiteUrl()),
     alternates: {
-      canonical,
       ...(extra?.alternates || {}),
+      canonical,
+      languages: {
+        en: canonical,
+        "en-US": canonical,
+        "x-default": canonical,
+      },
     },
     openGraph: {
       type,
@@ -279,10 +284,11 @@ export function organizationJsonLd() {
   const origin = getSiteUrl();
   return {
     "@context": "https://schema.org",
-    "@type": "NonprofitOrganization",
+    "@type": ["Organization", "NGO", "NonprofitOrganization", "LocalBusiness"],
     "@id": `${origin}/#organization`,
     name: SITE_NAME,
     alternateName: SITE_SHORT_NAME,
+    legalName: SITE_NAME,
     url: `${origin}/`,
     logo: {
       "@type": "ImageObject",
@@ -315,6 +321,15 @@ export function organizationJsonLd() {
       "https://www.youtube.com/@egcnyc",
     ],
     foundingDate: "2013",
+    founder: {
+      "@type": "Person",
+      "@id": `${origin}/#filip-sasic`,
+      name: "Filip Sasic",
+      jobTitle: "CEO and Founder",
+      url: `${origin}/about-us/egc-board-of-directors`,
+      image: absoluteUrl("/images/filip-sasic.png"),
+      sameAs: ["https://www.linkedin.com/in/filipsasic/"],
+    },
     knowsAbout: [
       "youth entrepreneurship",
       "startup acceleration",
@@ -324,6 +339,21 @@ export function organizationJsonLd() {
       "BOLD Summit",
       "emerging market founders",
     ],
+  };
+}
+
+export function founderJsonLd() {
+  const origin = getSiteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${origin}/#filip-sasic`,
+    name: "Filip Sasic",
+    jobTitle: "CEO and Founder",
+    worksFor: { "@id": `${origin}/#organization` },
+    url: `${origin}/about-us/egc-board-of-directors`,
+    image: absoluteUrl("/images/filip-sasic.png"),
+    sameAs: ["https://www.linkedin.com/in/filipsasic/"],
   };
 }
 

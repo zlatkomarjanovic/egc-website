@@ -6,7 +6,7 @@ export const PAGE_META: Record<
   { title: string; description: string; image?: string }
 > = {
   "/": {
-    title: "EGC | Youth Entrepreneurship Programs",
+    title: "EGC | Youth Entrepreneurship Programs for Founders",
     description:
       "EGC helps young founders from emerging ecosystems start and grow ventures through BOLD Fellowship, LeapX, workshops, and NYC programs.",
     image: "/images/egc-og-default.png",

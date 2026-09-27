@@ -38,35 +38,35 @@ const RELATED_READS = `
             <div class="egc-reads_split">
               <div class="egc-reads_stage">
                 <a href="/programs" class="egc-reads_shot is-programs">
-                  <img src="/images/IMG_6315-1.jpg" loading="eager" alt="EGC fellows during a program session" class="egc-reads_photo">
+                  <img src="/images/IMG_6315-1-p-1600.jpg" loading="eager" alt="EGC fellows during a youth entrepreneurship program session" class="egc-reads_photo" width="1600" height="1067">
                   <span class="egc-reads_feature-text">
                     <span class="egc-reads_where">Programs</span>
                     <strong class="egc-reads_feature-title">BOLD, Scale 2.0, LeapX, and the rest of the portfolio</strong>
                   </span>
                 </a>
                 <a href="/alumni" class="egc-reads_shot is-alumni">
-                  <img src="/images/Copy-of-IMG-20250615-WA0001.jpg" loading="lazy" alt="EGC alumni founders" class="egc-reads_photo">
+                  <img src="/images/Copy-of-IMG-20250615-WA0001-p-1600.jpg" loading="lazy" alt="EGC alumni founders from the Alumni Spotlight" class="egc-reads_photo" width="1600" height="1067">
                   <span class="egc-reads_feature-text">
                     <span class="egc-reads_where">Alumni</span>
                     <strong class="egc-reads_feature-title">Alumni Spotlight</strong>
                   </span>
                 </a>
                 <a href="/about-us/insights" class="egc-reads_shot is-insights">
-                  <img src="/images/pexels-life-of-pix-7613.jpg" loading="lazy" alt="EGC Insights" class="egc-reads_photo">
+                  <img src="/images/pexels-life-of-pix-7613-p-1600.jpg" loading="lazy" alt="EGC Insights youth entrepreneurship articles" class="egc-reads_photo" width="1600" height="1067">
                   <span class="egc-reads_feature-text">
                     <span class="egc-reads_where">Journal</span>
                     <strong class="egc-reads_feature-title">EGC Insights</strong>
                   </span>
                 </a>
                 <a href="/post/why-networking-matters-for-founders" class="egc-reads_shot is-networking">
-                  <img src="/images/Copy_of_IMG_4440.jpg" loading="lazy" alt="Founders networking" class="egc-reads_photo">
+                  <img src="/images/Copy_of_IMG_4440-p-1600.jpg" loading="lazy" alt="Young founders networking at an EGC program" class="egc-reads_photo" width="1600" height="1067">
                   <span class="egc-reads_feature-text">
                     <span class="egc-reads_where">Article</span>
                     <strong class="egc-reads_feature-title">Why networking matters for founders</strong>
                   </span>
                 </a>
                 <a href="/post/how-to-use-storytelling-in-entrepreneurship-beyond-marketing" class="egc-reads_shot is-story">
-                  <img src="/images/WhatsApp-Image-2024-09-03-at-11.46.56.jpeg" loading="lazy" alt="Founders telling their story" class="egc-reads_photo">
+                  <img src="/images/WhatsApp-Image-2024-09-03-at-11.46.56-p-1600.jpeg" loading="lazy" alt="Founders sharing their story at an EGC session" class="egc-reads_photo" width="1600" height="1067">
                   <span class="egc-reads_feature-text">
                     <span class="egc-reads_where">Article</span>
                     <strong class="egc-reads_feature-title">Storytelling for founders</strong>
@@ -185,12 +185,12 @@ export function fixHomepageHeadings(html: string): string {
   if (next.includes("Entrepreneurs for Global Change</h1>")) {
     next = insertAfterHero(
       next,
-      `<p id="egc-what-is" class="text-size-regular">EGC is a New York City nonprofit that runs entrepreneurship programs for young founders from emerging ecosystems, including the Western Balkans.</p>`
+      `<p id="egc-what-is" class="text-size-regular">EGC is a New York City nonprofit that runs youth entrepreneurship programs for young founders from emerging ecosystems, including the BOLD Fellowship, LeapX, and workshops across the Western Balkans.</p>`
     );
   }
   next = next.replace(
     /<h1 blocks-non-deletable="true" class="heading-style-h2">Entrepreneurs for Global Change<\/h1>/,
-    '<h2 blocks-non-deletable="true" class="heading-style-h2">What EGC is</h2>'
+    '<h2 blocks-non-deletable="true" class="heading-style-h2">Youth entrepreneurship programs</h2>'
   );
   next = next.replace(
     /<h2(\b[^>]*)>(?:(?!<\/h2>)[\s\S])*unique because of our\s*<\/h2>/i,
@@ -210,7 +210,7 @@ export function renameHomepageDuplicateHeading(html: string): string {
   if (!isHomepageHtml(html)) return html;
   return html.replace(
     /<h2(\b[^>]*)>\s*Entrepreneurs for Global Change\s*<\/h2>/gi,
-    "<h2$1>What EGC is</h2>"
+    "<h2$1>Youth entrepreneurship programs</h2>"
   );
 }
 
@@ -399,6 +399,15 @@ function isSearchIcon(src: string, className: string): boolean {
   return /search\.svg/i.test(src) || /\bsearch-icon\b/i.test(className);
 }
 
+function decorativeAlt(src: string, className: string): string {
+  if (/arrow-left\.svg/i.test(src) || /testimonial15_arrow-icon|icon-1x1/i.test(className)) {
+    return /right/i.test(className) ? "Next slide" : "Previous slide";
+  }
+  if (/Vector\.svg/i.test(src)) return "LinkedIn";
+  if (/Subtract\.svg/i.test(src)) return "EGC";
+  return "Entrepreneurs for Global Change";
+}
+
 function isDecorativeImage(src: string, className: string): boolean {
   if (isSearchIcon(src, className)) return false;
   if (/navbar2_logo|footer-egc-logo|layout3_image|fellow-img|blog21_/i.test(className)) {
@@ -498,8 +507,9 @@ export function fillEmptyImageAlts(html: string): string {
       return `<img${imageAttr(attrs, "alt", "Search Insights")}>`;
     }
     if (isDecorativeImage(src, className)) {
-      let next = imageAttr(attrs, "alt", "");
-      next = imageAttr(next, "aria-hidden", "true");
+      const label = decorativeAlt(src, className);
+      let next = imageAttr(attrs, "alt", label);
+      if (!label) next = imageAttr(next, "aria-hidden", "true");
       return `<img${next}>`;
     }
     const existing = attrs.match(/\balt="([^"]*)"/i) || attrs.match(/\balt='([^']*)'/i);
