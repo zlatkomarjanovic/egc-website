@@ -48,7 +48,27 @@ const nextConfig = {
   },
   trailingSlash: false,
   async redirects() {
+    // Webflow category collection slugs (current + aliases). These must never
+    // 308 to /post/:slug because those paths 404.
+    const insightsCategorySlug =
+      "communication|communication-and-marketing|communication-marketing|marketing|entrepreneurship|leadership|leadership-and-management|leadership-management|management|networking|networking-and-relationships|networking-relationships|relationships|trends|trends-and-insights|trends-insights|insights";
+
     return [
+      {
+        source: `/about-us/insights/:slug(${insightsCategorySlug})`,
+        destination: "/about-us/insights",
+        permanent: true,
+      },
+      {
+        source: `/insights/:slug(${insightsCategorySlug})`,
+        destination: "/about-us/insights",
+        permanent: true,
+      },
+      {
+        source: `/blog/:slug(${insightsCategorySlug})`,
+        destination: "/about-us/insights",
+        permanent: true,
+      },
       {
         source: "/about-us/insights/:slug",
         destination: "/post/:slug",

@@ -108,13 +108,37 @@ export function alumniPath(slug: string): string {
 
 export function decodeHtmlEntities(value: string): string {
   return value
-    .replace(/&amp;/g, "&")
+    .replace(/&amp;/gi, "&")
+    .replace(/&#0*38;/g, "&")
+    .replace(/&#x0*26;/gi, "&")
     .replace(/&#x27;|&#39;|&apos;/gi, "'")
     .replace(/&quot;/g, '"')
     .replace(/&#x2F;/gi, "/")
     .replace(/&nbsp;/gi, " ")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">");
+}
+
+function decodeHtmlEntitiesDeep(value: string): string {
+  let current = value;
+  for (let i = 0; i < 5; i++) {
+    const next = decodeHtmlEntities(current);
+    if (next === current) break;
+    current = next;
+  }
+  return current;
+}
+
+function ogSafeImageUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (!parsed.search.includes("&")) return parsed.href;
+    const auto = parsed.searchParams.get("auto");
+    parsed.search = auto ? `auto=${encodeURIComponent(auto)}` : "";
+    return parsed.href;
+  } catch {
+    return url.replace(/&(?:amp;|#0*38;|#x0*26;)?.*/i, "");
+  }
 }
 
 export function clipText(value: string, max: number): string {
@@ -142,14 +166,14 @@ export function pageDescription(description?: string | null): string {
 }
 
 export function localAssetUrl(url?: string | null, fallback = DEFAULT_OG_IMAGE): string {
-  if (!url) return absoluteUrl(fallback);
-  const decoded = decodeHtmlEntities(url);
+  if (!url) return ogSafeImageUrl(absoluteUrl(fallback));
+  const decoded = decodeHtmlEntitiesDeep(url);
   if (decoded.includes("website-files.com") || decoded.includes("cdn.prod.website-files.com")) {
-    return absoluteUrl(fallback);
+    return ogSafeImageUrl(absoluteUrl(fallback));
   }
-  if (decoded.startsWith("/")) return absoluteUrl(decoded);
-  if (/^https?:\/\//i.test(decoded)) return absoluteUrl(decoded);
-  return absoluteUrl(fallback);
+  if (decoded.startsWith("/")) return ogSafeImageUrl(absoluteUrl(decoded));
+  if (/^https?:\/\//i.test(decoded)) return ogSafeImageUrl(absoluteUrl(decoded));
+  return ogSafeImageUrl(absoluteUrl(fallback));
 }
 
 type RouteMetadataInput = {
@@ -182,7 +206,7 @@ export function routeMetadata({
   const canonical = absoluteUrl(path);
   const finalTitle = pageTitle(title);
   const finalDescription = pageDescription(description);
-  const ogImage = localAssetUrl(image);
+  const ogImage = localAssetUrl(decodeHtmlEntitiesDeep(image || ""));
   const ogAlt = imageAlt || finalTitle;
 
   return {
@@ -422,7 +446,12 @@ export function jobJsonLd(job: CmsJob) {
     (job.startDate && /^\d{4}/.test(job.startDate) ? Number(job.startDate.slice(0, 4)) : undefined) ||
     (job.endDate && /^\d{4}/.test(job.endDate) ? Number(job.endDate.slice(0, 4)) : undefined);
   const postedRaw = job.postedAt && /^\d{4}-\d{2}-\d{2}/.test(job.postedAt) ? job.postedAt : undefined;
-  const validThrough = jobDeadlineIso(job.applicationDeadline, yearHint);
+  const deadlineRaw = jobDeadlineIso(job.applicationDeadline, yearHint);
+  const deadlineMs = deadlineRaw ? Date.parse(deadlineRaw) : Number.NaN;
+  const validThrough =
+    !Number.isNaN(deadlineMs) && new Date(deadlineMs).getUTCFullYear() >= 2013
+      ? deadlineRaw
+      : undefined;
   const datePosted =
     postedRaw &&
     Date.parse(postedRaw) <= Date.now() &&
