@@ -16,7 +16,6 @@ const ROUTES: {
 }[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
   { path: "/about-us/mission-and-vision", changeFrequency: "yearly", priority: 0.8 },
-  { path: "/about-us/egc-our-team", changeFrequency: "monthly", priority: 0.6 },
   { path: "/about-us/egc-board-of-directors", changeFrequency: "yearly", priority: 0.4 },
   { path: "/contact", changeFrequency: "yearly", priority: 0.6 },
   { path: "/programs/bold-fellowship/general", changeFrequency: "monthly", priority: 0.8 },

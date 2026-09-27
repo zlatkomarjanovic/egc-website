@@ -54,6 +54,11 @@ const nextConfig = {
         destination: "/post/:slug",
         permanent: true,
       },
+      {
+        source: "/about-us/egc-our-team",
+        destination: "/about-us/egc-board-of-directors",
+        permanent: true,
+      },
     ];
   },
   async headers() {

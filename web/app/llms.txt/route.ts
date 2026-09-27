@@ -14,7 +14,7 @@ Address: 1412 Broadway, Floor 21, New York, NY 10018
 ## Main pages
 - [${site}/](${site}/): Homepage
 - [${site}/about-us/mission-and-vision](${site}/about-us/mission-and-vision): Mission and vision
-- [${site}/about-us/egc-our-team](${site}/about-us/egc-our-team): Team
+- [${site}/about-us/egc-board-of-directors](${site}/about-us/egc-board-of-directors): Board of Directors
 - [${site}/about-us/insights](${site}/about-us/insights): Insights and articles
 - [${site}/programs/bold-fellowship/general](${site}/programs/bold-fellowship/general): BOLD Fellowship
 - [${site}/programs/bold-regional-workshops](${site}/programs/bold-regional-workshops): Regional workshops

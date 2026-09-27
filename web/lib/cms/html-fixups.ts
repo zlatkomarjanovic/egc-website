@@ -109,9 +109,61 @@ export function fixScaleTimelineIcons(html: string): string {
     );
 }
 
+/** Hide the Our Team nav and footer links while the team page is offline. */
+export function hideOurTeamLinks(html: string): string {
+  return html.replace(
+    /\s*<a href="\/about-us\/egc-our-team"[^>]*>\s*Our [Tt]eam\s*<\/a>/g,
+    ""
+  );
+}
+
+function removeContainingDiv(html: string, marker: string, startToken: string): string {
+  const markerAt = html.indexOf(marker);
+  if (markerAt < 0) return html;
+
+  const start = html.lastIndexOf(startToken, markerAt);
+  if (start < 0) return html;
+
+  let index = start;
+  let depth = 0;
+  while (index < html.length) {
+    const nextOpen = html.indexOf("<div", index);
+    const nextClose = html.indexOf("</div>", index);
+    if (nextClose < 0) break;
+
+    if (nextOpen >= 0 && nextOpen < nextClose) {
+      depth += 1;
+      index = nextOpen + 4;
+      continue;
+    }
+
+    depth -= 1;
+    index = nextClose + 6;
+    if (depth === 0) {
+      return html.slice(0, start) + html.slice(index);
+    }
+  }
+
+  return html;
+}
+
+/** Temporary board reshuffle: drop Brian Pasalich from the directors page. */
+export function removeBrianFromBoard(html: string): string {
+  if (!html.includes("Brian Pasalich")) return html;
+  return removeContainingDiv(
+    html,
+    "Brian Pasalich",
+    '<div class="w-layout-grid layout3_component">'
+  );
+}
+
 export function applyWebflowHtmlFixups(html: string): string {
-  return fixScaleTimelineIcons(
-    disableHeroFadeOut(fixLogoAlt(fixImageQuality(fixEmbedlyVideos(html))))
+  return removeBrianFromBoard(
+    hideOurTeamLinks(
+      fixScaleTimelineIcons(
+        disableHeroFadeOut(fixLogoAlt(fixImageQuality(fixEmbedlyVideos(html))))
+      )
+    )
   );
 }
 
