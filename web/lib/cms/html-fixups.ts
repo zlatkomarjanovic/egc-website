@@ -117,7 +117,34 @@ export function hideOurTeamLinks(html: string): string {
   );
 }
 
-function removeContainingDiv(html: string, marker: string, startToken: string): string {
+const BOARD_CARD_START = '<div class="w-layout-grid layout3_component">';
+
+const FILIP_BOARD_CARD = `<div class="w-layout-grid layout3_component">
+                <div class="layout3_content" style="opacity:1">
+                  <div class="margin-bottom margin-xsmall">
+                    <a href="https://www.linkedin.com/in/filipsasic/" target="_blank" class="link-flex w-inline-block"><img src="/images/Vector.svg" loading="lazy" alt class="icon-1x1-xsmall">
+                      <div class="hide-desktop">LinkedIn profile</div>
+                    </a>
+                  </div>
+                  <div class="margin-bottom margin-xxsmall">
+                    <div class="tagline-light">CEO and Founder</div>
+                  </div>
+                  <div class="margin-bottom margin-xxsmall">
+                    <h2 class="heading-style-h3">Filip Sasic</h2>
+                  </div>
+                  <div class="margin-bottom margin-small">
+                    <p class="text-size-regular">Filip is the CEO and Founder of Entrepreneurs for Global Change. He leads EGC's work helping young founders from emerging ecosystems turn ideas into startups.</p>
+                  </div>
+                </div>
+                <div class="layout3_image-wrapper" style="opacity:1"><img src="/images/filip-sasic.png" loading="lazy" alt="Filip Sasic, CEO and Founder of Entrepreneurs for Global Change" class="layout3_image"></div>
+              </div>`;
+
+function replaceContainingDiv(
+  html: string,
+  marker: string,
+  startToken: string,
+  replacement: string
+): string {
   const markerAt = html.indexOf(marker);
   if (markerAt < 0) return html;
 
@@ -140,25 +167,32 @@ function removeContainingDiv(html: string, marker: string, startToken: string): 
     depth -= 1;
     index = nextClose + 6;
     if (depth === 0) {
-      return html.slice(0, start) + html.slice(index);
+      return html.slice(0, start) + replacement + html.slice(index);
     }
   }
 
   return html;
 }
 
-/** Temporary board reshuffle: drop Brian Pasalich from the directors page. */
-export function removeBrianFromBoard(html: string): string {
-  if (!html.includes("Brian Pasalich")) return html;
-  return removeContainingDiv(
-    html,
-    "Brian Pasalich",
-    '<div class="w-layout-grid layout3_component">'
-  );
+/** Move Filip Sasic onto the board and drop Brian Pasalich. */
+export function reshapeBoardDirectors(html: string): string {
+  if (!html.includes("layout3_component")) return html;
+  if (html.includes("Filip Sasic") && !html.includes("Brian Pasalich")) return html;
+
+  if (html.includes("Brian Pasalich")) {
+    return replaceContainingDiv(html, "Brian Pasalich", BOARD_CARD_START, FILIP_BOARD_CARD);
+  }
+
+  const mirzaAt = html.indexOf("Mirza Tihic");
+  if (mirzaAt < 0) return html;
+
+  const start = html.lastIndexOf(BOARD_CARD_START, mirzaAt);
+  if (start < 0) return html;
+  return html.slice(0, start) + FILIP_BOARD_CARD + html.slice(start);
 }
 
 export function applyWebflowHtmlFixups(html: string): string {
-  return removeBrianFromBoard(
+  return reshapeBoardDirectors(
     hideOurTeamLinks(
       fixScaleTimelineIcons(
         disableHeroFadeOut(fixLogoAlt(fixImageQuality(fixEmbedlyVideos(html))))

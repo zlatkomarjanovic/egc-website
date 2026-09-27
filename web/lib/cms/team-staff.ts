@@ -3,15 +3,6 @@ import type { CmsTeamMember } from "./types";
 /** Staff team from the live EGC site (Webflow Staff CMS was not in CSV exports). */
 export const STAFF_TEAM_MEMBERS: CmsTeamMember[] = [
   {
-    slug: "filip-sasic",
-    name: "Filip Sasic",
-    role: "CEO and Founder",
-    photo:
-      "https://cdn.prod.website-files.com/66d4f9dea6d0abdd1059a14f/66ddbc9f67c5af6501309ea1_Screenshot_1.png",
-    linkedin: "https://www.linkedin.com/in/filipsasic/",
-    sortOrder: 1,
-  },
-  {
     slug: "ruth-ku",
     name: "Ruth Ku",
     role: "CFO",
