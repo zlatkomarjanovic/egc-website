@@ -10,6 +10,7 @@ export {
 } from "./alumni-spotlights";
 export { getAllTestimonials } from "./testimonials";
 export {
+  alumniInCountry,
   loadAlumniSpotlightsForFellowship,
   loadFeaturedAlumniSpotlights,
   loadTeamMembers,

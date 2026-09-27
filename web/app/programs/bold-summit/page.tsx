@@ -1,7 +1,7 @@
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
 import { contentPageMetadata, PAGE_META } from "@/lib/page-meta";
-import { breadcrumbJsonLd, educationalProgramJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, eventJsonLd } from "@/lib/seo";
 import content from "./content.json";
 
 const PATH = "/programs/bold-summit";
@@ -11,13 +11,11 @@ export default function Page() {
   return (
     <>
       <JsonLd
-        data={educationalProgramJsonLd({
+        data={eventJsonLd({
           name: "BOLD Summit",
           path: PATH,
           description: PAGE_META[PATH].description,
           location: "Western Balkans",
-          timeToComplete: "P3D",
-          educationalProgramMode: "onsite",
         })}
       />
       <JsonLd

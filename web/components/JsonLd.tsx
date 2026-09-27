@@ -14,6 +14,7 @@ function prune(value: unknown): unknown {
     }
     return next;
   }
+  if (typeof value === "string" && !value.trim()) return undefined;
   return value === undefined ? undefined : value;
 }
 

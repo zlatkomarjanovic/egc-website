@@ -105,7 +105,7 @@ export default function PostDetailView({ post, relatedPosts, body }: PostDetailV
   const minutes = minutesLabel(post.minutesToRead);
 
   return (
-    <>
+    <main>
       <header className="section_blog-post5-header">
         <div className="padding-global">
           <div className="container-large">
@@ -144,6 +144,13 @@ export default function PostDetailView({ post, relatedPosts, body }: PostDetailV
                     {minutes ? <div className="text-size-small">{minutes}</div> : null}
                   </div>
                   <div className="margin-bottom margin-medium">
+                    <nav aria-label="Breadcrumb" className="text-size-small">
+                      <Link href="/">Home</Link>
+                      {" / "}
+                      <Link href="/about-us/insights">Insights</Link>
+                      {" / "}
+                      <span>{postDisplayTitle(post)}</span>
+                    </nav>
                     <h1 className="heading-style-h3">{postDisplayTitle(post)}</h1>
                   </div>
                   {publishedDate ? (
@@ -269,6 +276,6 @@ export default function PostDetailView({ post, relatedPosts, body }: PostDetailV
           </div>
         </section>
       ) : null}
-    </>
+    </main>
   );
 }

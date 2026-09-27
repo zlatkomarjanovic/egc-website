@@ -306,6 +306,7 @@ export function organizationJsonLd() {
       { "@type": "Country", name: "Bosnia and Herzegovina" },
       { "@type": "Country", name: "Serbia" },
       { "@type": "Country", name: "North Macedonia" },
+      { "@type": "Country", name: "Croatia" },
       { "@type": "Country", name: "United States" },
     ],
     sameAs: [
@@ -318,6 +319,9 @@ export function organizationJsonLd() {
       "youth entrepreneurship",
       "startup acceleration",
       "BOLD Fellowship",
+      "LeapX",
+      "Scale 2.0",
+      "BOLD Summit",
       "emerging market founders",
     ],
   };
@@ -410,7 +414,7 @@ export function articleJsonLd(post: CmsPost) {
           "@type": "Person",
           name: post.author.name,
           ...(role ? { jobTitle: role } : {}),
-          url: post.author.linkedin,
+          ...(post.author.linkedin ? { url: post.author.linkedin } : {}),
         }
       : { "@id": `${origin}/#organization` },
     publisher: { "@id": `${origin}/#organization` },
@@ -517,7 +521,7 @@ export function educationalProgramJsonLd(input: {
   location?: string;
   timeToComplete?: string;
   educationalProgramMode?: string;
-  offers?: { price: string; priceCurrency: string };
+  offers?: { price: string; priceCurrency: string; availability?: string };
 }) {
   return {
     "@context": "https://schema.org",
@@ -543,6 +547,33 @@ export function educationalProgramJsonLd(input: {
             "@type": "Offer",
             price: input.offers.price,
             priceCurrency: input.offers.priceCurrency,
+            ...(input.offers.availability ? { availability: input.offers.availability } : {}),
+          },
+        }
+      : {}),
+  };
+}
+
+export function eventJsonLd(input: {
+  name: string;
+  path: string;
+  description: string;
+  location?: string;
+  startDate?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: input.name,
+    url: absoluteUrl(input.path),
+    description: input.description,
+    organizer: { "@id": `${getSiteUrl()}/#organization` },
+    ...(input.startDate ? { startDate: input.startDate } : {}),
+    ...(input.location
+      ? {
+          location: {
+            "@type": "Place",
+            name: input.location,
           },
         }
       : {}),
@@ -570,17 +601,23 @@ export function faqPageJsonLd(
 
 const STORYTELLING_SLUG =
   "how-to-use-storytelling-in-entrepreneurship-beyond-marketing";
+const NETWORKING_SLUG = "why-networking-matters-for-founders";
 
 export function postDisplayTitle(post: Pick<CmsPost, "slug" | "name" | "metaTitle">): string {
   if (post.slug === STORYTELLING_SLUG) {
     return "How to use storytelling in entrepreneurship";
+  }
+  if (post.slug === NETWORKING_SLUG) {
+    return "Why networking matters for founders";
   }
   return post.name;
 }
 
 export function postMetadata(post: CmsPost): Metadata {
   const title =
-    post.slug === STORYTELLING_SLUG ? postDisplayTitle(post) : post.metaTitle || post.name;
+    post.slug === STORYTELLING_SLUG || post.slug === NETWORKING_SLUG
+      ? postDisplayTitle(post)
+      : post.metaTitle || post.name;
   const published = post.publishedAt || undefined;
   const modified = editorialModifiedAt(post.publishedAt, post.updatedAt, post.createdAt);
   return routeMetadata({
@@ -595,7 +632,7 @@ export function postMetadata(post: CmsPost): Metadata {
     authors: post.author?.name ? [post.author.name] : undefined,
     extra: {
       authors: post.author?.name
-        ? [{ name: post.author.name, url: post.author.linkedin }]
+        ? [{ name: post.author.name, ...(post.author.linkedin ? { url: post.author.linkedin } : {}) }]
         : undefined,
     },
   });
@@ -603,6 +640,10 @@ export function postMetadata(post: CmsPost): Metadata {
 
 export function alumniJsonLd(alumni: CmsAlumniSpotlight) {
   const name = alumni.alumniName || alumni.name;
+  const description = (alumni.oneLiner || alumni.whyStarted || alumniMetaDescription(alumni))
+    .replace(/\s+/g, " ")
+    .trim();
+  const country = alumni.country?.replace(/\s+/g, " ").trim();
   return {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
@@ -611,9 +652,9 @@ export function alumniJsonLd(alumni: CmsAlumniSpotlight) {
     mainEntity: {
       "@type": "Person",
       name,
-      description: alumni.oneLiner || alumni.whyStarted,
+      ...(description ? { description } : {}),
       image: alumni.profilePicture,
-      nationality: alumni.country,
+      ...(country ? { nationality: country } : {}),
       worksFor: alumni.ventureName
         ? { "@type": "Organization", name: alumni.ventureName }
         : undefined,

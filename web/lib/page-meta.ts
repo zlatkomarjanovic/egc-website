@@ -149,7 +149,39 @@ export const BOLD_PROGRAM_FAQS = [
   {
     question: "When do applications open?",
     answer:
-      "The BOLD Fellowship opens applications in cycles. Watch the country page and EGC channels for the next call.",
+      "The current BOLD Fellowship cycle is closed. Watch the country page and EGC channels for the next call.",
+  },
+];
+
+export const WORKSHOP_PROGRAM_FAQS = [
+  {
+    question: "How can I apply for the BOLD RW?",
+    answer:
+      "The call for applications opens in mid-December every year and you can apply via our website by completing a short application form.",
+  },
+  {
+    question: "What happens after I submit my application for the RW?",
+    answer: "If selected, our team will reach out confirming your spot for the RW.",
+  },
+  {
+    question: "Who is an ideal candidate?",
+    answer:
+      "If you are open-minded, curious, eager to network with peers from the region, passionate about learning, being challenged, and doing all of that while focusing on entrepreneurship know-how and skillsets, you are in the right spot.",
+  },
+  {
+    question: "What expenses are covered if I am accepted to the program?",
+    answer:
+      "The entire duration of the program including travelling to location of the RW, accommodation, meals, activities, local sightseeing, and programmatic activities are included.",
+  },
+  {
+    question: "How long is the program?",
+    answer:
+      "The RW is a 7-day long program with daily scheduled activities and sessions. Be ready to immerse yourself in a busy week!",
+  },
+  {
+    question: "Who will be at the Regional Workshop?",
+    answer:
+      "The sessions will be led by U.S. based and globally awesome facilitators and speakers/mentors from the region. Equally important, you will have a chance to meet like-minded peers from across the entire region and build your own regional network.",
   },
 ];
 

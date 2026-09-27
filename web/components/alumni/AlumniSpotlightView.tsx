@@ -60,6 +60,13 @@ export default function AlumniSpotlightView({
                 <div className="text-align-center">
                   <div className="max-width-xlarge align-center">
                     <div className="margin-bottom margin-medium">
+                      <nav aria-label="Breadcrumb" className="text-size-small">
+                        <Link href="/">Home</Link>
+                        {" / "}
+                        <Link href="/alumni">Alumni Spotlight</Link>
+                        {" / "}
+                        <span>{name}</span>
+                      </nav>
                       <div className="meet_fellow">
                         <h1 className="heading-style-h2">
                           {name}

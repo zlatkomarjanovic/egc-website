@@ -1,6 +1,10 @@
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
-import { injectAlumniSpotlightSlider, loadAlumniSpotlightsForFellowship } from "@/lib/cms";
+import {
+  alumniInCountry,
+  injectAlumniSpotlightSlider,
+  loadAlumniSpotlightsForFellowship,
+} from "@/lib/cms";
 import { BOLD_PROGRAM_FAQS, contentPageMetadata, PAGE_META } from "@/lib/page-meta";
 import {
   alumniPath,
@@ -18,7 +22,7 @@ export const metadata = contentPageMetadata(PATH, content.metadata);
 export const revalidate = 60;
 
 export default async function Page() {
-  const alumni = await loadAlumniSpotlightsForFellowship();
+  const alumni = alumniInCountry(await loadAlumniSpotlightsForFellowship(), "Serbia");
   const bodyHtml = injectAlumniSpotlightSlider(content.bodyHtml, alumni);
 
   return (
@@ -29,14 +33,14 @@ export default async function Page() {
           path: PATH,
           description: DESCRIPTION,
           location: "Serbia",
-          timeToComplete: "P6M",
           educationalProgramMode: "blended",
         })}
       />
       <JsonLd data={faqPageJsonLd(PATH, BOLD_PROGRAM_FAQS)} />
+      {alumni.length ? (
       <JsonLd
         data={collectionJsonLd(
-          "BOLD Fellows",
+          "BOLD Fellows from Serbia",
           PATH,
           DESCRIPTION,
           alumni.map((person) => ({
@@ -45,6 +49,7 @@ export default async function Page() {
           }))
         )}
       />
+      ) : null}
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },

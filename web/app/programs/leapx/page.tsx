@@ -18,7 +18,11 @@ export default function Page() {
           location: "Online and Canary Islands",
           timeToComplete: "P5W",
           educationalProgramMode: "blended",
-          offers: { price: "5000", priceCurrency: "EUR" },
+          offers: {
+            price: "5000",
+            priceCurrency: "EUR",
+            availability: "https://schema.org/SoldOut",
+          },
         })}
       />
       <JsonLd data={faqPageJsonLd(PATH, LEAPX_PROGRAM_FAQS)} />

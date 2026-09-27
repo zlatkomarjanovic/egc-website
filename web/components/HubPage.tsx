@@ -53,6 +53,16 @@ export default function HubPage({
           <div class="container-large">
             <div class="padding-section-large">
               <div class="margin-bottom margin-medium">
+                <nav aria-label="Breadcrumb" class="text-size-small">
+                  ${crumbs
+                    .map((crumb, index) => {
+                      const last = index === crumbs.length - 1;
+                      return last
+                        ? `<span>${escape(crumb.name)}</span>`
+                        : `<a href="${escape(crumb.path)}">${escape(crumb.name)}</a> / `;
+                    })
+                    .join("")}
+                </nav>
                 <h1 class="heading-style-h1">${title}</h1>
               </div>
               <p class="text-size-regular">${description}</p>

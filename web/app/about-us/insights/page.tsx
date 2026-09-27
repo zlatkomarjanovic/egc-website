@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import InlineScripts from "@/components/InlineScripts";
 import JsonLd from "@/components/JsonLd";
 import { buildInsightsBlogSection } from "@/lib/cms/insights-html";
@@ -25,8 +26,21 @@ import content from "./content.json";
 
 const INSIGHTS_DESCRIPTION = PAGE_META["/about-us/insights"].description;
 
-export const metadata = contentPageMetadata("/about-us/insights", content.metadata);
 export const revalidate = 60;
+
+type InsightsSearch = { category?: string; q?: string };
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<InsightsSearch>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const filtered = Boolean(params.category || params.q);
+  return contentPageMetadata("/about-us/insights", content.metadata, {
+    noIndex: filtered,
+  });
+}
 
 export default async function Page() {
   const sanityPosts = isSanityConfigured
@@ -61,7 +75,7 @@ export default async function Page() {
           { name: "Insights", path: "/about-us/insights" },
         ])}
       />
-      <div className={content.rootClass}>
+      <main className={content.rootClass}>
         <div
           dangerouslySetInnerHTML={{
             __html:
@@ -70,7 +84,7 @@ export default async function Page() {
               shellAfter,
           }}
         />
-      </div>
+      </main>
       {content.headExtras ? (
         <div
           style={{ display: "contents" }}

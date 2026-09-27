@@ -126,6 +126,7 @@ export function buildInsightsBlogSection(
                       <div class="tagline">INSIGHTS</div>
                     </div>
                     <div class="margin-bottom margin-small">
+                      <nav aria-label="Breadcrumb" class="text-size-small"><a href="/">Home</a> / <span>Insights</span></nav>
                       <h1 class="heading-style-h2">EGC Insights</h1>
                     </div>
                     <p class="text-size-medium opacity-70">Explore the latest trends in entrepreneurship, innovation, and networking. Learn how to transform ideas into successful ventures and create lasting networks.</p>

@@ -1,6 +1,6 @@
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
-import { BOLD_PROGRAM_FAQS, contentPageMetadata, PAGE_META } from "@/lib/page-meta";
+import { WORKSHOP_PROGRAM_FAQS, contentPageMetadata, PAGE_META } from "@/lib/page-meta";
 import { breadcrumbJsonLd, educationalProgramJsonLd, faqPageJsonLd } from "@/lib/seo";
 import content from "./content.json";
 
@@ -20,7 +20,7 @@ export default function Page() {
           educationalProgramMode: "onsite",
         })}
       />
-      <JsonLd data={faqPageJsonLd(PATH, BOLD_PROGRAM_FAQS)} />
+      <JsonLd data={faqPageJsonLd(PATH, WORKSHOP_PROGRAM_FAQS)} />
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },

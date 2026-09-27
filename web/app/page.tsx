@@ -1,7 +1,7 @@
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
 import { contentPageMetadata, PAGE_META } from "@/lib/page-meta";
-import { collectionJsonLd, webPageJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, collectionJsonLd, webPageJsonLd } from "@/lib/seo";
 import content from "./content.json";
 
 const PROGRAMS = [
@@ -23,7 +23,7 @@ export default async function Page() {
         data={collectionJsonLd(
           "EGC programs",
           "/",
-          `${PAGE_META["/"].description} This page lists 85 alumni members.`,
+          PAGE_META["/"].description,
           PROGRAMS
         )}
       />
@@ -35,6 +35,7 @@ export default async function Page() {
           speakableCss: ["#egc-what-is", "#egc-why-founders"],
         })}
       />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }])} />
       <WebflowPage
         headExtras={content.headExtras}
         bodyHtml={content.bodyHtml}

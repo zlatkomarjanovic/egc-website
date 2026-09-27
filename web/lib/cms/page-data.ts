@@ -25,6 +25,21 @@ export async function loadAlumniSpotlightsForFellowship(): Promise<CmsAlumniSpot
   return (sanityAlumni ?? []).map(sanityAlumniToCmsAlumni);
 }
 
+export function alumniInCountry(
+  alumni: CmsAlumniSpotlight[],
+  country: string
+): CmsAlumniSpotlight[] {
+  const needle = country.toLowerCase();
+  return alumni.filter((person) => {
+    const value = (person.country || "").toLowerCase();
+    if (!value) return false;
+    if (/bosnia|herzegovina/.test(needle)) return /bosnia|herzegovina|bih/.test(value);
+    if (/macedonia/.test(needle)) return /macedonia/.test(value);
+    if (/serbia/.test(needle)) return /serbia/.test(value);
+    return value.includes(needle);
+  });
+}
+
 export async function loadFeaturedAlumniSpotlights(): Promise<CmsAlumniSpotlight[]> {
   if (!isSanityConfigured) return getFeaturedAlumniSpotlights();
   const sanityAlumni = await sanityFetch<SanityAlumniSpotlight[]>(featuredAlumniQuery, {}, []);

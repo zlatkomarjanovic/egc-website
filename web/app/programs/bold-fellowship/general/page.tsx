@@ -29,7 +29,6 @@ export default async function Page() {
           path: PATH,
           description: DESCRIPTION,
           location: "Western Balkans",
-          timeToComplete: "P6M",
           educationalProgramMode: "blended",
         })}
       />

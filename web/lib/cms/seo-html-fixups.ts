@@ -193,6 +193,10 @@ export function fixLeapxHeading(html: string): string {
   }
   return next
     .replace(
+      /<h2(\b[^>]*)>\s*(?:<strong>)?How to Apply(?:<\/strong>)?\s*<\/h2>/i,
+      "<h2$1>Application status</h2>"
+    )
+    .replace(
       /<h2(\b[^>]*)>\s*By the end of the program, founders will have:\s*<\/h2>/i,
       "<h2$1>Outcomes</h2>"
     )
@@ -216,6 +220,13 @@ export function fixMentorHeading(html: string): string {
   return html.replace(
     /<h1\b([^>]*)>(?:\s*<span[^>]*>)?\s*Shape the Future of Global Founders\s*(?:<\/span>)?\s*<\/h1>/,
     "<h1$1>Become an EGC Mentor</h1>"
+  );
+}
+
+export function fixSummitCtas(html: string): string {
+  return html.replace(
+    /<a href="#" class="button is-bigger w-button">Read more about EGC<\/a>/gi,
+    '<a href="/about-us" class="button is-bigger w-button">Read more about EGC</a>'
   );
 }
 
@@ -479,6 +490,7 @@ export function applySeoHtmlFixups(html: string): string {
                               fixMentorHeading(
                                 fixInsightsHeading(
                                   fixLeapxHeading(
+                                    fixSummitCtas(
                                     fixBoldProgramNote(
                                       fixPartnerHeadings(
                                         renameHomepageDuplicateHeading(
@@ -487,6 +499,7 @@ export function applySeoHtmlFixups(html: string): string {
                                           )
                                         )
                                       )
+                                    )
                                     )
                                   )
                                 )

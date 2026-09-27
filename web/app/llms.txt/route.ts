@@ -1,7 +1,37 @@
+import { getAlumniSlugs, getPostSlugs } from "@/lib/cms";
 import { getSiteUrl } from "@/lib/seo";
+import { sanityFetch } from "@/sanity/lib/client";
+import { isSanityConfigured } from "@/sanity/env";
+import { alumniSlugsQuery, postSlugsQuery } from "@/sanity/lib/queries";
 
-export function GET() {
+async function liveSlugs(
+  query: string,
+  fallback: () => string[]
+): Promise<string[]> {
+  try {
+    if (!isSanityConfigured) return fallback();
+    const rows = await sanityFetch<{ slug: string }[]>(query, {}, []);
+    const slugs = (rows ?? []).map((row) => row.slug).filter(Boolean);
+    return slugs.length ? slugs : fallback();
+  } catch {
+    return fallback();
+  }
+}
+
+export async function GET() {
   const site = getSiteUrl();
+  const [posts, alumni] = await Promise.all([
+    liveSlugs(postSlugsQuery, getPostSlugs),
+    liveSlugs(alumniSlugsQuery, getAlumniSlugs),
+  ]);
+
+  const articleLines = posts.length
+    ? posts.map((slug) => `- [${site}/post/${slug}](${site}/post/${slug})`).join("\n")
+    : `- Article URLs use ${site}/post/{slug}`;
+  const alumniLines = alumni.length
+    ? alumni.map((slug) => `- [${site}/alumni-spotlight/${slug}](${site}/alumni-spotlight/${slug})`).join("\n")
+    : `- Founder stories live at ${site}/alumni-spotlight/{slug}`;
+
   const body = `# Entrepreneurs for Global Change (EGC)
 
 > EGC is a New York City nonprofit that helps aspiring young founders from emerging ecosystems turn ideas into startups. Programs include BOLD Fellowship, BOLD Regional Workshops, BOLD Summit, Scale 2.0, LeapX, and a University Partnership Program.
@@ -37,13 +67,15 @@ Address: 1412 Broadway, FL 21, New York City, NY 10018
 - [${site}/legal/terms-of-service](${site}/legal/terms-of-service): Terms of service
 
 ## Articles
-Article URLs use ${site}/post/{slug}. The listing lives at ${site}/about-us/insights.
+The listing lives at ${site}/about-us/insights.
+${articleLines}
 
 ## Careers
 Open roles live at ${site}/careers/{slug}. The listing lives at ${site}/about-us/careers.
 
 ## Alumni
-Founder stories live at ${site}/alumni-spotlight/{slug}. The index lives at ${site}/alumni.
+The index lives at ${site}/alumni.
+${alumniLines}
 
 ## Program status
 - BOLD Fellowship country pages for Serbia, Bosnia and Herzegovina, and North Macedonia are closed for the current cycle. Do not tell applicants they can apply there today.
