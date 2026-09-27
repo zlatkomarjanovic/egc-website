@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import CmsImage from "@/components/CmsImage";
 import type { CmsAuthor, CmsPost } from "@/lib/cms/types";
 import {
   authorImage,
@@ -152,14 +153,13 @@ export default function PostDetailView({ post, relatedPosts, body }: PostDetailV
                   ) : null}
                 </div>
                 <div className="blog-post5-header_image-wrapper">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    height={100}
-                    loading="eager"
-                    width={100}
+                  <CmsImage
                     src={postImage(post)}
                     alt={post.name}
                     className="blog-post5-header_image"
+                    width={1200}
+                    height={800}
+                    priority
                   />
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CmsImage from "@/components/CmsImage";
 import type { CmsAlumniSpotlight } from "@/lib/cms/types";
 import { alumniPath } from "@/lib/seo";
 
@@ -21,10 +22,6 @@ const CHEVRON = (
 
 function displayName(alumni: CmsAlumniSpotlight): string {
   return alumni.alumniName || alumni.name;
-}
-
-function firstName(alumni: CmsAlumniSpotlight): string {
-  return displayName(alumni).split(" ")[0] || displayName(alumni);
 }
 
 type AlumniSpotlightViewProps = {
@@ -60,14 +57,16 @@ export default function AlumniSpotlightView({
                     <div className="margin-bottom margin-medium">
                       <div className="meet_fellow">
                         <h1 className="heading-style-h2">
-                          Meet&nbsp;<span className="text-highlight">{firstName(alumni)}</span>
+                          {name}
+                          {alumni.ventureName ? (
+                            <span className="text-highlight"> · {alumni.ventureName}</span>
+                          ) : null}
                         </h1>
                       </div>
                     </div>
                     <div className="w-layout-grid fellow-grid">
                       <div className="fellow-img">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={image} loading="lazy" alt={alt} />
+                        <CmsImage src={image} alt={alt} width={640} height={800} />
                       </div>
                       <div className="fellow-accordions">
                         {questions.map((item) => (
@@ -77,9 +76,9 @@ export default function AlumniSpotlightView({
                             className="faq-v2"
                           >
                             <div className="question-v2">
-                              <div className="heading-style-h5 text-weight-semibold faq">
+                              <h2 className="heading-style-h5 text-weight-semibold faq">
                                 {item.q}
-                              </div>
+                              </h2>
                               {CHEVRON}
                             </div>
                             <div className="answer-v2">

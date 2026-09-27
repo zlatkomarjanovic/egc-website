@@ -108,7 +108,7 @@ export default async function InsightPostPage({
             relatedPosts={relatedPosts}
             body={
               <article className="text-rich-text w-richtext">
-                <PortableText value={sanityPost.postBody} />
+                <PortableText value={sanityPost.postBody} skipHeading={post.name} />
               </article>
             }
           />

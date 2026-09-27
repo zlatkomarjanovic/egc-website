@@ -66,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const [postRows, jobSlugs, alumniSlugs] = await Promise.all([
       isSanityConfigured
-        ? sanityFetch<Array<{ slug: string; publishedAt?: string; _createdAt?: string }>>(
+        ? sanityFetch<Array<{ slug: string; publishedAt?: string; createdAt?: string; updatedAt?: string }>>(
             allPostsQuery,
             {},
             []
@@ -75,14 +75,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             getAllPosts().map((post) => ({
               slug: post.slug,
               publishedAt: post.publishedAt,
-              _createdAt: post.createdAt,
+              createdAt: post.createdAt,
+            updatedAt: post.updatedAt,
             }))
           ),
       slugsFor(jobSlugsQuery, getJobSlugs),
       slugsFor(alumniSlugsQuery, getAlumniSlugs),
     ]);
 
-    const posts: Array<{ slug: string; publishedAt?: string; _createdAt?: string }> =
+    const posts: Array<{ slug: string; publishedAt?: string; createdAt?: string; updatedAt?: string }> =
       postRows?.length
         ? postRows
         : (await slugsFor(postSlugsQuery, getPostSlugs)).map((slug) => ({ slug }));
@@ -91,7 +92,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((post) => post.slug)
       .map((post) => ({
         url: absoluteUrl(`/post/${post.slug}`),
-        lastModified: post.publishedAt || post._createdAt || now,
+        lastModified: post.updatedAt || post.publishedAt || post.createdAt || now,
         changeFrequency: "monthly" as const,
         priority: 0.7,
       }));

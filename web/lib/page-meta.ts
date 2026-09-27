@@ -11,7 +11,7 @@ export const PAGE_META: Record<
       "EGC helps young founders from emerging ecosystems start and grow ventures through BOLD Fellowship, LeapX, workshops, and NYC programs.",
   },
   "/about-us": {
-    title: "About EGC",
+    title: "About EGC | New York Youth Entrepreneurship Nonprofit",
     description:
       "Entrepreneurs for Global Change is a New York nonprofit that trains young founders from emerging ecosystems through fellowships, workshops, and mentorship.",
   },
@@ -31,13 +31,13 @@ export const PAGE_META: Record<
       "The EGC Advisory Board advises Entrepreneurs for Global Change on youth entrepreneurship programs across emerging ecosystems.",
   },
   "/about-us/careers": {
-    title: "Careers at EGC",
+    title: "Careers at EGC | Jobs in Youth Entrepreneurship",
     description:
       "Open roles at Entrepreneurs for Global Change. Join the team supporting young founders across emerging startup ecosystems.",
     image: "/images/egc-careers-cover.png",
   },
   "/about-us/insights": {
-    title: "Insights",
+    title: "EGC Insights | Youth Entrepreneurship Articles",
     description:
       "Articles from Entrepreneurs for Global Change on youth entrepreneurship, startup programs, and founder stories from emerging ecosystems.",
   },
@@ -72,7 +72,7 @@ export const PAGE_META: Record<
       "BOLD Regional Workshops teach entrepreneurship skills and connect future founders across the Western Balkans.",
   },
   "/programs/bold-summit": {
-    title: "BOLD Summit",
+    title: "BOLD Summit | EGC Alumni Conference",
     description:
       "BOLD Summit is EGC's annual conference showcasing BOLD alumni founder stories and the Western Balkans entrepreneurship community.",
   },
@@ -92,17 +92,17 @@ export const PAGE_META: Record<
       "EGC's University Partnership Program helps faculty and PhD students in entrepreneurship share teaching methods and collaborate across campuses.",
   },
   "/partners": {
-    title: "Partners",
+    title: "EGC Partners | Universities, Startups, and Funders",
     description:
       "EGC partners with universities, startups, and global organizations to support young founders from emerging ecosystems.",
   },
   "/become-an-egc-mentor": {
     title: "Become an EGC Mentor",
     description:
-      "Apply to become an EGC mentor and support young founders from emerging ecosystems through fellowships and startup programs.",
+      "Apply to become an EGC mentor and support young founders from emerging ecosystems, including the Western Balkans, through fellowships and startup programs.",
   },
   "/contact": {
-    title: "Contact EGC",
+    title: "Contact EGC | New York Nonprofit for Young Founders",
     description:
       "Contact Entrepreneurs for Global Change in New York. Reach the team about programs, partnerships, mentorship, or careers.",
   },
@@ -122,7 +122,7 @@ export const PAGE_META: Record<
       "Terms of service for Entrepreneurs for Global Change websites, programs, and related services.",
   },
   "/newsletter": {
-    title: "EGC Newsletter",
+    title: "EGC Newsletter | Program and Alumni Updates",
     description:
       "Follow EGC updates on youth entrepreneurship programs, alumni stories, and upcoming fellowships.",
   },
@@ -137,12 +137,12 @@ export const BOLD_PROGRAM_FAQS = [
   {
     question: "What do fellows receive?",
     answer:
-      "Fellows receive entrepreneurship training, mentorship, workshops, and access to the EGC alumni network across the Western Balkans.",
+      "The BOLD Fellowship gives fellows entrepreneurship training, mentorship, workshops, and access to the EGC alumni network across the Western Balkans.",
   },
   {
     question: "When do applications open?",
     answer:
-      "Applications open in cycles. Watch the country page and EGC channels for the next call.",
+      "The BOLD Fellowship opens applications in cycles. Watch the country page and EGC channels for the next call.",
   },
 ];
 

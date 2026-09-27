@@ -11,7 +11,7 @@ export const DEFAULT_DESCRIPTION =
   "EGC helps young founders from emerging ecosystems start and grow ventures through the BOLD Fellowship, LeapX, workshops, and NYC programs.";
 export const DEFAULT_OG_IMAGE = "/images/egc-og-default.png";
 export const DEFAULT_OG_ALT = "Entrepreneurs for Global Change";
-export const LOGO_PATH = "/images/webclip.png";
+export const LOGO_PATH = "/images/egc-logo.png";
 export const TITLE_MAX = 60;
 export const DESCRIPTION_MAX = 155;
 
@@ -114,10 +114,12 @@ export function pageTitle(title?: string | null): string {
   const raw = (title || DEFAULT_TITLE).replace(/\s+/g, " ").trim();
   if (!raw) return DEFAULT_TITLE;
   if (raw === DEFAULT_TITLE) return DEFAULT_TITLE;
-  if (/\bEGC\b/i.test(raw) || raw.includes(SITE_NAME)) {
-    return clipText(raw, TITLE_MAX);
-  }
-  return clipText(`${raw} | ${SITE_SHORT_NAME}`, TITLE_MAX);
+  const branded =
+    /\bEGC\b/i.test(raw) || raw.includes(SITE_NAME)
+      ? raw
+      : `${raw} | ${SITE_SHORT_NAME}`;
+  if (branded.length >= 32) return clipText(branded, TITLE_MAX);
+  return clipText(`${branded.replace(/\s*\|\s*EGC$/i, "")} | ${SITE_NAME}`, TITLE_MAX);
 }
 
 export function pageDescription(description?: string | null): string {
@@ -318,7 +320,7 @@ export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
 export function articleJsonLd(post: CmsPost) {
   const origin = getSiteUrl();
   const published = post.publishedAt || post.createdAt;
-  const modified = post.publishedAt || post.createdAt;
+  const modified = post.updatedAt || post.publishedAt || post.createdAt;
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -360,9 +362,9 @@ export function jobJsonLd(job: CmsJob) {
   const location = job.location || "";
   const remote = /remote|hybrid|balkan|online/i.test(location);
   const country = countryCodeFromLocation(location);
-  const rawPosted = job.startDate && /^\d{4}-\d{2}-\d{2}/.test(job.startDate)
-    ? job.startDate
-    : undefined;
+  const rawPosted =
+    (job.createdAt && /^\d{4}-\d{2}-\d{2}/.test(job.createdAt) && job.createdAt) ||
+    (job.startDate && /^\d{4}-\d{2}-\d{2}/.test(job.startDate) ? job.startDate : undefined);
   const datePosted =
     rawPosted && new Date(rawPosted).getTime() <= Date.now() ? rawPosted : undefined;
   const validThrough = job.applicationDeadline;
@@ -371,7 +373,7 @@ export function jobJsonLd(job: CmsJob) {
     "@context": "https://schema.org",
     "@type": "JobPosting",
     title,
-    description: job.excerpt || title,
+    description: job.descriptionText || job.excerpt || title,
     datePosted: datePosted || validThrough || undefined,
     validThrough,
     employmentType: job.type || "FULL_TIME",
@@ -466,7 +468,7 @@ export function postMetadata(post: CmsPost): Metadata {
     imageAlt: post.name,
     type: "article",
     publishedTime: post.publishedAt || post.createdAt,
-    modifiedTime: post.publishedAt || post.createdAt,
+    modifiedTime: post.updatedAt || post.publishedAt || post.createdAt,
     authors: post.author?.name ? [post.author.name] : undefined,
   });
 }
@@ -521,10 +523,41 @@ export function alumniMetaDescription(alumni: CmsAlumniSpotlight): string {
   const name = alumni.alumniName || alumni.name;
   const venture = alumni.ventureName ? ` of ${alumni.ventureName}` : "";
   const country = alumni.country ? ` from ${alumni.country}` : "";
-  const pitch = alumni.oneLiner ? ` ${alumni.oneLiner}` : "";
+  const pitch = alumni.oneLiner || alumni.whyStarted || "";
   return pageDescription(
-    `${name} is an EGC alumni founder${venture}${country}.${pitch}`
+    `${name} is an EGC alumni founder${venture}${country}. ${pitch}`.trim()
   );
+}
+
+export function contactPageJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact EGC",
+    url: absoluteUrl("/contact"),
+    mainEntity: { "@id": `${getSiteUrl()}/#organization` },
+  };
+}
+
+export function peopleJsonLd(
+  people: Array<{ name: string; jobTitle?: string; sameAs?: string; image?: string }>
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: people.map((person, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Person",
+        name: person.name,
+        jobTitle: person.jobTitle,
+        image: person.image,
+        sameAs: person.sameAs ? [person.sameAs] : undefined,
+        worksFor: { "@id": `${getSiteUrl()}/#organization` },
+      },
+    })),
+  };
 }
 
 export function jobMetaDescription(job: CmsJob): string {

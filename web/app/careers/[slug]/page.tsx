@@ -29,6 +29,17 @@ export const revalidate = 60;
 
 type JobParam = { slug: string };
 
+function portableToPlain(blocks?: PortableTextBlock[]): string {
+  if (!blocks?.length) return "";
+  return blocks
+    .map((block) => {
+      const children = (block as { children?: Array<{ text?: string }> }).children;
+      return children?.map((child) => child.text || "").join("") || "";
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
 export async function generateStaticParams(): Promise<JobParam[]> {
   if (isSanityConfigured) {
     return (await sanityFetch<JobParam[]>(jobSlugsQuery, {}, [])) ?? [];
@@ -84,7 +95,14 @@ export default async function CareerDetailPage({
 
   return (
     <>
-      <JsonLd data={jobJsonLd(loaded.job)} />
+      <JsonLd
+        data={jobJsonLd({
+          ...loaded.job,
+          descriptionText: [loaded.job.excerpt, portableToPlain(loaded.body)]
+            .filter(Boolean)
+            .join("\n\n"),
+        })}
+      />
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },

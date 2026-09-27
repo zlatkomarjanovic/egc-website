@@ -54,6 +54,7 @@ export type SanityJob = {
   coverImage?: SanityImage;
   startDate?: string;
   endDate?: string;
+  createdAt?: string;
   detailedInstructions?: unknown;
 };
 
@@ -120,6 +121,7 @@ export type SanityPostListItem = {
   postSummary?: string;
   publishedAt?: string;
   createdAt?: string;
+  updatedAt?: string;
   featured?: boolean;
   blogPageFeature?: boolean;
   minutesToRead?: number;
@@ -177,6 +179,7 @@ export function sanityPostToCmsPost(post: SanityPostListItem): CmsPost {
     sortOrder: post.sortOrder,
     publishedAt: post.publishedAt,
     createdAt: post.createdAt,
+    updatedAt: post.updatedAt,
     author: adaptAuthor(post.author),
     coAuthors: [],
     category: adaptCategory(post.category),
@@ -216,6 +219,7 @@ export function sanityJobToCmsJob(job: SanityJob): CmsJob {
     coverImage: imageUrl(job.coverImage) || "/images/egc-careers-cover.png",
     startDate: job.startDate,
     endDate: job.endDate,
+    createdAt: job.createdAt,
   };
 }
 

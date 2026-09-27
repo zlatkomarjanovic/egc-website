@@ -124,7 +124,7 @@ export function buildInsightsBlogSection(
                       <div class="tagline">INSIGHTS</div>
                     </div>
                     <div class="margin-bottom margin-small">
-                      <h1 class="heading-style-h2">Insights</h1>
+                      <h1 class="heading-style-h2">EGC Insights</h1>
                     </div>
                     <p class="text-size-medium opacity-70">Explore the latest trends in entrepreneurship, innovation, and networking. Learn how to transform ideas into successful ventures and create lasting networks.</p>
                   </div>
@@ -149,6 +149,7 @@ export function buildInsightsBlogSection(
                       </div>
                     </div>
                   </div>
+                  <h2 class="heading-style-h4">Latest articles</h2>
                   <div class="blog21_list-wrapper w-dyn-list">
                     <div fs-cmsfilter-element="list" role="list" class="blog21_list w-dyn-items">
                       ${listItems}

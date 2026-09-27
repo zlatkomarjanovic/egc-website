@@ -11,7 +11,8 @@ export const allPostsQuery = groq`
     "slug": slug.current,
     postSummary,
     publishedAt,
-    "_createdAt": _createdAt,
+    "createdAt": _createdAt,
+    "updatedAt": _updatedAt,
     featured,
     blogPageFeature,
     minutesToRead,
@@ -33,6 +34,8 @@ export const postBySlugQuery = groq`
     postBody,
     mainImage,
     publishedAt,
+    "createdAt": _createdAt,
+    "updatedAt": _updatedAt,
     minutesToRead,
     metaTitle,
     metaDescription,
@@ -105,7 +108,8 @@ export const jobBySlugQuery = groq`
     startDate,
     endDate,
     detailedInstructions,
-    applicationLink
+    applicationLink,
+    "createdAt": _createdAt
   }
 `;
 

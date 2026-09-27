@@ -18,6 +18,7 @@ type HubPageProps = {
   path: string;
   crumbs: Array<{ name: string; path: string }>;
   links: HubLink[];
+  extraHtml?: string;
 };
 
 export default function HubPage({
@@ -26,6 +27,7 @@ export default function HubPage({
   path,
   crumbs,
   links,
+  extraHtml = "",
 }: HubPageProps) {
   const { before, after } = splitNavAndFooter(content.bodyHtml);
   const escape = (value: string) =>
@@ -55,6 +57,7 @@ export default function HubPage({
               </div>
               <p class="text-size-regular">${description}</p>
               <div class="margin-top margin-large">${items}</div>
+              ${extraHtml}
             </div>
           </div>
         </div>

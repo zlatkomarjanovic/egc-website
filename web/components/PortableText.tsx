@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   PortableText as BasePortableText,
   type PortableTextComponents,
@@ -5,20 +6,27 @@ import {
 } from "@portabletext/react";
 import { urlForImage } from "@/sanity/lib/image";
 
-const components: PortableTextComponents = {
+function childText(children: ReactNode): string {
+  if (typeof children === "string" || typeof children === "number") return String(children);
+  if (Array.isArray(children)) return children.map(childText).join("");
+  return "";
+}
+
+const baseComponents: PortableTextComponents = {
   types: {
     image: ({ value }) => {
       const url = urlForImage(value);
       if (!url) return null;
       // eslint-disable-next-line @next/next/no-img-element
-      return <img src={url} alt={value?.alt || ""} loading="lazy" className="rich-text_image" />;
+      return (
+        <img
+          src={url}
+          alt={value?.alt || "EGC article image"}
+          loading="lazy"
+          className="rich-text_image"
+        />
+      );
     },
-  },
-  block: {
-    h1: ({ children }) => <h2 className="heading-style-h2">{children}</h2>,
-    h2: ({ children }) => <h2 className="heading-style-h2">{children}</h2>,
-    h3: ({ children }) => <h3 className="heading-style-h3">{children}</h3>,
-    h4: ({ children }) => <h4 className="heading-style-h4">{children}</h4>,
   },
   marks: {
     link: ({ children, value }) => {
@@ -38,9 +46,33 @@ const components: PortableTextComponents = {
 
 export default function PortableText({
   value,
+  skipHeading,
 }: {
   value: PortableTextBlock | PortableTextBlock[] | null | undefined;
+  skipHeading?: string;
 }) {
   if (!value) return null;
+  let skipped = false;
+  const skip = skipHeading?.replace(/\s+/g, " ").trim().toLowerCase();
+  const heading = (Tag: "h2" | "h3" | "h4", className: string) =>
+    function Heading({ children }: { children?: ReactNode }) {
+      const text = childText(children).replace(/\s+/g, " ").trim().toLowerCase();
+      if (!skipped && skip && text === skip) {
+        skipped = true;
+        return null;
+      }
+      return <Tag className={className}>{children}</Tag>;
+    };
+
+  const components: PortableTextComponents = {
+    ...baseComponents,
+    block: {
+      h1: heading("h2", "heading-style-h2"),
+      h2: heading("h2", "heading-style-h2"),
+      h3: heading("h3", "heading-style-h3"),
+      h4: heading("h4", "heading-style-h4"),
+    },
+  };
+
   return <BasePortableText value={value} components={components} />;
 }

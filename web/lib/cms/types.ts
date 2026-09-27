@@ -31,6 +31,7 @@ export type CmsPost = {
   sortOrder?: number;
   publishedAt?: string;
   createdAt?: string;
+  updatedAt?: string;
   metaTitle?: string;
   metaDescription?: string;
   author?: CmsAuthor;
@@ -52,6 +53,8 @@ export type CmsJob = {
   coverImage?: string;
   startDate?: string;
   endDate?: string;
+  createdAt?: string;
+  descriptionText?: string;
 };
 
 export type CmsPartner = {

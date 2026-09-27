@@ -61,6 +61,13 @@ export default function Page() {
           description: "Collaboration for entrepreneurship faculty and PhD students.",
         },
       ]}
+      extraHtml={`
+        <div class="margin-top margin-large">
+          <h2 class="heading-style-h3">Which EGC program fits?</h2>
+          <p class="text-size-regular">BOLD Fellowship is for Western Balkans founders who want a multi-month fellowship. Scale 2.0 is a fully funded incubator for Croatian teams with an MVP. LeapX is a 5-week AI bootcamp. Workshops and the BOLD Summit are shorter community programs.</p>
+          <p class="text-size-regular">Compare duration, location, and who should apply, then open the program page that matches your stage. EGC does not rank one program as universally best. The right fit depends on country, traction, and time.</p>
+        </div>
+      `}
     />
   );
 }

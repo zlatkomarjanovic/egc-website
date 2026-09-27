@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import CmsImage from "@/components/CmsImage";
 import type { CmsJob } from "@/lib/cms/types";
 
 const PLACEHOLDER = "/images/egc-careers-cover.png";
@@ -40,8 +41,7 @@ export default function CareerDetailView({ job, body }: CareerDetailViewProps) {
             <div className="content14_component">
               <div className="margin-bottom margin-xxlarge">
                 <div className="content14_image-wrapper">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt={title} loading="lazy" src={image} className="content14_image" />
+                  <CmsImage src={image} alt={title} className="content14_image" width={1400} height={700} />
                 </div>
                 {meta.length ? (
                   <div className="w-layout-grid content14_metatag-list">
@@ -56,13 +56,19 @@ export default function CareerDetailView({ job, body }: CareerDetailViewProps) {
               </div>
               <div className="max-width-large align-center">
                 <h1 className="heading-style-h3">{title}</h1>
-                {body ? (
-                  <div className="text-rich-text w-richtext">{body}</div>
-                ) : job.excerpt ? (
-                  <div className="text-rich-text w-richtext">
+                {job.excerpt ? (
+                  <>
+                    <h2 className="heading-style-h5">Role overview</h2>
                     <p>{job.excerpt}</p>
-                  </div>
+                  </>
                 ) : null}
+                {body ? (
+                  <>
+                    <h2 className="heading-style-h5">About this role</h2>
+                    <div className="text-rich-text w-richtext">{body}</div>
+                  </>
+                ) : null}
+                <h2 className="heading-style-h5">How to apply</h2>
                 <div className="margin-top margin-small">
                   <a
                     href={applyHref}
