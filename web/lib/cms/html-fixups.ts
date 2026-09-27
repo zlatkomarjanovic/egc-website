@@ -396,7 +396,7 @@ const CELINE_ADVISOR_CARD = `<div class="w-layout-grid layout3_component">
                     <p class="text-size-regular">Celine is a Clinical Assistant Professor of Entrepreneurship at the University at Buffalo School of Management. She designed and facilitated the BOLD Fellowship for emerging founders from the Western Balkans, and coaches startups through NSF I-Corps and UB entrepreneurial programs.</p>
                   </div>
                 </div>
-                <div class="layout3_image-wrapper" style="opacity:1"><img src="/images/celine-krzan.jpg" loading="lazy" alt="Celine Krzan, Clinical Assistant Professor of Entrepreneurship at University at Buffalo" class="layout3_image"></div>
+                <div class="layout3_image-wrapper" style="opacity:1"><img src="/images/celine-krzan.jpg" loading="lazy" alt="Celine Krzan, Clinical Assistant Professor of Entrepreneurship at University at Buffalo" class="layout3_image is-celine"></div>
               </div>`;
 
 function insertAfterLastLayoutCard(html: string, card: string): string {
@@ -428,9 +428,13 @@ function insertAfterLastLayoutCard(html: string, card: string): string {
 
 /** Add Celine Krzan to the advisory zig-zag after the last existing card. */
 export function addCelineAdvisor(html: string): string {
-  if (html.includes("Celine Krzan")) return html;
-  if (!html.includes("Emina Poricanin") || !html.includes("Sinisa Babcic")) return html;
-  return insertAfterLastLayoutCard(html, CELINE_ADVISOR_CARD);
+  let next = html.replace(
+    /(<img\b[^>]*src="\/images\/celine-krzan\.jpg"[^>]*class="layout3_image)(?! is-celine)/i,
+    "$1 is-celine"
+  );
+  if (next.includes("Celine Krzan")) return next;
+  if (!next.includes("Emina Poricanin") || !next.includes("Sinisa Babcic")) return next;
+  return insertAfterLastLayoutCard(next, CELINE_ADVISOR_CARD);
 }
 
 /** Move Filip Sasic onto the board and drop Brian Pasalich. */
