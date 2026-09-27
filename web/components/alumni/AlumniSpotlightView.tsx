@@ -43,7 +43,8 @@ export default function AlumniSpotlightView({
     { q: "What has been the biggest growth related challenge?", a: alumni.biggestChallenge },
     { q: "What advice would you give to first time founders?", a: alumni.adviceFirstTime },
     { q: "What drives your forward when facing challenges?", a: alumni.whatDrives },
-  ].filter((item) => item.a);
+  ];
+  const unanswered = "This fellow has not published an answer yet.";
 
   return (
     <>
@@ -83,7 +84,9 @@ export default function AlumniSpotlightView({
                             </div>
                             <div className="answer-v2">
                               <div className="margin-bottom _1rem">
-                                <p className="text-weight-light">{item.a}</p>
+                                <p className="text-weight-light">
+                                  {item.a?.trim() ? item.a : unanswered}
+                                </p>
                               </div>
                             </div>
                           </div>

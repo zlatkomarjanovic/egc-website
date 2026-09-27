@@ -69,6 +69,46 @@ const nextConfig = {
         destination: "/become-an-egc-mentor",
         permanent: true,
       },
+      {
+        source: "/programs/bold-fellowship",
+        destination: "/programs/bold-fellowship/general",
+        permanent: true,
+      },
+      {
+        source: "/apply",
+        destination: "/programs",
+        permanent: true,
+      },
+      {
+        source: "/blog",
+        destination: "/about-us/insights",
+        permanent: true,
+      },
+      {
+        source: "/blog/:slug",
+        destination: "/post/:slug",
+        permanent: true,
+      },
+      {
+        source: "/team",
+        destination: "/about-us/egc-board-of-directors",
+        permanent: true,
+      },
+      {
+        source: "/index.html",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/insights",
+        destination: "/about-us/insights",
+        permanent: true,
+      },
+      {
+        source: "/insights/:slug",
+        destination: "/post/:slug",
+        permanent: true,
+      },
     ];
   },
   async headers() {

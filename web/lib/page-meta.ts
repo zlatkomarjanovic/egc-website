@@ -9,6 +9,7 @@ export const PAGE_META: Record<
     title: "EGC | Youth Entrepreneurship Programs",
     description:
       "EGC helps young founders from emerging ecosystems start and grow ventures through BOLD Fellowship, LeapX, workshops, and NYC programs.",
+    image: "/images/egc-og-default.png",
   },
   "/about-us": {
     title: "About EGC | New York Youth Entrepreneurship Nonprofit",
@@ -40,16 +41,19 @@ export const PAGE_META: Record<
     title: "EGC Insights | Youth Entrepreneurship Articles",
     description:
       "Articles from Entrepreneurs for Global Change on youth entrepreneurship, startup programs, and founder stories from emerging ecosystems.",
+    image: "/images/egc-og-default.png",
   },
   "/programs": {
     title: "Programs",
     description:
       "EGC programs for young founders: BOLD Fellowship, BOLD Regional Workshops, BOLD Summit, Scale 2.0, LeapX, and University Partnership.",
+    image: "/images/egc-og-default.png",
   },
   "/programs/bold-fellowship/general": {
     title: "BOLD Fellowship for Entrepreneurship",
     description:
       "The BOLD Fellowship is an EGC and U.S. Department of State program for young founders in Bosnia and Herzegovina, North Macedonia, and Serbia.",
+    image: "/images/egc-og-default.png",
   },
   "/programs/bold-fellowship/serbia": {
     title: "BOLD Fellowship Serbia",
@@ -85,6 +89,7 @@ export const PAGE_META: Record<
     title: "LeapX AI Startup Bootcamp",
     description:
       "LeapX is EGC's AI startup bootcamp: four weeks online plus one week in the Canary Islands, from idea to first customer.",
+    image: "/images/egc-og-default.png",
   },
   "/programs/university-partnership-program": {
     title: "University Partnership Program",
@@ -95,6 +100,7 @@ export const PAGE_META: Record<
     title: "EGC Partners | Universities, Startups, and Funders",
     description:
       "EGC partners with universities, startups, and global organizations to support young founders from emerging ecosystems.",
+    image: "/images/egc-og-default.png",
   },
   "/become-an-egc-mentor": {
     title: "Become an EGC Mentor",
@@ -110,6 +116,7 @@ export const PAGE_META: Record<
     title: "Alumni Spotlight",
     description:
       "Stories from EGC alumni founders who built ventures through BOLD Fellowship and other Entrepreneurs for Global Change programs.",
+    image: "/images/egc-og-default.png",
   },
   "/legal/privacy-policy": {
     title: "Privacy Policy",
@@ -143,6 +150,44 @@ export const BOLD_PROGRAM_FAQS = [
     question: "When do applications open?",
     answer:
       "The BOLD Fellowship opens applications in cycles. Watch the country page and EGC channels for the next call.",
+  },
+];
+
+export const LEAPX_PROGRAM_FAQS = [
+  {
+    question: "Can I apply for the LeapX Bootcamp?",
+    answer:
+      "You can apply if you are an aspiring startup founder with an early-stage business idea or prototype in the tech or AI space. The call for applications is currently closed.",
+  },
+  {
+    question: "What happens after I submit my application?",
+    answer:
+      "After submitting your application, it will be reviewed by the LeapX team. If selected, you will be invited to participate in the bootcamp, which includes mentorship, workshops, and hands-on sessions designed to accelerate your startup idea.",
+  },
+  {
+    question: "Who is eligible to apply for this program?",
+    answer:
+      "The program is open to aspiring founders who are working on AI-focused or tech-driven startups, either individually or in small teams.",
+  },
+  {
+    question: "What is the purpose of the LeapX Bootcamp?",
+    answer:
+      "LeapX is designed to accelerate early-stage startups by providing mentorship, access to industry experts, practical tools, and networking opportunities. The program aims to equip participants with the skills and connections needed to grow their AI or tech ventures in one month.",
+  },
+  {
+    question: "Why should I join this program?",
+    answer:
+      "Joining LeapX gives you the opportunity to learn from experienced mentors, collaborate with fellow startup founders, refine your business model, and gain exposure to potential investors and partners in the AI and tech ecosystem.",
+  },
+  {
+    question: "How long is the program and what does it include?",
+    answer:
+      "The bootcamp spans several weeks and includes workshops, mentorship sessions, pitch practice, and networking opportunities. Specific schedules and program details can be found on the website.",
+  },
+  {
+    question: "Will I have opportunities for ongoing collaboration after the program?",
+    answer:
+      "Yes. LeapX encourages ongoing collaboration through alumni networks, follow-up mentorship, and opportunities to connect with investors, partners, and fellow founders beyond the bootcamp.",
   },
 ];
 

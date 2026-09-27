@@ -18,7 +18,7 @@ const RELATED_READS = `
         <div class="padding-global">
           <div class="container-large">
             <div class="padding-section-large" style="padding-top:0">
-              <h2 class="heading-style-h3">Keep reading</h2>
+              <p class="heading-style-h3" role="doc-subtitle">Keep reading</p>
               <p class="text-size-regular">See how this program connects to EGC Insights, alumni founders, and the rest of the portfolio.</p>
               <p class="text-size-regular"><a href="/about-us/insights">EGC Insights</a> · <a href="/alumni">Alumni Spotlight</a> · <a href="/programs">All EGC programs</a> · <a href="/post/why-networking-matters-for-founders">Why networking matters for founders</a> · <a href="/post/how-to-use-storytelling-in-entrepreneurship-beyond-marketing">Storytelling for founders</a></p>
             </div>
@@ -79,6 +79,14 @@ export function demoteExtraH1s(html: string): string {
   });
 }
 
+function isHomepageHtml(html: string): boolean {
+  return (
+    html.includes('id="egc-what-is"') ||
+    /unique because of our/i.test(html) ||
+    /Discover your[\s\S]{0,80}inner entrepreneur/i.test(html)
+  );
+}
+
 export function fixHomepageHeadings(html: string): string {
   let next = html.replace(
     /(<h1\b[^>]*>)[\s\S]*?EGC[\s\S]{0,40}Discover your[\s\S]*?(<\/h1>)/i,
@@ -86,16 +94,61 @@ export function fixHomepageHeadings(html: string): string {
   );
   if (
     next.includes("Entrepreneurs for Global Change</h1>") &&
-    !next.includes("id=\"egc-what-is\"")
+    !next.includes('id="egc-what-is"')
   ) {
     next = next.replace(
       /(<h1\b[^>]*>Entrepreneurs for Global Change<\/h1>)/,
       `$1\n<p id="egc-what-is" class="text-size-regular">EGC is a New York City nonprofit that runs entrepreneurship programs for young founders from emerging ecosystems, including the Western Balkans.</p>`
     );
   }
-  return next.replace(
+  next = next.replace(
     /<h1 blocks-non-deletable="true" class="heading-style-h2">Entrepreneurs for Global Change<\/h1>/,
-    '<h2 blocks-non-deletable="true" class="heading-style-h2">Entrepreneurs for Global Change</h2>'
+    '<h2 blocks-non-deletable="true" class="heading-style-h2">What EGC is</h2>'
+  );
+  next = next.replace(
+    /<h2(\b[^>]*)>(?:(?!<\/h2>)[\s\S])*unique because of our\s*<\/h2>/i,
+    `<h2$1>Why founders choose EGC</h2>
+<p class="text-size-regular">EGC is an entrepreneurship community, and we are unique because of our network, dedication, and location.</p>`
+  );
+  return next;
+}
+
+export function renameHomepageDuplicateHeading(html: string): string {
+  if (!isHomepageHtml(html)) return html;
+  return html.replace(
+    /<h2(\b[^>]*)>\s*Entrepreneurs for Global Change\s*<\/h2>/gi,
+    "<h2$1>What EGC is</h2>"
+  );
+}
+
+export function demoteKeepReadingHeadings(html: string): string {
+  return html.replace(
+    /<h2(\b[^>]*)>\s*Keep reading\s*<\/h2>/gi,
+    '<p$1 role="doc-subtitle">Keep reading</p>'
+  );
+}
+
+export function fixBoldProgramNote(html: string): string {
+  return html.replace(
+    /<h2(\b[^>]*)>\s*The BOLD Fellowship for Entrepreneurship is a program of the U\.S\. Department of State\.\s*<\/h2>/i,
+    '<p$1 role="note">The BOLD Fellowship for Entrepreneurship is a program of the U.S. Department of State.</p>'
+  );
+}
+
+export function fixMentorQuotes(html: string): string {
+  if (!html.includes("testimonial5_content") || !html.includes("test-txt")) {
+    return html;
+  }
+  return html.replace(
+    /<div class="testimonial5_content">\s*<h3 class="([^"]*\btest-txt\b[^"]*)">([\s\S]*?)<\/h3>([\s\S]*?<div class="text-weight-semibold">)([^<]+)(<\/div>)/gi,
+    (full, quoteClass, quote, middle, name, nameClose) => {
+      const text = String(quote).replace(/<[^>]+>/g, "").trim();
+      const who = String(name).replace(/\s+/g, " ").trim();
+      if (text.length < 80 || !who || who.length > 80) return full;
+      return `<div class="testimonial5_content">
+                    <h3 class="heading-style-h5">${who}</h3>
+                    <blockquote class="${quoteClass}">${quote}</blockquote>${middle}${name}${nameClose}`;
+    }
   );
 }
 
@@ -121,11 +174,20 @@ export function injectPartnerCopy(html: string): string {
 }
 
 export function fixLeapxHeading(html: string): string {
-  if (!html.includes("Entrepreneur in Residence")) return html;
-  return html.replace(
-    /<h1 class="heading-style-h1 text-color-alternate">[\s\S]*?Entrepreneur in Residence[\s\S]*?<\/h1>/,
-    '<h1 class="heading-style-h1 text-color-alternate"><strong>LeapX AI Startup Bootcamp</strong></h1>\n<p class="text-size-regular">Entrepreneur in residence and founder residency, including €5K+ in AI tools, four weeks online, and one week in the Canary Islands.</p>'
-  );
+  let next = html;
+  if (next.includes("Entrepreneur in Residence")) {
+    next = next.replace(
+      /<h1 class="heading-style-h1 text-color-alternate">[\s\S]*?Entrepreneur in Residence[\s\S]*?<\/h1>/,
+      '<h1 class="heading-style-h1 text-color-alternate"><strong>LeapX AI Startup Bootcamp</strong></h1>\n<p class="text-size-regular">Entrepreneur in residence and founder residency, including €5K+ in AI tools, four weeks online, and one week in the Canary Islands.</p>'
+    );
+  }
+  return next
+    .replace(
+      /<h2(\b[^>]*)>\s*By the end of the program, founders will have:\s*<\/h2>/i,
+      "<h2$1>Outcomes</h2>"
+    )
+    .replace(/<h3(\b[^>]*)>\s*This is not\s*<\/h3>/gi, "<h3$1>LeapX is not</h3>")
+    .replace(/<h3(\b[^>]*)>\s*This is\s*<\/h3>/gi, "<h3$1>LeapX is</h3>");
 }
 
 export function fixInsightsHeading(html: string): string {
@@ -173,11 +235,42 @@ export function rewriteClosedTimelines(html: string): string {
   return html.replace(/Program Timeline \([^)]*Closed[^)]*\)/gi, "Program Timeline");
 }
 
+const COUNTRY_STATUS: Array<{ match: RegExp; label: string }> = [
+  { match: /<h1\b[^>]*>[\s\S]{0,120}?BOLD Fellowship Serbia[\s\S]{0,80}?<\/h1>/i, label: "Serbia" },
+  {
+    match: /<h1\b[^>]*>[\s\S]{0,120}?BOLD Fellowship North Macedonia[\s\S]{0,80}?<\/h1>/i,
+    label: "North Macedonia",
+  },
+  {
+    match: /<h1\b[^>]*>[\s\S]{0,120}?BOLD Fellowship Bosnia and Herzegovina[\s\S]{0,80}?<\/h1>/i,
+    label: "Bosnia and Herzegovina",
+  },
+];
+
+function countryStatusNote(label: string): string {
+  return `<p id="egc-country-status" class="text-size-regular">Applications for BOLD Fellowship ${label} are closed. Watch this page and EGC channels for the next cycle. If you are eligible, consider <a href="/programs/leapx">LeapX</a> or <a href="/programs/scale-2-0">Scale 2.0</a>.</p>`;
+}
+
 export function injectCountryIntros(html: string): string {
   let next = html;
   for (const item of COUNTRY_INTROS) {
     if (next.includes(item.html)) continue;
     next = next.replace(item.match, (match) => `${match}\n${item.html}`);
+  }
+  return next;
+}
+
+export function injectCountryStatusNotes(html: string): string {
+  let next = html.replace(
+    /\s*Applications open on October 14th and close on November 4th\./gi,
+    ""
+  );
+  if (next.includes('id="egc-country-status"')) return next;
+  for (const item of COUNTRY_STATUS) {
+    const updated = next.replace(item.match, (match) => `${match}\n${countryStatusNote(item.label)}`);
+    if (updated !== next) {
+      return updated;
+    }
   }
   return next;
 }
@@ -253,22 +346,32 @@ export function prefixFaqAnswers(html: string): string {
 
 export function applySeoHtmlFixups(html: string): string {
   return fillEmptyImageAlts(
-    injectRelatedReads(
-      prefixFaqAnswers(
-        injectBoardNote(
-          injectContactHeadings(
-            injectPartnerCopy(
-              injectCountryIntros(
-                rewriteClosedTimelines(
-                  fixNewsletterHeading(
-                    fixLegalHeadings(
-                      fixCareersHeading(
-                        fixMentorHeading(
-                          fixInsightsHeading(
-                            fixLeapxHeading(
-                              fixPartnerHeadings(
-                                demoteExtraH1s(
-                                  fixHomepageHeadings(stripEmbeddedJsonLd(html))
+    demoteKeepReadingHeadings(
+      injectRelatedReads(
+        prefixFaqAnswers(
+          injectBoardNote(
+            injectContactHeadings(
+              injectPartnerCopy(
+                injectCountryStatusNotes(
+                  injectCountryIntros(
+                    rewriteClosedTimelines(
+                      fixNewsletterHeading(
+                        fixLegalHeadings(
+                          fixCareersHeading(
+                            fixMentorQuotes(
+                              fixMentorHeading(
+                                fixInsightsHeading(
+                                  fixLeapxHeading(
+                                    fixBoldProgramNote(
+                                      fixPartnerHeadings(
+                                        renameHomepageDuplicateHeading(
+                                          demoteExtraH1s(
+                                            fixHomepageHeadings(stripEmbeddedJsonLd(html))
+                                          )
+                                        )
+                                      )
+                                    )
+                                  )
                                 )
                               )
                             )

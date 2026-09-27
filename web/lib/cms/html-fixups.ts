@@ -176,6 +176,34 @@ function replaceContainingDiv(
   return html;
 }
 
+/** Remove cloneable leftover links and normalize footer contact URLs. */
+export function fixFooterJunk(html: string): string {
+  return html
+    .replace(
+      /<a\b([^>]*)\bhref="[^"]*webflow-cookies\.com[^"]*"([^>]*)>([\s\S]*?)<\/a>/gi,
+      '<a href="/legal/privacy-policy"$1$2>$3</a>'
+    )
+    .replace(
+      /mailto:info@egcnyc\.org\?subject=Hello(?:%20|\s)there(?:%20|\s)%7Bname%7D(?:%20|\s)here/gi,
+      "mailto:info@egcnyc.org?subject=Hello%20from%20the%20EGC%20website"
+    )
+    .replace(
+      /mailto:info@egcnyc\.org\?subject=Hello(?:%20|\s)there(?:%20|\s)\{name\}(?:%20|\s)here/gi,
+      "mailto:info@egcnyc.org?subject=Hello%20from%20the%20EGC%20website"
+    )
+    .replace(/href="tel:\+?1?[-.\s()]*347[-.\s]*990[-.\s]*2142"/gi, 'href="tel:+13479902142"')
+    .replace(/\?displayConfirmation=true(?=&|"|'|$)/gi, "")
+    .replace(/&amp;displayConfirmation=true|&displayConfirmation=true/gi, "")
+    .replace(
+      /https?:\/\/(?:www\.)?instagram\.com\/egcnyc\/?/gi,
+      "https://www.instagram.com/egc.nyc/"
+    )
+    .replace(
+      /https?:\/\/(?:www\.)?instagram\.com\/egc\.nyc\/?/gi,
+      "https://www.instagram.com/egc.nyc/"
+    );
+}
+
 /** Move Filip Sasic onto the board and drop Brian Pasalich. */
 export function reshapeBoardDirectors(html: string): string {
   if (!html.includes("layout3_component")) return html;
@@ -198,7 +226,9 @@ export function applyWebflowHtmlFixups(html: string): string {
     reshapeBoardDirectors(
       hideOurTeamLinks(
         fixScaleTimelineIcons(
-          disableHeroFadeOut(fixLogoAlt(fixImageQuality(fixEmbedlyVideos(html))))
+          disableHeroFadeOut(
+            fixLogoAlt(fixImageQuality(fixEmbedlyVideos(fixFooterJunk(html))))
+          )
         )
       )
     )

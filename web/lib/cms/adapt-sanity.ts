@@ -21,6 +21,7 @@ type SanityAuthor = {
   slug?: string;
   position?: string;
   picture?: SanityImage;
+  linkedin?: string;
 };
 
 type SanityCategory = {
@@ -55,6 +56,8 @@ export type SanityJob = {
   startDate?: string;
   endDate?: string;
   createdAt?: string;
+  postedAt?: string;
+  updatedAt?: string;
   detailedInstructions?: unknown;
 };
 
@@ -94,6 +97,7 @@ export type SanityAlumniSpotlight = {
   extraNote?: string;
   videoLink?: string;
   sortNumber?: number;
+  updatedAt?: string;
 };
 
 export type SanityTestimonial = {
@@ -145,6 +149,7 @@ function adaptAuthor(author?: SanityAuthor | null): CmsAuthor | undefined {
     name: author.name,
     position: author.position,
     picture: imageUrl(author.picture),
+    linkedin: author.linkedin,
   };
 }
 
@@ -155,6 +160,20 @@ function adaptCategory(category?: SanityCategory | null): CmsCategory | undefine
     name: category.name,
     color: category.color,
   };
+}
+
+function portableTextWordCount(blocks?: PortableTextBlock[]): number | undefined {
+  if (!blocks?.length) return undefined;
+  const text = blocks
+    .map((block) => {
+      const children = (block as { children?: Array<{ text?: string }> }).children;
+      return children?.map((child) => child.text || "").join("") || "";
+    })
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const count = text.split(/\s+/).filter(Boolean).length;
+  return count || undefined;
 }
 
 function adaptTags(tags?: SanityTag[] | null): CmsTag[] {
@@ -194,6 +213,7 @@ export function sanityPostsToFeatured(posts: CmsPost[]): CmsPost[] {
 export function sanityPostDetailToCmsPost(post: SanityPostDetail): CmsPost {
   return {
     ...sanityPostToCmsPost(post),
+    wordCount: portableTextWordCount(post.postBody),
     metaTitle: post.metaTitle,
     metaDescription: post.metaDescription,
     coAuthors: uniqueAuthors(
@@ -219,7 +239,9 @@ export function sanityJobToCmsJob(job: SanityJob): CmsJob {
     coverImage: imageUrl(job.coverImage) || "/images/egc-careers-cover.png",
     startDate: job.startDate,
     endDate: job.endDate,
+    postedAt: job.postedAt,
     createdAt: job.createdAt,
+    updatedAt: job.updatedAt,
   };
 }
 
@@ -272,6 +294,7 @@ export function sanityAlumniToCmsAlumni(alumni: SanityAlumniSpotlight): CmsAlumn
     extraNote: alumni.extraNote,
     videoLink: alumni.videoLink,
     sortNumber: alumni.sortNumber,
+    updatedAt: alumni.updatedAt,
   };
 }
 

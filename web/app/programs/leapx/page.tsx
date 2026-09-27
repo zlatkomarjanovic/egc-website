@@ -1,7 +1,7 @@
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
-import { contentPageMetadata, PAGE_META } from "@/lib/page-meta";
-import { breadcrumbJsonLd, educationalProgramJsonLd } from "@/lib/seo";
+import { contentPageMetadata, LEAPX_PROGRAM_FAQS, PAGE_META } from "@/lib/page-meta";
+import { breadcrumbJsonLd, educationalProgramJsonLd, faqPageJsonLd } from "@/lib/seo";
 import content from "./content.json";
 
 const PATH = "/programs/leapx";
@@ -18,8 +18,10 @@ export default function Page() {
           location: "Online and Canary Islands",
           timeToComplete: "P5W",
           educationalProgramMode: "blended",
+          offers: { price: "5000", priceCurrency: "EUR" },
         })}
       />
+      <JsonLd data={faqPageJsonLd(PATH, LEAPX_PROGRAM_FAQS)} />
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },

@@ -62,9 +62,11 @@ export const openJobsQuery = groq`
     organization,
     location,
     type,
+    postedAt,
     applicationDeadline,
     applicationLink,
-    coverImage
+    coverImage,
+    "updatedAt": _updatedAt
   }
 `;
 
@@ -91,7 +93,12 @@ export const allMentorsQuery = groq`
   }
 `;
 
-export const jobSlugsQuery = groq`*[_type == "job" && defined(slug.current)]{ "slug": slug.current }`;
+export const jobSlugsQuery = groq`*[_type == "job" && defined(slug.current)]{
+  "slug": slug.current,
+  postedAt,
+  applicationDeadline,
+  "updatedAt": _updatedAt
+}`;
 
 export const jobBySlugQuery = groq`
   *[_type == "job" && slug.current == $slug][0] {
@@ -109,11 +116,16 @@ export const jobBySlugQuery = groq`
     endDate,
     detailedInstructions,
     applicationLink,
-    "createdAt": _createdAt
+    postedAt,
+    "createdAt": _createdAt,
+    "updatedAt": _updatedAt
   }
 `;
 
-export const alumniSlugsQuery = groq`*[_type == "alumniSpotlight" && defined(slug.current)]{ "slug": slug.current }`;
+export const alumniSlugsQuery = groq`*[_type == "alumniSpotlight" && defined(slug.current)]{
+  "slug": slug.current,
+  "updatedAt": _updatedAt
+}`;
 
 export const alumniBySlugQuery = groq`
   *[_type == "alumniSpotlight" && slug.current == $slug][0] {

@@ -4,7 +4,7 @@ import InlineScripts from "@/components/InlineScripts";
 import JsonLd from "@/components/JsonLd";
 import CareerDetailView from "@/components/careers/CareerDetailView";
 import PortableText from "@/components/PortableText";
-import { getJobBySlug, getJobSlugs } from "@/lib/cms/jobs";
+import { getJobBySlug, getJobSlugs, isJobOpen } from "@/lib/cms/jobs";
 import { applyWebflowHtmlFixups } from "@/lib/cms/html-fixups";
 import { stripSeoHeadExtras } from "@/lib/cms/seo-html-fixups";
 import { splitNavAndFooter } from "@/lib/cms/shell";
@@ -79,6 +79,7 @@ export async function generateMetadata({
     description: jobMetaDescription(loaded.job),
     image: loaded.job.coverImage || "/images/egc-careers-cover.png",
     imageAlt: title,
+    noIndex: !isJobOpen(loaded.job),
   });
 }
 

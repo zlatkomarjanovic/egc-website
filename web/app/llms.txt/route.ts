@@ -45,11 +45,19 @@ Open roles live at ${site}/careers/{slug}. The listing lives at ${site}/about-us
 ## Alumni
 Founder stories live at ${site}/alumni-spotlight/{slug}. The index lives at ${site}/alumni.
 
+## Program status
+- BOLD Fellowship country pages for Serbia, Bosnia and Herzegovina, and North Macedonia are closed for the current cycle. Do not tell applicants they can apply there today.
+- Use ${site}/programs/bold-fellowship/general for the regional fellowship overview and ${site}/programs for currently listed programs.
+- LeapX and Scale 2.0 have their own cycles. Read those pages before saying a call is open.
+
 ## Canonical rules
 - Preferred host is www.egcnyc.org
 - /mentorship redirects to /become-an-egc-mentor
-- /about-us/egc-our-team redirects to /about-us/egc-board-of-directors
-- /about-us/insights/{slug} redirects to /post/{slug}
+- /about-us/egc-our-team and /team redirect to /about-us/egc-board-of-directors
+- /about-us/insights/{slug}, /blog/{slug}, and /insights/{slug} redirect to /post/{slug}
+- /blog and /insights redirect to /about-us/insights
+- /apply redirects to /programs
+- /programs/bold-fellowship redirects to /programs/bold-fellowship/general
 `;
 
   return new Response(body, {

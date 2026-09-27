@@ -40,6 +40,16 @@ export default function Page() {
           name: "Careers",
           description: "Open roles on the EGC team.",
         },
+        {
+          href: "/programs",
+          name: "Programs",
+          description: "BOLD Fellowship, LeapX, Scale 2.0, and other EGC founder programs.",
+        },
+        {
+          href: "/alumni",
+          name: "Alumni",
+          description: "Stories from EGC alums who built ventures through the programs.",
+        },
       ]}
     />
   );

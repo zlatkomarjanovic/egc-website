@@ -106,12 +106,14 @@ export function buildInsightsBlogSection(
   featuredPosts: CmsPost[]
 ): string {
   const featuredItems = featuredPosts.map(featuredPostHtml).join("\n");
+  const featuredSlugs = new Set(featuredPosts.map((post) => post.slug));
+  const listPosts = posts.filter((post) => !featuredSlugs.has(post.slug));
   const sortedCategories = [...categories].sort((a, b) =>
     a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
   );
   const categoryItems =
     allCategoryFilterHtml() + sortedCategories.map(categoryFilterHtml).join("\n");
-  const listItems = posts.map(listPostHtml).join("\n");
+  const listItems = listPosts.map(listPostHtml).join("\n");
 
   return `<header id="blog-header-21" class="section_blog21">
         <div class="padding-global">

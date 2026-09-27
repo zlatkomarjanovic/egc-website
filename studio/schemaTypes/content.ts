@@ -56,6 +56,12 @@ export const job = defineType({
     defineField({ name: "organization", title: "Organization", type: "string" }),
     defineField({ name: "location", title: "Location", type: "string" }),
     defineField({ name: "type", title: "Type", type: "string" }),
+    defineField({
+      name: "postedAt",
+      title: "Posted at",
+      type: "datetime",
+      description: "Public open date for JobPosting.datePosted. Do not use document created time.",
+    }),
     defineField({ name: "applicationDeadline", title: "Application Deadline", type: "date" }),
     defineField({ name: "startDate", title: "Start Date", type: "date" }),
     defineField({ name: "endDate", title: "End Date", type: "date" }),

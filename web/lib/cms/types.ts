@@ -32,6 +32,7 @@ export type CmsPost = {
   publishedAt?: string;
   createdAt?: string;
   updatedAt?: string;
+  wordCount?: number;
   metaTitle?: string;
   metaDescription?: string;
   author?: CmsAuthor;
@@ -53,7 +54,9 @@ export type CmsJob = {
   coverImage?: string;
   startDate?: string;
   endDate?: string;
+  postedAt?: string;
   createdAt?: string;
+  updatedAt?: string;
   descriptionText?: string;
 };
 
@@ -93,6 +96,7 @@ export type CmsAlumniSpotlight = {
   extraNote?: string;
   videoLink?: string;
   sortNumber?: number;
+  updatedAt?: string;
 };
 
 export type CmsTestimonial = {

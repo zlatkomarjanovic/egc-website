@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+import {
+  employmentTypeForSchema,
+  jobDeadlineIso,
+} from "@/lib/cms/jobs";
 import type { CmsAlumniSpotlight, CmsJob, CmsPost } from "@/lib/cms/types";
 
 export const SITE_NAME = "Entrepreneurs for Global Change";
@@ -102,8 +106,19 @@ export function alumniPath(slug: string): string {
   return `/alumni-spotlight/${slug}`;
 }
 
+export function decodeHtmlEntities(value: string): string {
+  return value
+    .replace(/&amp;/g, "&")
+    .replace(/&#x27;|&#39;|&apos;/gi, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&#x2F;/gi, "/")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
 export function clipText(value: string, max: number): string {
-  const clean = value.replace(/\s+/g, " ").trim();
+  const clean = decodeHtmlEntities(value).replace(/\s+/g, " ").trim();
   if (clean.length <= max) return clean;
   const slice = clean.slice(0, max - 1);
   const cut = slice.lastIndexOf(" ");
@@ -128,11 +143,12 @@ export function pageDescription(description?: string | null): string {
 
 export function localAssetUrl(url?: string | null, fallback = DEFAULT_OG_IMAGE): string {
   if (!url) return absoluteUrl(fallback);
-  if (url.includes("website-files.com") || url.includes("cdn.prod.website-files.com")) {
+  const decoded = decodeHtmlEntities(url);
+  if (decoded.includes("website-files.com") || decoded.includes("cdn.prod.website-files.com")) {
     return absoluteUrl(fallback);
   }
-  if (url.startsWith("/")) return absoluteUrl(url);
-  if (/^https?:\/\//i.test(url)) return absoluteUrl(url);
+  if (decoded.startsWith("/")) return absoluteUrl(decoded);
+  if (/^https?:\/\//i.test(decoded)) return absoluteUrl(decoded);
   return absoluteUrl(fallback);
 }
 
@@ -268,8 +284,8 @@ export function organizationJsonLd() {
     ],
     sameAs: [
       "https://www.linkedin.com/company/entrepreneurs-for-global-change/",
-      "https://www.instagram.com/egcnyc/",
-      "https://www.facebook.com/egcnyc/",
+      "https://www.instagram.com/egc.nyc/",
+      "https://www.youtube.com/@egcnyc",
     ],
     foundingDate: "2013",
     knowsAbout: [
@@ -293,14 +309,6 @@ export function websiteJsonLd() {
     description: DEFAULT_DESCRIPTION,
     inLanguage: "en-US",
     publisher: { "@id": `${origin}/#organization` },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${origin}/about-us/insights?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 
@@ -317,10 +325,52 @@ export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
   };
 }
 
+export function editorialModifiedAt(
+  published?: string,
+  updated?: string,
+  created?: string
+): string | undefined {
+  if (!updated) return published;
+  const updatedMs = Date.parse(updated);
+  if (Number.isNaN(updatedMs)) return published;
+  const createdMs = created ? Date.parse(created) : Number.NaN;
+  const publishedMs = published ? Date.parse(published) : Number.NaN;
+  const day = 24 * 60 * 60 * 1000;
+  if (!Number.isNaN(createdMs) && Math.abs(updatedMs - createdMs) < day) {
+    return published || undefined;
+  }
+  if (!Number.isNaN(publishedMs) && updatedMs <= publishedMs + day) {
+    return published;
+  }
+  return updated;
+}
+
+function articleWordCount(post: CmsPost): number | undefined {
+  if (post.wordCount && post.wordCount > 0) return post.wordCount;
+  if (!post.postBody) return undefined;
+  const count = post.postBody
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return count || undefined;
+}
+
+function authorJobTitle(author: { name: string; position?: string }): string | undefined {
+  const role = author.position?.replace(/\s+/g, " ").trim();
+  if (!role) return undefined;
+  if (role.toLowerCase() === author.name.replace(/\s+/g, " ").trim().toLowerCase()) {
+    return undefined;
+  }
+  return role;
+}
+
 export function articleJsonLd(post: CmsPost) {
   const origin = getSiteUrl();
-  const published = post.publishedAt || post.createdAt;
-  const modified = post.updatedAt || post.publishedAt || post.createdAt;
+  const published = post.publishedAt || undefined;
+  const modified = editorialModifiedAt(post.publishedAt, post.updatedAt, post.createdAt);
+  const role = post.author ? authorJobTitle(post.author) : undefined;
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -328,12 +378,12 @@ export function articleJsonLd(post: CmsPost) {
     description: pageDescription(post.metaDescription || post.postSummary),
     image: localAssetUrl(post.mainImage || post.thumbnailImage),
     datePublished: published,
-    dateModified: modified,
+    ...(modified ? { dateModified: modified } : {}),
     author: post.author
       ? {
           "@type": "Person",
           name: post.author.name,
-          jobTitle: post.author.position,
+          ...(role ? { jobTitle: role } : {}),
           url: post.author.linkedin,
         }
       : { "@id": `${origin}/#organization` },
@@ -341,9 +391,7 @@ export function articleJsonLd(post: CmsPost) {
     mainEntityOfPage: absoluteUrl(postPath(post.slug)),
     articleSection: post.category?.name,
     keywords: post.tags.map((tag) => tag.name).filter(Boolean),
-    wordCount: post.postBody
-      ? post.postBody.replace(/<[^>]+>/g, " ").trim().split(/\s+/).length
-      : undefined,
+    wordCount: articleWordCount(post),
     timeRequired: post.minutesToRead ? `PT${post.minutesToRead}M` : undefined,
   };
 }
@@ -357,55 +405,68 @@ function countryCodeFromLocation(location?: string): string | undefined {
   return undefined;
 }
 
+const BALKAN_APPLICANT_COUNTRIES = [
+  { "@type": "Country", name: "BA" },
+  { "@type": "Country", name: "RS" },
+  { "@type": "Country", name: "MK" },
+  { "@type": "Country", name: "ME" },
+];
+
 export function jobJsonLd(job: CmsJob) {
   const title = job.jobTitle || job.name;
   const location = job.location || "";
-  const remote = /remote|hybrid|balkan|online/i.test(location);
+  const balkansRemote = /balkan|western balkans/i.test(location) && /remote|hybrid|online/i.test(location);
+  const remote = /remote|hybrid|online/i.test(location);
   const country = countryCodeFromLocation(location);
-  const rawPosted =
-    (job.createdAt && /^\d{4}-\d{2}-\d{2}/.test(job.createdAt) && job.createdAt) ||
-    (job.startDate && /^\d{4}-\d{2}-\d{2}/.test(job.startDate) ? job.startDate : undefined);
+  const postedRaw = job.postedAt && /^\d{4}-\d{2}-\d{2}/.test(job.postedAt) ? job.postedAt : undefined;
   const datePosted =
-    rawPosted && new Date(rawPosted).getTime() <= Date.now() ? rawPosted : undefined;
-  const validThrough = job.applicationDeadline;
+    postedRaw && Date.parse(postedRaw) <= Date.now() ? postedRaw : undefined;
+  const validThrough = jobDeadlineIso(job.applicationDeadline);
 
   return {
     "@context": "https://schema.org",
     "@type": "JobPosting",
     title,
     description: job.descriptionText || job.excerpt || title,
-    datePosted: datePosted || validThrough || undefined,
-    validThrough,
-    employmentType: job.type || "FULL_TIME",
+    ...(datePosted ? { datePosted } : {}),
+    ...(validThrough ? { validThrough } : {}),
+    employmentType: employmentTypeForSchema(job.type),
     hiringOrganization: {
       "@type": "Organization",
       name: job.organization || SITE_NAME,
       sameAs: getSiteUrl(),
       logo: absoluteUrl(LOGO_PATH),
     },
-    jobLocation: remote
+    ...(balkansRemote
       ? {
-          "@type": "Place",
-          address: {
-            "@type": "PostalAddress",
-            addressCountry: country || "BA",
-            addressRegion: location,
-          },
+          jobLocationType: "TELECOMMUTE",
+          applicantLocationRequirements: BALKAN_APPLICANT_COUNTRIES,
         }
-      : {
-          "@type": "Place",
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: "1412 Broadway, FL 21",
-            addressLocality: "New York City",
-            addressRegion: "NY",
-            postalCode: "10018",
-            addressCountry: country || "US",
-          },
-        },
-    applicantLocationRequirements: country
-      ? { "@type": "Country", name: country }
-      : undefined,
+      : remote
+        ? {
+            jobLocationType: "TELECOMMUTE",
+            ...(country
+              ? {
+                  applicantLocationRequirements: {
+                    "@type": "Country",
+                    name: country,
+                  },
+                }
+              : {}),
+          }
+        : {
+            jobLocation: {
+              "@type": "Place",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "1412 Broadway, FL 21",
+                addressLocality: "New York City",
+                addressRegion: "NY",
+                postalCode: "10018",
+                addressCountry: country || "US",
+              },
+            },
+          }),
     directApply: Boolean(job.applicationLink),
     url: absoluteUrl(careerPath(job.slug)),
   };
@@ -418,6 +479,7 @@ export function educationalProgramJsonLd(input: {
   location?: string;
   timeToComplete?: string;
   educationalProgramMode?: string;
+  offers?: { price: string; priceCurrency: string };
 }) {
   return {
     "@context": "https://schema.org",
@@ -427,13 +489,22 @@ export function educationalProgramJsonLd(input: {
     description: input.description,
     provider: { "@id": `${getSiteUrl()}/#organization` },
     educationalProgramMode: input.educationalProgramMode || "blended",
-    timeToComplete: input.timeToComplete || "P6M",
+    ...(input.timeToComplete ? { timeToComplete: input.timeToComplete } : {}),
     occupationalCategory: "Entrepreneurship",
     ...(input.location
       ? {
           occupancyLocation: {
             "@type": "AdministrativeArea",
             name: input.location,
+          },
+        }
+      : {}),
+    ...(input.offers
+      ? {
+          offers: {
+            "@type": "Offer",
+            price: input.offers.price,
+            priceCurrency: input.offers.priceCurrency,
           },
         }
       : {}),
@@ -459,17 +530,31 @@ export function faqPageJsonLd(
   return faqJsonLd(items.map((item) => ({ q: item.question, a: item.answer })));
 }
 
+const STORYTELLING_SLUG =
+  "how-to-use-storytelling-in-entrepreneurship-beyond-marketing";
+
 export function postMetadata(post: CmsPost): Metadata {
+  const title =
+    post.slug === STORYTELLING_SLUG
+      ? "How to use storytelling in entrepreneurship"
+      : post.metaTitle || post.name;
+  const published = post.publishedAt || undefined;
+  const modified = editorialModifiedAt(post.publishedAt, post.updatedAt, post.createdAt);
   return routeMetadata({
     path: postPath(post.slug),
-    title: post.metaTitle || post.name,
+    title,
     description: post.metaDescription || post.postSummary,
     image: post.mainImage || post.thumbnailImage,
     imageAlt: post.name,
     type: "article",
-    publishedTime: post.publishedAt || post.createdAt,
-    modifiedTime: post.updatedAt || post.publishedAt || post.createdAt,
+    publishedTime: published,
+    modifiedTime: modified,
     authors: post.author?.name ? [post.author.name] : undefined,
+    extra: {
+      authors: post.author?.name
+        ? [{ name: post.author.name, url: post.author.linkedin }]
+        : undefined,
+    },
   });
 }
 
@@ -521,11 +606,13 @@ export function collectionJsonLd(
 
 export function alumniMetaDescription(alumni: CmsAlumniSpotlight): string {
   const name = alumni.alumniName || alumni.name;
-  const venture = alumni.ventureName ? ` of ${alumni.ventureName}` : "";
+  const venture = alumni.ventureName ? `, founder of ${alumni.ventureName}` : "";
   const country = alumni.country ? ` from ${alumni.country}` : "";
-  const pitch = alumni.oneLiner || alumni.whyStarted || "";
+  const pitch = (alumni.oneLiner || alumni.whyStarted || "").replace(/\s+/g, " ").trim();
+  const lead = `${name} is an EGC alum${venture}${country}.`;
+  if (pitch) return pageDescription(`${lead} ${pitch}`);
   return pageDescription(
-    `${name} is an EGC alumni founder${venture}${country}. ${pitch}`.trim()
+    `${lead} ${name} built a venture through Entrepreneurs for Global Change programs for young founders.`
   );
 }
 

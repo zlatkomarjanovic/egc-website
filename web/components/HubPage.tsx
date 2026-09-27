@@ -41,7 +41,7 @@ export default function HubPage({
     .map(
       (link) => `
                 <div class="margin-bottom margin-medium">
-                  <h2 class="heading-style-h3"><a href="${escape(link.href)}">${escape(link.name)}</a></h2>
+                  <p class="heading-style-h3"><a href="${escape(link.href)}">${escape(link.name)}</a></p>
                   <p class="text-size-regular">${escape(link.description)}</p>
                 </div>`
     )
@@ -56,6 +56,7 @@ export default function HubPage({
                 <h1 class="heading-style-h1">${title}</h1>
               </div>
               <p class="text-size-regular">${description}</p>
+              <h2 class="heading-style-h3">Explore these pages</h2>
               <div class="margin-top margin-large">${items}</div>
               ${extraHtml}
             </div>
