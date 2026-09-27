@@ -44,7 +44,7 @@ export const PAGE_META: Record<
     image: "/images/egc-og-default.png",
   },
   "/programs": {
-    title: "Programs",
+    title: "EGC Programs",
     description:
       "EGC programs for young founders: BOLD Fellowship, BOLD Regional Workshops, BOLD Summit, Scale 2.0, LeapX, and University Partnership.",
     image: "/images/egc-og-default.png",
@@ -205,13 +205,16 @@ export function pageCopy(path: string): {
   );
 }
 
+export const LEGAL_LASTMOD = "2026-06-25";
+
 export function contentPageMetadata(
   path: string,
   raw: unknown,
-  extra?: { noIndex?: boolean }
+  extra?: { noIndex?: boolean; modifiedTime?: string }
 ): Metadata {
   return fromContentMetadata(raw, path, {
     ...pageCopy(path),
     noIndex: extra?.noIndex,
+    modifiedTime: extra?.modifiedTime,
   });
 }

@@ -268,6 +268,8 @@ export function fromContentMetadata(
     image: overrides.image ?? imageUrl,
     imageAlt: overrides.imageAlt,
     type: overrides.type,
+    publishedTime: overrides.publishedTime,
+    modifiedTime: overrides.modifiedTime,
     noIndex: overrides.noIndex,
     extra: overrides.extra,
   });
@@ -398,7 +400,7 @@ export function articleJsonLd(post: CmsPost) {
   return {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: post.name,
+    headline: postDisplayTitle(post),
     description: pageDescription(post.metaDescription || post.postSummary),
     image: localAssetUrl(post.mainImage || post.thumbnailImage),
     datePublished: published,
@@ -569,11 +571,16 @@ export function faqPageJsonLd(
 const STORYTELLING_SLUG =
   "how-to-use-storytelling-in-entrepreneurship-beyond-marketing";
 
+export function postDisplayTitle(post: Pick<CmsPost, "slug" | "name" | "metaTitle">): string {
+  if (post.slug === STORYTELLING_SLUG) {
+    return "How to use storytelling in entrepreneurship";
+  }
+  return post.name;
+}
+
 export function postMetadata(post: CmsPost): Metadata {
   const title =
-    post.slug === STORYTELLING_SLUG
-      ? "How to use storytelling in entrepreneurship"
-      : post.metaTitle || post.name;
+    post.slug === STORYTELLING_SLUG ? postDisplayTitle(post) : post.metaTitle || post.name;
   const published = post.publishedAt || undefined;
   const modified = editorialModifiedAt(post.publishedAt, post.updatedAt, post.createdAt);
   return routeMetadata({
@@ -680,6 +687,33 @@ export function contactPageJsonLd() {
     name: "Contact EGC",
     url: absoluteUrl("/contact"),
     mainEntity: { "@id": `${getSiteUrl()}/#organization` },
+  };
+}
+
+export function webPageJsonLd(input: {
+  name: string;
+  path: string;
+  description?: string;
+  dateModified?: string;
+  speakableCss?: string[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: input.name,
+    url: absoluteUrl(input.path),
+    description: input.description,
+    ...(input.dateModified ? { dateModified: input.dateModified } : {}),
+    isPartOf: { "@id": `${getSiteUrl()}/#website` },
+    publisher: { "@id": `${getSiteUrl()}/#organization` },
+    ...(input.speakableCss?.length
+      ? {
+          speakable: {
+            "@type": "SpeakableSpecification",
+            cssSelector: input.speakableCss,
+          },
+        }
+      : {}),
   };
 }
 

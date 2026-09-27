@@ -21,6 +21,7 @@ import {
 import {
   articleJsonLd,
   breadcrumbJsonLd,
+  postDisplayTitle,
   postMetadata,
   postPath,
 } from "@/lib/seo";
@@ -98,7 +99,7 @@ export default async function InsightPostPage({
           data={breadcrumbJsonLd([
             { name: "Home", path: "/" },
             { name: "Insights", path: "/about-us/insights" },
-            { name: post.name, path: postPath(post.slug) },
+            { name: postDisplayTitle(post), path: postPath(post.slug) },
           ])}
         />
         <div className={content.rootClass}>
@@ -108,7 +109,7 @@ export default async function InsightPostPage({
             relatedPosts={relatedPosts}
             body={
               <article className="text-rich-text w-richtext">
-                <PortableText value={sanityPost.postBody} skipHeading={post.name} />
+                <PortableText value={sanityPost.postBody} skipHeading={postDisplayTitle(post)} />
               </article>
             }
           />
@@ -135,7 +136,7 @@ export default async function InsightPostPage({
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Insights", path: "/about-us/insights" },
-          { name: cmsPost.name, path: postPath(cmsPost.slug) },
+          { name: postDisplayTitle(cmsPost), path: postPath(cmsPost.slug) },
         ])}
       />
       <div className={content.rootClass}>

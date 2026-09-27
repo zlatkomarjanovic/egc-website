@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAlumniSlugs, getAllJobs, getAllPosts, getJobSlugs, getPostSlugs } from "@/lib/cms";
 import { isJobOpen } from "@/lib/cms/jobs";
+import { LEGAL_LASTMOD } from "@/lib/page-meta";
 import { absoluteUrl } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/client";
 import { isSanityConfigured } from "@/sanity/env";
@@ -94,13 +95,13 @@ const STATIC_ROUTES: {
     path: "/legal/terms-of-service",
     changeFrequency: "yearly",
     priority: 0.3,
-    lastModified: "2026-06-25",
+    lastModified: LEGAL_LASTMOD,
   },
   {
     path: "/legal/privacy-policy",
     changeFrequency: "yearly",
     priority: 0.3,
-    lastModified: "2026-06-25",
+    lastModified: LEGAL_LASTMOD,
   },
 ];
 

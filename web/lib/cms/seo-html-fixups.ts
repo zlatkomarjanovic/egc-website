@@ -112,8 +112,14 @@ export function fixHomepageHeadings(html: string): string {
   next = next.replace(
     /<h2(\b[^>]*)>(?:(?!<\/h2>)[\s\S])*unique because of our\s*<\/h2>/i,
     `<h2$1>Why founders choose EGC</h2>
-<p class="text-size-regular">EGC is an entrepreneurship community, and we are unique because of our network, dedication, and location.</p>`
+<p id="egc-why-founders" class="text-size-regular">EGC is an entrepreneurship community, and we are unique because of our network, dedication, and location.</p>`
   );
+  if (!next.includes('id="egc-why-founders"')) {
+    next = next.replace(
+      /<p class="text-size-regular">(EGC is an entrepreneurship community, and we are unique because of our network, dedication, and location\.)<\/p>/,
+      '<p id="egc-why-founders" class="text-size-regular">$1</p>'
+    );
+  }
   return next;
 }
 

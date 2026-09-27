@@ -100,6 +100,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/programs/compare",
+        destination: "/programs",
+        permanent: true,
+      },
+      {
         source: "/blog",
         destination: "/about-us/insights",
         permanent: true,

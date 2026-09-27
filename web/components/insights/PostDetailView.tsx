@@ -10,6 +10,7 @@ import {
   postImage,
   uniqueAuthors,
 } from "@/lib/cms/format";
+import { postDisplayTitle } from "@/lib/seo";
 
 type PostDetailViewProps = {
   post: CmsPost;
@@ -52,7 +53,7 @@ function RelatedPostCard({ post }: { post: CmsPost }) {
           <div className="blog37_image-wrapper">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              alt={post.name}
+              alt={postDisplayTitle(post)}
               loading="lazy"
               src={postImage(post, true)}
               className="blog37_image"
@@ -63,7 +64,7 @@ function RelatedPostCard({ post }: { post: CmsPost }) {
           <div className="tag is-text">{post.category?.name}</div>
         </div>
         <div className="margin-bottom margin-xxsmall">
-          <h3 className="heading-style-h5">{post.name}</h3>
+          <h3 className="heading-style-h5">{postDisplayTitle(post)}</h3>
         </div>
         <div className="text-size-regular">{post.postSummary}</div>
         <div className="margin-top margin-small">
@@ -143,7 +144,7 @@ export default function PostDetailView({ post, relatedPosts, body }: PostDetailV
                     {minutes ? <div className="text-size-small">{minutes}</div> : null}
                   </div>
                   <div className="margin-bottom margin-medium">
-                    <h1 className="heading-style-h3">{post.name}</h1>
+                    <h1 className="heading-style-h3">{postDisplayTitle(post)}</h1>
                   </div>
                   {publishedDate ? (
                     <div className="blog-post5-header_date-wrapper">
@@ -155,7 +156,7 @@ export default function PostDetailView({ post, relatedPosts, body }: PostDetailV
                 <div className="blog-post5-header_image-wrapper">
                   <CmsImage
                     src={postImage(post)}
-                    alt={post.name}
+                    alt={postDisplayTitle(post)}
                     className="blog-post5-header_image"
                     width={1200}
                     height={800}
