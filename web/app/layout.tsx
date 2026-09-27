@@ -60,8 +60,15 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
   },
   icons: {
-    icon: "/images/favicon.png",
-    apple: "/images/webclip.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png" },
+      { url: "/images/favicon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png" },
+      { url: "/images/webclip.png" },
+    ],
   },
   verification: {
     google: "Fw7cC4U3zzayVZ1Rdx1KFmY6GDrtg8pjgTW1jCroA_U",

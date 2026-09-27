@@ -149,6 +149,62 @@ const nextConfig = {
         destination: "/post/:slug",
         permanent: true,
       },
+      {
+        source: "/jobs",
+        destination: "/about-us/careers",
+        permanent: true,
+      },
+      {
+        source: "/leapx",
+        destination: "/programs/leapx",
+        permanent: true,
+      },
+      {
+        source: "/bold",
+        destination: "/programs/bold-fellowship/general",
+        permanent: true,
+      },
+      {
+        source: "/scale",
+        destination: "/programs/scale-2-0",
+        permanent: true,
+      },
+      {
+        source: "/mentor",
+        destination: "/become-an-egc-mentor",
+        permanent: true,
+      },
+      {
+        source: "/privacy",
+        destination: "/legal/privacy-policy",
+        permanent: true,
+      },
+      {
+        source: "/terms",
+        destination: "/legal/terms-of-service",
+        permanent: true,
+      },
+      {
+        source: "/legal",
+        destination: "/legal/privacy-policy",
+        permanent: true,
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/favicon.ico",
+        destination: "/images/favicon.png",
+      },
+      {
+        source: "/apple-touch-icon.png",
+        destination: "/images/webclip.png",
+      },
+      {
+        source: "/icon.png",
+        destination: "/images/favicon.png",
+      },
     ];
   },
   async headers() {
