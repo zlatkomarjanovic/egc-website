@@ -44,9 +44,13 @@ async function slugsFor(
   sanityQuery: string,
   fallback: () => string[]
 ): Promise<string[]> {
-  if (!isSanityConfigured) return fallback();
-  const rows = await sanityFetch<{ slug: string }[]>(sanityQuery, {}, []);
-  return rows ? rows.map((row) => row.slug).filter(Boolean) : fallback();
+  try {
+    if (!isSanityConfigured) return fallback();
+    const rows = await sanityFetch<{ slug: string }[]>(sanityQuery, {}, []);
+    return rows ? rows.map((row) => row.slug).filter(Boolean) : fallback();
+  } catch {
+    return fallback();
+  }
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -59,51 +63,55 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route.priority,
   }));
 
-  const [postRows, jobSlugs, alumniSlugs] = await Promise.all([
-    isSanityConfigured
-      ? sanityFetch<Array<{ slug: string; publishedAt?: string; _createdAt?: string }>>(
-          allPostsQuery,
-          {},
-          []
-        )
-      : Promise.resolve(
-          getAllPosts().map((post) => ({
-            slug: post.slug,
-            publishedAt: post.publishedAt,
-            _createdAt: post.createdAt,
-          }))
-        ),
-    slugsFor(jobSlugsQuery, getJobSlugs),
-    slugsFor(alumniSlugsQuery, getAlumniSlugs),
-  ]);
+  try {
+    const [postRows, jobSlugs, alumniSlugs] = await Promise.all([
+      isSanityConfigured
+        ? sanityFetch<Array<{ slug: string; publishedAt?: string; _createdAt?: string }>>(
+            allPostsQuery,
+            {},
+            []
+          ).catch(() => [])
+        : Promise.resolve(
+            getAllPosts().map((post) => ({
+              slug: post.slug,
+              publishedAt: post.publishedAt,
+              _createdAt: post.createdAt,
+            }))
+          ),
+      slugsFor(jobSlugsQuery, getJobSlugs),
+      slugsFor(alumniSlugsQuery, getAlumniSlugs),
+    ]);
 
-  const posts: Array<{ slug: string; publishedAt?: string; _createdAt?: string }> =
-    postRows?.length
-      ? postRows
-      : (await slugsFor(postSlugsQuery, getPostSlugs)).map((slug) => ({ slug }));
+    const posts: Array<{ slug: string; publishedAt?: string; _createdAt?: string }> =
+      postRows?.length
+        ? postRows
+        : (await slugsFor(postSlugsQuery, getPostSlugs)).map((slug) => ({ slug }));
 
-  const postEntries = posts
-    .filter((post) => post.slug)
-    .map((post) => ({
-      url: absoluteUrl(`/post/${post.slug}`),
-      lastModified: post.publishedAt || post._createdAt || now,
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
+    const postEntries = posts
+      .filter((post) => post.slug)
+      .map((post) => ({
+        url: absoluteUrl(`/post/${post.slug}`),
+        lastModified: post.publishedAt || post._createdAt || now,
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      }));
+
+    const jobEntries = jobSlugs.map((slug) => ({
+      url: absoluteUrl(`/careers/${slug}`),
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
     }));
 
-  const jobEntries = jobSlugs.map((slug) => ({
-    url: absoluteUrl(`/careers/${slug}`),
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.6,
-  }));
+    const alumniEntries = alumniSlugs.map((slug) => ({
+      url: absoluteUrl(`/alumni-spotlight/${slug}`),
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    }));
 
-  const alumniEntries = alumniSlugs.map((slug) => ({
-    url: absoluteUrl(`/alumni-spotlight/${slug}`),
-    lastModified: now,
-    changeFrequency: "monthly" as const,
-    priority: 0.5,
-  }));
-
-  return [...staticEntries, ...postEntries, ...jobEntries, ...alumniEntries];
+    return [...staticEntries, ...postEntries, ...jobEntries, ...alumniEntries];
+  } catch {
+    return staticEntries;
+  }
 }
