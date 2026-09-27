@@ -21,7 +21,7 @@ const ADVISORS = [
     name: "Celine Krzan",
     jobTitle: "Clinical Assistant Professor of Entrepreneurship, UB",
     sameAs: "https://www.linkedin.com/in/celinekrzan",
-    image: `${getSiteUrl()}/images/celine-krzan.jpg`,
+    image: `${getSiteUrl()}/images/celine-krzan.jpg?v=2`,
   },
 ];
 

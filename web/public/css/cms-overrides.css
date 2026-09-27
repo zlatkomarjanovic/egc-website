@@ -297,6 +297,7 @@ img.relative-0,
 }
 
 .layout3_image.is-celine {
-  object-position: 50% 18%;
+  object-fit: cover;
+  object-position: 50% 50%;
 }
 
