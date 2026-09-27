@@ -120,7 +120,6 @@ export function hideOurTeamLinks(html: string): string {
 const BOARD_CARD_START = '<div class="w-layout-grid layout3_component">';
 
 const FILIP_BOARD_CARD = `<div class="w-layout-grid layout3_component">
-                <div class="layout3_image-wrapper" style="opacity:1"><img src="/images/filip-sasic.png" loading="lazy" alt="Filip Sasic, CEO and Founder of Entrepreneurs for Global Change" class="layout3_image"></div>
                 <div class="layout3_content" style="opacity:1">
                   <div class="margin-bottom margin-xsmall">
                     <a href="https://www.linkedin.com/in/filipsasic/" target="_blank" class="link-flex w-inline-block"><img src="/images/Vector.svg" loading="lazy" alt class="icon-1x1-xsmall">
@@ -137,6 +136,7 @@ const FILIP_BOARD_CARD = `<div class="w-layout-grid layout3_component">
                     <p class="text-size-regular">Filip is the CEO and Founder of Entrepreneurs for Global Change. He leads EGC's work helping young founders from emerging ecosystems turn ideas into startups.</p>
                   </div>
                 </div>
+                <div class="layout3_image-wrapper" style="opacity:1"><img src="/images/filip-sasic.png" loading="lazy" alt="Filip Sasic, CEO and Founder of Entrepreneurs for Global Change" class="layout3_image"></div>
               </div>`;
 
 function replaceContainingDiv(

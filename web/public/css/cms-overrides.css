@@ -48,11 +48,3 @@
   height: 100%;
 }
 
-.section_layout3 .layout3_image-wrapper {
-  order: 1 !important;
-}
-
-.section_layout3 .layout3_content {
-  order: 2 !important;
-}
-
