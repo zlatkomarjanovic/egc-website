@@ -88,6 +88,104 @@ export function disableHeroFadeOut(html: string): string {
   );
 }
 
+/**
+ * Hero H1s and subtitles ship with inline opacity:0 and wait for IX2.
+ * If that interaction never fires, the bottom paragraph stays invisible
+ * on the dark overlay. Force them on.
+ */
+export function revealHeroCopy(html: string): string {
+  return html.replace(
+    /<(header|section)(\b[^>]*\bsection_hero\b[^>]*)>([\s\S]*?)<\/\1>/gi,
+    (_full, tag: string, attrs: string, inner: string) => {
+      const revealed = inner.replace(/\sstyle="([^"]*)"/gi, (_style, value: string) => {
+        if (!/opacity\s*:/i.test(value)) return ` style="${value}"`;
+        return ' style="opacity:1;transform:none"';
+      });
+      return `<${tag}${attrs}>${revealed}</${tag}>`;
+    }
+  );
+}
+
+const COOKIE_BANNER_HTML = `<div class="cookie-component">
+      <div fs-cc="banner" class="fs-cc_cookie-component">
+        <div class="fs-cc_modal">
+          <a fs-cc="close" href="#" class="fs-cc_close-button w-inline-block">
+            <div class="fs-cc_close-button-line"></div>
+            <div class="fs-cc_close-button-line is-2nd"></div>
+            <div class="fs-cc_screen-reader-only">Close Cookie Popup</div>
+          </a>
+          <div class="fs_cc-modal-content">
+            <div class="fs-cc_title">Cookie settings</div>
+            <div class="fs-cc_description">By clicking &quot;Accept all cookies&quot;, you agree to storing cookies on your device to enhance site navigation, analyze site usage and assist in our marketing efforts as outlined in our <a href="/legal/privacy-policy" class="fs-cc_link">privacy policy</a>.</div>
+          </div>
+          <div class="fs-cc_modal-buttons">
+            <a fs-cc="allow" href="#" class="fs-cc_button w-button">Accept all cookies</a>
+            <a fs-cc="deny" href="#" class="fs-cc_button is-secondary w-button">Essential only</a>
+            <a fs-cc="open-preferences" href="#" class="fs-cc_button is-secondary w-button">Cookie settings</a>
+          </div>
+        </div>
+      </div>
+      <div fs-cc="preferences" class="fs-cc_preference-component">
+        <div class="cookie-preference_wrapper">
+          <div class="fs-cc_modal">
+            <a fs-cc="close" href="#" class="fs-cc_close-button w-inline-block">
+              <div class="fs-cc_close-button-line"></div>
+              <div class="fs-cc_close-button-line is-2nd"></div>
+              <div class="fs-cc_screen-reader-only">Close Cookie Preference Manager</div>
+            </a>
+            <div class="fs_cc-modal-content">
+              <div class="fs-cc_title">Cookie settings</div>
+              <div class="fs-cc_description">Choose which cookies EGC can use. Analytics stays off until you allow it. Read the <a href="/legal/privacy-policy" class="fs-cc_link">privacy policy</a>.</div>
+              <div class="fs-cc_form w-form">
+                <form id="ck-form" name="wf-form-ck-form" data-name="ck-form" method="get" class="fs-cc_preferences">
+                  <div class="fs-cc_checkbox is--not-allowed w-clearfix">
+                    <div class="fs-cc_checkbox-button is-required"></div>
+                    <div class="fs-cc_checkbox-label is--not-allowed">Strictly necessary (always active)</div>
+                    <div class="fs-cc_checkbox-description is--not-allowed">Cookies required to enable basic website functionality.</div>
+                  </div><label class="w-checkbox fs-cc_checkbox w-clearfix">
+                    <div class="w-checkbox-input w-checkbox-input--inputType-custom fs-cc_checkbox-button"></div><input type="checkbox" name="Fs-Marketing" id="fs__marketing" data-name="Fs Marketing" fs-cc-checkbox="marketing" style="opacity:0;position:absolute;z-index:-1"><span for="Fs-Marketing" class="fs-cc_checkbox-label w-form-label">Marketing</span>
+                    <div class="fs-cc_checkbox-description">Cookies used to deliver advertising that is more relevant to you and your interests.</div>
+                  </label><label class="w-checkbox fs-cc_checkbox w-clearfix">
+                    <div class="w-checkbox-input w-checkbox-input--inputType-custom fs-cc_checkbox-button"></div><input type="checkbox" name="Fs-Personalization" id="fs__personalization" data-name="Fs Personalization" fs-cc-checkbox="personalization" style="opacity:0;position:absolute;z-index:-1"><span for="Fs-Personalization" class="fs-cc_checkbox-label w-form-label">Personalization<br></span>
+                    <div class="fs-cc_checkbox-description">Cookies allowing the website to remember choices you make (such as your user name, language, or the region you are in).</div>
+                  </label><label class="w-checkbox fs-cc_checkbox w-clearfix">
+                    <div class="w-checkbox-input w-checkbox-input--inputType-custom fs-cc_checkbox-button"></div><input type="checkbox" name="Fs-Analytics" id="fs__analytics" data-name="Fs Analytics" fs-cc-checkbox="analytics" style="opacity:0;position:absolute;z-index:-1"><span for="Fs-Analytics" class="fs-cc_checkbox-label w-form-label">Analytics<br></span>
+                    <div class="fs-cc_checkbox-description">Cookies helping understand how this website performs, how visitors interact with the site, and whether there may be technical issues.</div>
+                  </label>
+                </form>
+                <div class="fs-cc_preference-buttons">
+                  <a fs-cc="allow" href="#" class="fs-cc_button w-button">Accept all cookies</a>
+                  <a fs-cc="submit" href="#" class="fs-cc_button is-secondary w-button">Save settings</a>
+                </div>
+                <div class="hide-all w-form-done"></div>
+                <div class="hide-all w-form-fail"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div fs-cc="close" class="cookie-preference_background"></div>
+      </div>
+    </div>`;
+
+/** Insights and a few shells shipped the script without the banner markup. */
+export function ensureCookieBanner(html: string): string {
+  if (html.includes('fs-cc="banner"')) return html;
+  if (!/navbar2_component|<body\b/i.test(html)) return html;
+  const at = html.search(/<div class="main-wrapper">|<main\b/i);
+  if (at >= 0) return html.slice(0, at) + COOKIE_BANNER_HTML + html.slice(at);
+  return COOKIE_BANNER_HTML + html;
+}
+
+/** Add an essential-only action so the banner can refuse analytics. */
+export function fixCookieBanner(html: string): string {
+  if (html.includes('fs-cc="deny"')) return html;
+  return html.replace(
+    /(<div fs-cc="banner"[\s\S]*?<a fs-cc="allow"[^>]*>Accept all cookies<\/a>)/i,
+    `$1
+            <a fs-cc="deny" href="#" class="fs-cc_button is-secondary w-button">Essential only</a>`
+  );
+}
+
 /** Give each Scale 2.0 timeline card a distinct, matching icon. */
 export function fixScaleTimelineIcons(html: string): string {
   if (!html.includes("Program Timeline")) return html;
@@ -226,8 +324,14 @@ export function applyWebflowHtmlFixups(html: string): string {
     reshapeBoardDirectors(
       hideOurTeamLinks(
         fixScaleTimelineIcons(
-          disableHeroFadeOut(
-            fixLogoAlt(fixImageQuality(fixEmbedlyVideos(fixFooterJunk(html))))
+          revealHeroCopy(
+            disableHeroFadeOut(
+              fixCookieBanner(
+                ensureCookieBanner(
+                  fixLogoAlt(fixImageQuality(fixEmbedlyVideos(fixFooterJunk(html))))
+                )
+              )
+            )
           )
         )
       )

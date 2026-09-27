@@ -34,6 +34,49 @@
   opacity: 1 !important;
 }
 
+.section_hero h1,
+.section_hero p,
+.section_hero .text-size-regular,
+.section_hero .text-size-18px,
+.section_hero .text-size-medium,
+.section_hero .text-color-alternate,
+.section_hero .text-color-white {
+  opacity: 1 !important;
+  transform: none !important;
+  color: #fff !important;
+}
+
+.section_hero .subtext-slider .w-slider-mask {
+  height: auto !important;
+}
+
+.section_hero .subtext-slider .w-slide {
+  width: 100% !important;
+}
+
+.section_hero .subtext-slider .w-slide:not(:first-child) {
+  display: none;
+}
+
+.section_hero .subtext-slider .w-slide[aria-hidden="false"] {
+  display: block;
+}
+
+.egc-after-hero-wrap {
+  padding-top: 2.5rem;
+  padding-bottom: 0;
+}
+
+.egc-after-hero-wrap .text-size-regular {
+  max-width: 48rem;
+}
+
+.fs-cc_button.is-secondary {
+  background-color: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+}
+
 .alumni-excerpt {
   display: -webkit-box;
   -webkit-box-orient: vertical;

@@ -13,6 +13,7 @@
   "dependencies": {
     "@portabletext/react": "^6.2.0",
     "@sanity/image-url": "^1.2.0",
+    "@vercel/analytics": "^2.0.1",
     "next": "15.5.26",
     "next-sanity": "^11.6.13",
     "react": "^19.1.0",

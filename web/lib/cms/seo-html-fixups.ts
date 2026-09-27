@@ -1,15 +1,33 @@
+function afterHeroSection(inner: string): string {
+  return `<section class="egc-after-hero-wrap" aria-label="Overview">
+  <div class="padding-global">
+    <div class="container-large">
+      ${inner}
+    </div>
+  </div>
+</section>`;
+}
+
+function insertAfterHero(html: string, block: string): string {
+  const id = block.match(/\bid="([^"]+)"/)?.[1];
+  if (id && html.includes(`id="${id}"`)) return html;
+  const close = html.search(/<\/header>/i);
+  if (close === -1) return html;
+  return `${html.slice(0, close + 9)}\n${afterHeroSection(block)}\n${html.slice(close + 9)}`;
+}
+
 const COUNTRY_INTROS: Array<{ match: RegExp; html: string }> = [
   {
     match: /<h1\b[^>]*>[\s\S]{0,120}?BOLD Fellowship Serbia[\s\S]{0,80}?<\/h1>/i,
-    html: `<p class="text-size-regular">BOLD Fellowship Serbia is EGC's entrepreneurship program for young founders building startups in Serbia, including Belgrade and Novi Sad. Fellows get mentorship, workshops, and a path into the wider Western Balkans BOLD network.</p>`,
+    html: `<p id="egc-serbia-intro" class="text-size-regular">BOLD Fellowship Serbia is EGC's entrepreneurship program for young founders building startups in Serbia, including Belgrade and Novi Sad. Fellows get mentorship, workshops, and a path into the wider Western Balkans BOLD network.</p>`,
   },
   {
     match: /<h1\b[^>]*>[\s\S]{0,120}?BOLD Fellowship North Macedonia[\s\S]{0,80}?<\/h1>/i,
-    html: `<p class="text-size-regular">BOLD Fellowship North Macedonia is EGC's entrepreneurship program for young founders building startups in North Macedonia, including Skopje. The fellowship pairs local founder support with regional BOLD programming.</p>`,
+    html: `<p id="egc-macedonia-intro" class="text-size-regular">BOLD Fellowship North Macedonia is EGC's entrepreneurship program for young founders building startups in North Macedonia, including Skopje. The fellowship pairs local founder support with regional BOLD programming.</p>`,
   },
   {
     match: /<h1\b[^>]*>[\s\S]{0,120}?BOLD Fellowship Bosnia and Herzegovina[\s\S]{0,80}?<\/h1>/i,
-    html: `<p class="text-size-regular">BOLD Fellowship Bosnia and Herzegovina is EGC's entrepreneurship program for young founders building startups in Bosnia and Herzegovina, including Sarajevo and Banja Luka, with mentorship, workshops, and alumni support.</p>`,
+    html: `<p id="egc-bosnia-intro" class="text-size-regular">BOLD Fellowship Bosnia and Herzegovina is EGC's entrepreneurship program for young founders building startups in Bosnia and Herzegovina, including Sarajevo and Banja Luka, with mentorship, workshops, and alumni support.</p>`,
   },
 ];
 
@@ -92,18 +110,15 @@ export function fixHomepageHeadings(html: string): string {
     /(<h1\b[^>]*>)[\s\S]*?EGC[\s\S]{0,40}Discover your[\s\S]*?(<\/h1>)/i,
     "$1Entrepreneurs for Global Change$2"
   );
+  next = next.replace(
+    /\s*<p id="egc-what-is"[^>]*>[\s\S]*?<\/p>/i,
+    ""
+  );
   if (next.includes("Entrepreneurs for Global Change</h1>")) {
-    if (!next.includes('id="egc-what-is"')) {
-      next = next.replace(
-        /(<h1\b[^>]*>Entrepreneurs for Global Change<\/h1>)/,
-        `$1\n<p id="egc-what-is" class="text-size-regular">EGC is a New York City nonprofit that runs entrepreneurship programs for young founders from emerging ecosystems, including the Western Balkans. This page lists 85 alumni members.</p>`
-      );
-    } else if (!next.includes("85 alumni members")) {
-      next = next.replace(
-        /(<p id="egc-what-is"[^>]*>)([\s\S]*?)(<\/p>)/,
-        `$1$2 This page lists 85 alumni members.$3`
-      );
-    }
+    next = insertAfterHero(
+      next,
+      `<p id="egc-what-is" class="text-size-regular">EGC is a New York City nonprofit that runs entrepreneurship programs for young founders from emerging ecosystems, including the Western Balkans.</p>`
+    );
   }
   next = next.replace(
     /<h1 blocks-non-deletable="true" class="heading-style-h2">Entrepreneurs for Global Change<\/h1>/,
@@ -185,10 +200,18 @@ export function injectPartnerCopy(html: string): string {
 
 export function fixLeapxHeading(html: string): string {
   let next = html;
-  if (next.includes("Entrepreneur in Residence")) {
+  if (next.includes("Entrepreneur in Residence") || next.includes("LeapX AI Startup Bootcamp")) {
     next = next.replace(
-      /<h1 class="heading-style-h1 text-color-alternate">[\s\S]*?Entrepreneur in Residence[\s\S]*?<\/h1>/,
-      '<h1 class="heading-style-h1 text-color-alternate"><strong>LeapX AI Startup Bootcamp</strong></h1>\n<p class="text-size-regular">Entrepreneur in residence and founder residency, including €5K+ in AI tools, four weeks online, and one week in the Canary Islands.</p>'
+      /<h1 class="heading-style-h1 text-color-alternate">[\s\S]*?(?:Entrepreneur in Residence|LeapX AI Startup Bootcamp)[\s\S]*?<\/h1>/,
+      '<h1 class="heading-style-h1 text-color-alternate"><strong>LeapX AI Startup Bootcamp</strong></h1>'
+    );
+    next = next.replace(
+      /(<h1 class="heading-style-h1 text-color-alternate"><strong>LeapX AI Startup Bootcamp<\/strong><\/h1>)\s*<p class="text-size-regular">[\s\S]*?<\/p>/,
+      "$1"
+    );
+    next = insertAfterHero(
+      next,
+      `<p id="egc-leapx-intro" class="text-size-regular">Entrepreneur in residence and founder residency, including €5K+ in AI tools, four weeks online, and one week in the Canary Islands.</p>`
     );
   }
   return next
@@ -275,8 +298,8 @@ function countryStatusNote(label: string): string {
 export function injectCountryIntros(html: string): string {
   let next = html;
   for (const item of COUNTRY_INTROS) {
-    if (next.includes(item.html)) continue;
-    next = next.replace(item.match, (match) => `${match}\n${item.html}`);
+    if (!item.match.test(next)) continue;
+    next = insertAfterHero(next, item.html);
   }
   return next;
 }
@@ -288,10 +311,8 @@ export function injectCountryStatusNotes(html: string): string {
   );
   if (next.includes('id="egc-country-status"')) return next;
   for (const item of COUNTRY_STATUS) {
-    const updated = next.replace(item.match, (match) => `${match}\n${countryStatusNote(item.label)}`);
-    if (updated !== next) {
-      return updated;
-    }
+    if (!item.match.test(next)) continue;
+    return insertAfterHero(next, countryStatusNote(item.label));
   }
   return next;
 }
