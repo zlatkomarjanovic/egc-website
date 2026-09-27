@@ -203,6 +203,7 @@ function alumniCardInnerHtml(alumni: CmsAlumniSpotlight): string {
   );
   const name = escapeHtml(alumniDisplayName(alumni));
   const venture = escapeHtml(alumni.ventureName || "");
+  const country = escapeHtml(alumni.country || "");
   const description = escapeHtml(alumniDescription(alumni));
 
   return `<a href="${href}" class="video-item w-inline-block">
@@ -210,7 +211,7 @@ function alumniCardInnerHtml(alumni: CmsAlumniSpotlight): string {
     <div class="margin-bottom margin-xsmall">
       <div class="margin-bottom margin-small">
         <h3 class="heading-style-h4 text-weight-medium">${name}</h3>
-        <p class="text-color-egc">${venture}</p>
+        <p class="text-color-egc">${[venture, country].filter(Boolean).join(" · ")}</p>
       </div>
       <div class="margin-bottom margin-small">
         <p class="text-color-egc alumni-excerpt">${description}</p>
@@ -300,6 +301,10 @@ function replaceBetween(
 
   const endIdx = startIdx + endMatch.index;
   return bodyHtml.slice(0, startIdx) + replacement + bodyHtml.slice(endIdx);
+}
+
+export function alumniDirectoryItemsHtml(alumni: CmsAlumniSpotlight[]): string {
+  return alumni.map(alumniListItemHtml).join("\n");
 }
 
 export function injectAlumniSpotlightSlider(bodyHtml: string, alumni: CmsAlumniSpotlight[]): string {

@@ -546,6 +546,10 @@ export function injectBoardNote(html: string): string {
   );
 }
 
+export function relatedReadsSection(): string {
+  return RELATED_READS;
+}
+
 export function injectRelatedReads(html: string): string {
   if (html.includes('id="egc-related-reads"')) {
     return html.replace(
@@ -553,11 +557,12 @@ export function injectRelatedReads(html: string): string {
       RELATED_READS.trim()
     );
   }
+  const footer = html.indexOf("<footer");
+  if (footer < 1) return html;
+  if (!/<h1\b/i.test(html) && !/section_hero/i.test(html)) return html;
   if (!/BOLD Fellowship|Scale 2\.0|LeapX|BOLD Summit|BOLD Regional|University Partnership/.test(html)) {
     return html;
   }
-  const footer = html.indexOf("<footer");
-  if (footer < 0) return html + RELATED_READS;
   return html.slice(0, footer) + RELATED_READS + html.slice(footer);
 }
 

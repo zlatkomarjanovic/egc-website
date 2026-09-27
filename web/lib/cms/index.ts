@@ -16,6 +16,7 @@ export {
   loadTeamMembers,
 } from "./page-data";
 export {
+  alumniDirectoryItemsHtml,
   injectAlumniSpotlightSlider,
   injectCareersList,
   injectHomeFeaturedAlumni,

@@ -1,7 +1,7 @@
 import InlineScripts from "@/components/InlineScripts";
 import JsonLd from "@/components/JsonLd";
 import { applyWebflowHtmlFixups } from "@/lib/cms/html-fixups";
-import { stripSeoHeadExtras } from "@/lib/cms/seo-html-fixups";
+import { relatedReadsSection, stripSeoHeadExtras } from "@/lib/cms/seo-html-fixups";
 import { splitNavAndFooter } from "@/lib/cms/shell";
 import { breadcrumbJsonLd, collectionJsonLd } from "@/lib/seo";
 import content from "@/app/about-us/mission-and-vision/content.json";
@@ -89,7 +89,10 @@ export default function HubPage({
         <div
           dangerouslySetInnerHTML={{
             __html:
-              applyWebflowHtmlFixups(before) + main + applyWebflowHtmlFixups(after),
+              applyWebflowHtmlFixups(before) +
+              main +
+              relatedReadsSection() +
+              applyWebflowHtmlFixups(after),
           }}
         />
       </div>

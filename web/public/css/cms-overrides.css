@@ -301,3 +301,53 @@ img.relative-0,
   object-position: 50% 50%;
 }
 
+html body header.section_hero.egc-alumni-hero,
+html body header.section_hero.egc-alumni-hero > .padding-global {
+  min-height: 28rem;
+}
+
+.egc-alumni-hero .header30_content {
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.egc-alumni-hero nav a,
+.egc-alumni-hero nav span {
+  color: #fff;
+}
+
+.egc-alumni-body {
+  padding-top: 4rem;
+}
+
+.egc-alumni-dir {
+  width: 100%;
+}
+
+.egc-alumni-dir .layout179_image-wrapper {
+  aspect-ratio: 1;
+  margin-bottom: 1rem;
+}
+
+.egc-alumni-dir .img-100 {
+  object-position: 50% 18%;
+}
+
+.egc-alumni-dir .video-item {
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.egc-alumni-dir .video-item:hover .heading-style-h4 {
+  color: #4b98b9;
+}
+
+.step.normal {
+  align-items: center;
+  text-align: center;
+}
+

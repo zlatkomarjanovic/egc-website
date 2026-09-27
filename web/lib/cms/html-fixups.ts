@@ -393,7 +393,7 @@ const CELINE_ADVISOR_CARD = `<div class="w-layout-grid layout3_component">
                     <h2 class="heading-style-h3"><strong>Celine Krzan</strong></h2>
                   </div>
                   <div class="margin-bottom margin-small">
-                    <p class="text-size-regular">Celine is a Clinical Assistant Professor of Entrepreneurship at the University at Buffalo School of Management. She designed and facilitated the BOLD Fellowship for emerging founders from the Western Balkans, and coaches startups through NSF I-Corps and UB entrepreneurial programs.</p>
+                    <p class="text-size-regular">Celine is a Clinical Assistant Professor of Entrepreneurship at the University at Buffalo School of Management. She has led more than $1M in grant-funded entrepreneurship programming, including NSF I-Corps, and coached hundreds of emerging founders. Her current work focuses on AI and leadership, helping founders and teams build the skills, operating models, and readiness to work effectively alongside AI.</p>
                   </div>
                 </div>
                 <div class="layout3_image-wrapper" style="opacity:1"><img src="/images/celine-krzan.jpg?v=2" loading="lazy" alt="Celine Krzan, Clinical Assistant Professor of Entrepreneurship at University at Buffalo" class="layout3_image is-celine"></div>
@@ -427,12 +427,19 @@ function insertAfterLastLayoutCard(html: string, card: string): string {
 }
 
 /** Add Celine Krzan to the advisory zig-zag after the last existing card. */
+const CELINE_BIO =
+  "Celine is a Clinical Assistant Professor of Entrepreneurship at the University at Buffalo School of Management. She has led more than $1M in grant-funded entrepreneurship programming, including NSF I-Corps, and coached hundreds of emerging founders. Her current work focuses on AI and leadership, helping founders and teams build the skills, operating models, and readiness to work effectively alongside AI.";
+
 export function addCelineAdvisor(html: string): string {
   let next = html
     .replace(/src="\/images\/celine-krzan\.jpg(?:\?v=\d+)?"/gi, 'src="/images/celine-krzan.jpg?v=2"')
     .replace(
       /(<img\b[^>]*src="\/images\/celine-krzan\.jpg\?v=2"[^>]*class="layout3_image)(?! is-celine)/i,
       "$1 is-celine"
+    )
+    .replace(
+      /(<h2 class="heading-style-h3"><strong>Celine Krzan<\/strong><\/h2>[\s\S]*?<p class="text-size-regular">)[\s\S]*?(<\/p>)/i,
+      `$1${CELINE_BIO}$2`
     );
   if (next.includes("Celine Krzan")) return next;
   if (!next.includes("Emina Poricanin") || !next.includes("Sinisa Babcic")) return next;
