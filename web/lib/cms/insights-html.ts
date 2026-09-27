@@ -12,11 +12,15 @@ function postHref(slug: string): string {
   return `/post/${slug}`;
 }
 
+function cleanLabel(value: string): string {
+  return value.replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function featuredPostHtml(post: CmsPost): string {
   const date = formatPostDate(postDateValue(post));
   const minutes = minutesLabel(post.minutesToRead);
   const authorName = post.author?.name ?? "";
-  const category = post.category?.name ?? "";
+  const category = cleanLabel(post.category?.name ?? "");
 
   return `<div role="listitem" class="blog21_featured-item w-dyn-item">
   <a href="${postHref(post.slug)}" class="blog21_featured-item-link w-inline-block">
@@ -51,7 +55,7 @@ function listPostHtml(post: CmsPost): string {
   const date = formatPostDate(postDateValue(post));
   const minutes = minutesLabel(post.minutesToRead);
   const authorName = post.author?.name ?? "";
-  const category = post.category?.name ?? "";
+  const category = cleanLabel(post.category?.name ?? "");
 
   return `<div role="listitem" class="blog21_item w-dyn-item">
   <a href="${postHref(post.slug)}" class="blog21_item-link w-inline-block">
@@ -84,8 +88,15 @@ function listPostHtml(post: CmsPost): string {
 
 function categoryFilterHtml(category: CmsCategory): string {
   const inputId = `category-${category.slug}`;
-  return `<div role="listitem" class="categories-item w-dyn-item"><label class="finsweet-radio w-radio">
-    <div class="w-form-formradioinput w-form-formradioinput--inputType-custom finsweet-radio-btn w-radio-input"></div><input type="radio" data-name="Radio" id="${inputId}" name="radio" style="opacity:0;position:absolute;z-index:-1" value="${escapeHtml(category.slug)}"><span fs-cmsfilter-field="category" class="finsweet-radio-label w-form-label" for="${inputId}">${escapeHtml(category.name)}</span>
+  const value = escapeHtml(cleanLabel(category.name));
+  return `<div role="listitem" class="categories-item w-dyn-item"><label class="finsweet-radio" for="${inputId}">
+    <div class="finsweet-radio-btn"></div><input type="radio" data-name="Radio" id="${inputId}" name="insights-category" style="opacity:0;position:absolute;z-index:-1" value="${value}" fs-cmsfilter-field="category"><span class="finsweet-radio-label" for="${inputId}">${value}</span>
+  </label></div>`;
+}
+
+function allCategoryFilterHtml(): string {
+  return `<div role="listitem" class="categories-item w-dyn-item"><label class="finsweet-radio" for="category-all">
+    <div class="finsweet-radio-btn"></div><input type="radio" data-name="Radio" id="category-all" name="insights-category" style="opacity:0;position:absolute;z-index:-1" value="" checked fs-cmsfilter-element="clear"><span class="finsweet-radio-label" for="category-all">All</span>
   </label></div>`;
 }
 
@@ -95,7 +106,11 @@ export function buildInsightsBlogSection(
   featuredPosts: CmsPost[]
 ): string {
   const featuredItems = featuredPosts.map(featuredPostHtml).join("\n");
-  const categoryItems = categories.map(categoryFilterHtml).join("\n");
+  const sortedCategories = [...categories].sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+  );
+  const categoryItems =
+    allCategoryFilterHtml() + sortedCategories.map(categoryFilterHtml).join("\n");
   const listItems = posts.map(listPostHtml).join("\n");
 
   return `<header id="blog-header-21" class="section_blog21">
@@ -123,28 +138,23 @@ export function buildInsightsBlogSection(
                 </div>
                 <div class="blog21_content">
                   <div class="category-filter-menu">
-                    <div fs-cmsfilter-element="filters" class="form-block w-form">
-                      <form id="email-form" name="email-form" data-name="Email Form" method="get" data-wf-page-id="6a2ed7db57ccd44542c25777" data-wf-element-id="fdc0adbb-006f-2a5e-dce1-7c5384e846e9">
-                        <div class="margin-bottom margin-medium">
-                          <div class="search-wrap"><img src="/images/search.svg" loading="lazy" alt="" class="search-icon"><input class="search-box w-input" maxlength="256" name="Search" fs-cmsfilter-field="title" data-name="Search" placeholder="Search..." type="text" id="Search" required=""></div>
-                        </div>
-                        <div class="categories-wrap w-dyn-list">
-                          <div role="list" class="categories-list w-dyn-items">
-                            ${categoryItems}
-                          </div>
-                        </div>
-                      </form>
-                      <div class="w-form-done">
-                        <div>Thank you! Your submission has been received!</div>
+                    <div fs-cmsfilter-element="filters" class="form-block">
+                      <div class="margin-bottom margin-medium">
+                        <div class="search-wrap"><img src="/images/search.svg" loading="lazy" alt="" class="search-icon"><input class="search-box" maxlength="256" name="Search" fs-cmsfilter-field="title" data-name="Search" placeholder="Search..." type="text" id="Search"></div>
                       </div>
-                      <div class="w-form-fail">
-                        <div>Oops! Something went wrong while submitting the form.</div>
+                      <div class="categories-wrap w-dyn-list">
+                        <div role="list" class="categories-list w-dyn-items">
+                          ${categoryItems}
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div class="blog21_list-wrapper w-dyn-list">
                     <div fs-cmsfilter-element="list" role="list" class="blog21_list w-dyn-items">
                       ${listItems}
+                    </div>
+                    <div id="insights-empty" class="w-dyn-empty" style="display:none">
+                      <div>No articles match that search.</div>
                     </div>
                   </div>
                 </div>

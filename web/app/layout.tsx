@@ -82,7 +82,7 @@ export default function RootLayout({
           href="/css/egc-staging-27323bfac8974ca5bc4feec8fe4.webflow.css"
           precedence="default"
         />
-        <link rel="stylesheet" href="/css/cms-overrides.css?v=careers-insights-1" precedence="default" />
+        <link rel="stylesheet" href="/css/cms-overrides.css?v=insights-filter-3" precedence="default" />
         {/* Set the per-route data-wf-page on <html> synchronously, before webflow.js
             runs. Without it webflow.js can't bind IX2 interactions and the scroll-in
             reveal animations stay stuck at their hidden initial state. A raw inline
@@ -116,6 +116,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <script src="/js/webflow.js" />
+        <script src="/js/insights-filter.js" />
 
         {/* Finsweet: cookie consent (gates analytics), attributes, scroll-disable. */}
         <script src="https://cdn.jsdelivr.net/npm/@finsweet/cookie-consent@1/fs-cc.js" async />

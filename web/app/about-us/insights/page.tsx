@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import InlineScripts from "@/components/InlineScripts";
-import InsightsBlogSection from "@/components/insights/InsightsBlogSection";
 import JsonLd from "@/components/JsonLd";
+import { buildInsightsBlogSection } from "@/lib/cms/insights-html";
 import {
   sanityPostsToCategories,
   sanityPostsToFeatured,
@@ -79,13 +79,14 @@ export default async function Page() {
         ])}
       />
       <div className={content.rootClass}>
-        <div dangerouslySetInnerHTML={{ __html: shellBefore }} />
-        <InsightsBlogSection
-          posts={posts}
-          categories={categories}
-          featuredPosts={featuredPosts}
+        <div
+          dangerouslySetInnerHTML={{
+            __html:
+              shellBefore +
+              buildInsightsBlogSection(posts, categories, featuredPosts) +
+              shellAfter,
+          }}
         />
-        <div dangerouslySetInnerHTML={{ __html: shellAfter }} />
       </div>
       {content.headExtras ? (
         <div
