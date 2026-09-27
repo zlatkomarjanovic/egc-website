@@ -9,5 +9,5 @@ const builder = isSanityConfigured
 /** Build a CDN URL for a Sanity image source. Returns "" until configured. */
 export function urlForImage(source: Image | undefined | null): string {
   if (!builder || !source) return "";
-  return builder.image(source).auto("format").fit("max").url();
+  return builder.image(source).width(2000).quality(85).auto("format").fit("max").url();
 }

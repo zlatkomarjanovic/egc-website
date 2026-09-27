@@ -32,13 +32,81 @@ const COUNTRY_INTROS: Array<{ match: RegExp; html: string }> = [
 ];
 
 const RELATED_READS = `
-      <section id="egc-related-reads" class="section_layout236">
+      <section id="egc-related-reads" class="egc-reads" aria-label="Keep reading">
         <div class="padding-global">
           <div class="container-large">
-            <div class="padding-section-large" style="padding-top:0">
-              <p class="heading-style-h3" role="doc-subtitle">Keep reading</p>
-              <p class="text-size-regular">See how this program connects to EGC Insights, alumni founders, and the rest of the portfolio.</p>
-              <p class="text-size-regular"><a href="/about-us/insights">EGC Insights</a> · <a href="/alumni">Alumni Spotlight</a> · <a href="/programs">All EGC programs</a> · <a href="/post/why-networking-matters-for-founders">Why networking matters for founders</a> · <a href="/post/how-to-use-storytelling-in-entrepreneurship-beyond-marketing">Storytelling for founders</a></p>
+            <div class="egc-reads_split">
+              <div class="egc-reads_stage">
+                <a href="/programs" class="egc-reads_shot is-programs">
+                  <img src="/images/IMG_6315-1.jpg" loading="eager" alt="EGC fellows during a program session" class="egc-reads_photo">
+                  <span class="egc-reads_feature-text">
+                    <span class="egc-reads_where">Programs</span>
+                    <strong class="egc-reads_feature-title">BOLD, Scale 2.0, LeapX, and the rest of the portfolio</strong>
+                  </span>
+                </a>
+                <a href="/alumni" class="egc-reads_shot is-alumni">
+                  <img src="/images/Copy-of-IMG-20250615-WA0001.jpg" loading="lazy" alt="EGC alumni founders" class="egc-reads_photo">
+                  <span class="egc-reads_feature-text">
+                    <span class="egc-reads_where">Alumni</span>
+                    <strong class="egc-reads_feature-title">Alumni Spotlight</strong>
+                  </span>
+                </a>
+                <a href="/about-us/insights" class="egc-reads_shot is-insights">
+                  <img src="/images/pexels-life-of-pix-7613.jpg" loading="lazy" alt="EGC Insights" class="egc-reads_photo">
+                  <span class="egc-reads_feature-text">
+                    <span class="egc-reads_where">Journal</span>
+                    <strong class="egc-reads_feature-title">EGC Insights</strong>
+                  </span>
+                </a>
+                <a href="/post/why-networking-matters-for-founders" class="egc-reads_shot is-networking">
+                  <img src="/images/Copy_of_IMG_4440.jpg" loading="lazy" alt="Founders networking" class="egc-reads_photo">
+                  <span class="egc-reads_feature-text">
+                    <span class="egc-reads_where">Article</span>
+                    <strong class="egc-reads_feature-title">Why networking matters for founders</strong>
+                  </span>
+                </a>
+                <a href="/post/how-to-use-storytelling-in-entrepreneurship-beyond-marketing" class="egc-reads_shot is-story">
+                  <img src="/images/WhatsApp-Image-2024-09-03-at-11.46.56.jpeg" loading="lazy" alt="Founders telling their story" class="egc-reads_photo">
+                  <span class="egc-reads_feature-text">
+                    <span class="egc-reads_where">Article</span>
+                    <strong class="egc-reads_feature-title">Storytelling for founders</strong>
+                  </span>
+                </a>
+              </div>
+              <div class="egc-reads_index">
+                <h2 class="heading-style-h2">Keep reading</h2>
+                <p class="egc-reads_lead">If you are still here, these are the pages people usually open next.</p>
+                <div class="egc-reads_list">
+                  <a href="/alumni" class="egc-reads_line is-alumni">
+                    <span class="egc-reads_num">01</span>
+                    <span class="egc-reads_line-copy">
+                      <span class="egc-reads_where">Alumni</span>
+                      <span class="egc-reads_line-title">Alumni Spotlight</span>
+                    </span>
+                  </a>
+                  <a href="/about-us/insights" class="egc-reads_line is-insights">
+                    <span class="egc-reads_num">02</span>
+                    <span class="egc-reads_line-copy">
+                      <span class="egc-reads_where">Journal</span>
+                      <span class="egc-reads_line-title">EGC Insights</span>
+                    </span>
+                  </a>
+                  <a href="/post/why-networking-matters-for-founders" class="egc-reads_line is-networking">
+                    <span class="egc-reads_num">03</span>
+                    <span class="egc-reads_line-copy">
+                      <span class="egc-reads_where">Article</span>
+                      <span class="egc-reads_line-title">Why networking matters for founders</span>
+                    </span>
+                  </a>
+                  <a href="/post/how-to-use-storytelling-in-entrepreneurship-beyond-marketing" class="egc-reads_line is-story">
+                    <span class="egc-reads_num">04</span>
+                    <span class="egc-reads_line-copy">
+                      <span class="egc-reads_where">Article</span>
+                      <span class="egc-reads_line-title">Storytelling for founders</span>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -469,7 +537,12 @@ export function injectBoardNote(html: string): string {
 }
 
 export function injectRelatedReads(html: string): string {
-  if (html.includes("id=\"egc-related-reads\"")) return html;
+  if (html.includes('id="egc-related-reads"')) {
+    return html.replace(
+      /<section id="egc-related-reads"[\s\S]*?<\/section>/i,
+      RELATED_READS.trim()
+    );
+  }
   if (!/BOLD Fellowship|Scale 2\.0|LeapX|BOLD Summit|BOLD Regional|University Partnership/.test(html)) {
     return html;
   }

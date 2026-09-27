@@ -32,7 +32,8 @@ export default function CmsImage({
       className={className}
       width={width}
       height={height}
-      sizes="(max-width: 767px) 100vw, 900px"
+      sizes="(max-width: 767px) 100vw, 1600px"
+      quality={90}
       priority={priority}
       style={{ width: "100%", height: "auto" }}
     />

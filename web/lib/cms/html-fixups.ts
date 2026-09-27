@@ -49,22 +49,56 @@ export function fixEmbedlyVideos(html: string): string {
   });
 }
 
-/** Prefer the largest image from srcset and drop responsive downscaling hints. */
+const SHARP_IMAGE_SWAPS: Record<string, string> = {
+  "/images/image-16_1image-16.webp": "/images/IMG_6315-1.jpg",
+  "/images/image-38-1_1image-38-1.webp": "/images/Copy_of_IMG_4440.jpg",
+  "/images/image-39_1image-39.webp": "/images/Copy-of-IMG-20250615-WA0001.jpg",
+};
+
+function upgradeCompressedSrc(src: string): string {
+  return src.replace(
+    /-p-(?:500|800|1080|1600|2000|2600|3200|130x130q80)(?=\.[a-z0-9]+(?:\.webp)?$)/i,
+    ""
+  );
+}
+
+function sharpSrc(src: string): string {
+  const normalized = src.startsWith("images/") ? `/${src}` : src;
+  const upgraded = upgradeCompressedSrc(normalized);
+  return SHARP_IMAGE_SWAPS[upgraded] || SHARP_IMAGE_SWAPS[normalized] || SHARP_IMAGE_SWAPS[src] || upgraded;
+}
+
+function largestFromSrcset(srcset: string): string | null {
+  let bestUrl = "";
+  let bestWidth = -1;
+  for (const part of srcset.split(",")) {
+    const bits = part.trim().split(/\s+/);
+    const url = bits[0];
+    if (!url) continue;
+    const width = Number((bits[1] || "").replace(/w$/i, "")) || 0;
+    if (width >= bestWidth) {
+      bestWidth = width;
+      bestUrl = url;
+    }
+  }
+  return bestUrl || null;
+}
+
+/** Prefer the largest real photo and drop Webflow's tiny compressed stand-ins. */
 export function fixImageQuality(html: string): string {
   return html
     .replace(/<img([^>]*)\ssrcset="([^"]*)"([^>]*)>/gi, (match, before, srcset, after) => {
-      const candidates = srcset
-        .split(",")
-        .map((part: string) => part.trim().split(/\s+/)[0])
-        .filter(Boolean);
-      const largest = candidates[candidates.length - 1];
+      const largest = largestFromSrcset(srcset);
       if (!largest) return match;
 
       const withoutSrcset = `${before}${after}`.replace(/\ssrc="[^"]*"/, "");
-      return `<img${withoutSrcset} src="${largest}">`;
+      return `<img${withoutSrcset} src="${sharpSrc(largest)}">`;
     })
     .replace(/\ssrcset="[^"]*"/gi, "")
-    .replace(/\ssizes="[^"]*"/gi, "");
+    .replace(/\ssizes="[^"]*"/gi, "")
+    .replace(/<img([^>]*?)\ssrc="([^"]+)"([^>]*)>/gi, (_match, before, src, after) => {
+      return `<img${before} src="${sharpSrc(src)}"${after}>`;
+    });
 }
 
 /** Add a real logo alt without changing image size or source. */
@@ -91,56 +125,38 @@ export function disableHeroFadeOut(html: string): string {
 const HERO_COPY_STYLE =
   "opacity:1;transform:none;color:#fff;-webkit-text-fill-color:#fff";
 
-const HERO_COPY_CSS = `<style id="egc-hero-copy">
-html body header.section_hero h1,
-html body header.section_hero h1 *,
-html body header.section_hero p,
-html body header.section_hero p *,
-html body header.section_hero .text-size-regular,
-html body header.section_hero .text-size-medium,
-html body header.section_hero .text-size-18px,
-html body header.section_hero .text-color-alternate,
-html body header.section_hero .text-wrap,
-html body header.section_hero .subtext-slider {
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-  opacity: 1 !important;
-  transform: none !important;
-  word-spacing: normal;
-  white-space: normal;
+function isHeroMedia(attrs: string): boolean {
+  return /overlay-div|home-bg-video|w-background-video|header30_background|content21_lightbox/.test(
+    attrs
+  );
 }
-</style>`;
 
 /**
- * Hero H1s and subtitles ship with inline opacity:0 and wait for IX2.
- * Size classes like .text-size-18px also force color:#000, which disappears
- * on the dark overlay. Paint the copy white in the markup, not only in CSS.
+ * Hero headings and subtitles ship with inline opacity:0 and wait for IX2.
+ * Only rewrite those text nodes. Leave the video, poster, and 0.75 overlay alone.
  */
 export function revealHeroCopy(html: string): string {
   return html.replace(
     /<(header|section)(\b[^>]*\bsection_hero\b[^>]*)>([\s\S]*?)<\/\1>/gi,
     (_full, tag: string, attrs: string, inner: string) => {
-      let next = inner.replace(/\sstyle="([^"]*)"/gi, (_style, value: string) => {
-        if (!/opacity\s*:|translate3d|color\s*:/i.test(value)) return ` style="${value}"`;
-        return ` style="${HERO_COPY_STYLE}"`;
-      });
-      next = next.replace(/<(h1|h2|p)(\b[^>]*)>/gi, (_match, name: string, raw: string) => {
-        let nextAttrs = String(raw);
-        if (!/\bstyle=/i.test(nextAttrs)) {
-          nextAttrs += ` style="${HERO_COPY_STYLE}"`;
-        }
-        if (!/text-color-white|text-color-alternate/.test(nextAttrs)) {
-          if (/\bclass="/i.test(nextAttrs)) {
-            nextAttrs = nextAttrs.replace(/\bclass="/i, 'class="text-color-white ');
-          } else {
-            nextAttrs += ' class="text-color-white"';
+      const next = inner.replace(
+        /<(h1|h2|p)(\b[^>]*)>/gi,
+        (_match, name: string, raw: string) => {
+          let nextAttrs = String(raw).replace(/\sstyle="[^"]*"/i, "");
+          if (!/text-color-white|text-color-alternate/.test(nextAttrs)) {
+            if (/\bclass="/i.test(nextAttrs)) {
+              nextAttrs = nextAttrs.replace(/\bclass="/i, 'class="text-color-white ');
+            } else {
+              nextAttrs += ' class="text-color-white"';
+            }
           }
+          return `<${name}${nextAttrs} style="${HERO_COPY_STYLE}">`;
         }
-        return `<${name}${nextAttrs}>`;
+      ).replace(/<div(\b[^>]*\bstyle="[^"]*opacity:\s*0(?:\s|;|")[^"]*"[^>]*)>/gi, (full, raw: string) => {
+        if (isHeroMedia(raw) || /opacity:\s*0\.\d+/.test(raw)) return full;
+        const cleaned = String(raw).replace(/\sstyle="[^"]*"/i, "");
+        return `<div${cleaned} style="opacity:1;transform:none">`;
       });
-      if (!next.includes('id="egc-hero-copy"')) {
-        next = HERO_COPY_CSS + next;
-      }
       return `<${tag}${attrs}>${next}</${tag}>`;
     }
   );
