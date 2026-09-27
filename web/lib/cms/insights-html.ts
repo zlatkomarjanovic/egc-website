@@ -142,7 +142,7 @@ export function buildInsightsBlogSection(
                   <div class="category-filter-menu">
                     <div fs-cmsfilter-element="filters" class="form-block">
                       <div class="margin-bottom margin-medium">
-                        <div class="search-wrap"><img src="/images/search.svg" loading="lazy" alt="" class="search-icon"><input class="search-box" maxlength="256" name="Search" fs-cmsfilter-field="title" data-name="Search" placeholder="Search..." type="text" id="Search"></div>
+                        <div class="search-wrap"><img src="/images/search.svg" loading="lazy" alt="Search Insights" class="search-icon"><input class="search-box" maxlength="256" name="Search" fs-cmsfilter-field="title" data-name="Search" placeholder="Search..." type="text" id="Search"></div>
                       </div>
                       <div class="categories-wrap w-dyn-list">
                         <div role="list" class="categories-list w-dyn-items">

@@ -195,7 +195,12 @@ function alumniLink(alumni: CmsAlumniSpotlight): string {
 function alumniCardInnerHtml(alumni: CmsAlumniSpotlight): string {
   const href = escapeHtml(alumniLink(alumni));
   const image = escapeHtml(alumni.profilePicture || PLACEHOLDER_ALUMNI);
-  const alt = escapeHtml(alumni.profilePictureAlt || alumniDisplayName(alumni));
+  const alt = escapeHtml(
+    alumni.profilePictureAlt ||
+      [alumniDisplayName(alumni), alumni.ventureName ? `founder of ${alumni.ventureName}` : "", "EGC alum"]
+        .filter(Boolean)
+        .join(", ")
+  );
   const name = escapeHtml(alumniDisplayName(alumni));
   const venture = escapeHtml(alumni.ventureName || "");
   const description = escapeHtml(alumniDescription(alumni));
@@ -235,7 +240,12 @@ function alumniHomeSlideHtml(alumni: CmsAlumniSpotlight): string {
   const country = escapeHtml(alumni.country || "");
   const text = escapeHtml(alumni.whyStarted || alumni.oneLiner || "");
   const image = escapeHtml(alumni.profilePicture || PLACEHOLDER_ALUMNI);
-  const alt = escapeHtml(alumni.profilePictureAlt || `${name} - ${venture}`);
+  const alt = escapeHtml(
+    alumni.profilePictureAlt ||
+      [alumniDisplayName(alumni), alumni.ventureName ? `founder of ${alumni.ventureName}` : "", "EGC alum"]
+        .filter(Boolean)
+        .join(", ")
+  );
   const title = escapeHtml(`Read about ${alumniDisplayName(alumni).split(" ")[0]}'s success`);
 
   return `<div class="testimonial15_slide w-slide">

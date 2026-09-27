@@ -279,20 +279,126 @@ export function injectCountryStatusNotes(html: string): string {
   return next;
 }
 
+function imageAttr(attrs: string, name: string, value: string): string {
+  const quoted = new RegExp(`\\s${name}="[^"]*"`, "i");
+  const single = new RegExp(`\\s${name}='[^']*'`, "i");
+  const bare = new RegExp(`\\s${name}(?=[\\s>/])`, "i");
+  if (quoted.test(attrs)) return attrs.replace(quoted, ` ${name}="${value}"`);
+  if (single.test(attrs)) return attrs.replace(single, ` ${name}="${value}"`);
+  if (bare.test(attrs)) return attrs.replace(bare, ` ${name}="${value}"`);
+  return `${attrs} ${name}="${value}"`;
+}
+
+function isSearchIcon(src: string, className: string): boolean {
+  return /search\.svg/i.test(src) || /\bsearch-icon\b/i.test(className);
+}
+
+function isDecorativeImage(src: string, className: string): boolean {
+  if (isSearchIcon(src, className)) return false;
+  if (/navbar2_logo|footer-egc-logo|layout3_image|fellow-img|blog21_/i.test(className)) {
+    return false;
+  }
+  return (
+    /arrow-left\.svg|Vector\.svg|Subtract\.svg/i.test(src) ||
+    /icon-1x1|testimonial15_arrow-icon/i.test(className)
+  );
+}
+
+function visibleText(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function rewriteLayout3CardAlts(card: string, pageContext: "board" | "advisory" | "people"): string {
+  const name = visibleText(
+    card.match(/<h2\b[^>]*class="[^"]*heading-style-h3[^"]*"[^>]*>([\s\S]*?)<\/h2>/i)?.[1] || ""
+  );
+  if (!name) return card;
+  const role = visibleText(
+    card.match(/<div class="tagline-light">([\s\S]*?)<\/div>/i)?.[1] || ""
+  );
+  const context =
+    pageContext === "advisory"
+      ? "Advisory Board"
+      : pageContext === "board"
+        ? "Board of Directors"
+        : "EGC";
+  const parts = [name, role || undefined, context === "EGC" ? undefined : context, "EGC"].filter(
+    Boolean
+  );
+  const alt = escapeAlt(parts.join(", "));
+  return card.replace(/<img\b([^>]*\blayout3_image\b[^>]*)>/gi, (_full, attrs: string) => {
+    return `<img${imageAttr(attrs, "alt", alt)}>`;
+  });
+}
+
+function walkLayout3Cards(html: string, rewrite: (card: string) => string): string {
+  const startToken = '<div class="w-layout-grid layout3_component">';
+  let output = "";
+  let cursor = 0;
+  let start = html.indexOf(startToken);
+  while (start >= 0) {
+    output += html.slice(cursor, start);
+    let index = start;
+    let depth = 0;
+    let closed = false;
+    while (index < html.length) {
+      const nextOpen = html.indexOf("<div", index);
+      const nextClose = html.indexOf("</div>", index);
+      if (nextClose < 0) break;
+      if (nextOpen >= 0 && nextOpen < nextClose) {
+        depth += 1;
+        index = nextOpen + 4;
+        continue;
+      }
+      depth -= 1;
+      index = nextClose + 6;
+      if (depth === 0) {
+        output += rewrite(html.slice(start, index));
+        cursor = index;
+        closed = true;
+        break;
+      }
+    }
+    if (!closed) break;
+    start = html.indexOf(startToken, cursor);
+  }
+  return output + html.slice(cursor);
+}
+
+export function fixPeoplePortraitAlts(html: string): string {
+  const pageContext = /<h1\b[^>]*>[\s\S]{0,120}?Advisory Board/i.test(html)
+    ? "advisory"
+    : /Board of Directors/i.test(html)
+      ? "board"
+      : "people";
+  if (!html.includes("layout3_component")) return html;
+  return walkLayout3Cards(html, (card) => rewriteLayout3CardAlts(card, pageContext));
+}
+
 export function fillEmptyImageAlts(html: string): string {
-  return html.replace(/<img\b([^>]*)>/gi, (full, attrs: string) => {
+  return html.replace(/<img\b([^>]*)>/gi, (_full, attrs: string) => {
+    const src = attrs.match(/\bsrc="([^"]+)"/i)?.[1] || "";
+    const className = attrs.match(/\bclass="([^"]*)"/i)?.[1] || "";
+    if (isSearchIcon(src, className)) {
+      return `<img${imageAttr(attrs, "alt", "Search Insights")}>`;
+    }
+    if (isDecorativeImage(src, className)) {
+      let next = imageAttr(attrs, "alt", "");
+      next = imageAttr(next, "aria-hidden", "true");
+      return `<img${next}>`;
+    }
     const existing = attrs.match(/\balt="([^"]*)"/i) || attrs.match(/\balt='([^']*)'/i);
-    if (existing && existing[1].trim()) return full;
-    const srcMatch = attrs.match(/\bsrc="([^"]+)"/i);
-    const decorative = /search\.svg|Vector\.svg|arrow|icon-1x1/i.test(srcMatch?.[1] || "");
-    const alt = decorative ? "" : escapeAlt(altFromSrc(srcMatch?.[1] || ""));
-    if (/\balt=/.test(attrs)) {
-      return `<img${attrs.replace(/\balt=(?:"[^"]*"|'[^']*')/, `alt="${alt}"`)}>`;
-    }
-    if (/\balt(?=[\s>/])/.test(attrs)) {
-      return `<img${attrs.replace(/\balt(?=[\s>/])/, `alt="${alt}"`)}>`;
-    }
-    return `<img alt="${alt}"${attrs}>`;
+    if (existing && existing[1].trim()) return `<img${attrs}>`;
+    return `<img${imageAttr(attrs, "alt", escapeAlt(altFromSrc(src)))}>`;
   });
 }
 
@@ -350,7 +456,8 @@ export function prefixFaqAnswers(html: string): string {
 
 export function applySeoHtmlFixups(html: string): string {
   return fillEmptyImageAlts(
-    demoteKeepReadingHeadings(
+    fixPeoplePortraitAlts(
+      demoteKeepReadingHeadings(
       injectRelatedReads(
         prefixFaqAnswers(
           injectBoardNote(
@@ -389,6 +496,7 @@ export function applySeoHtmlFixups(html: string): string {
             )
           )
         )
+      )
       )
     )
   );

@@ -124,7 +124,7 @@ const BOARD_CARD_START = '<div class="w-layout-grid layout3_component">';
 const FILIP_BOARD_CARD = `<div class="w-layout-grid layout3_component">
                 <div class="layout3_content" style="opacity:1">
                   <div class="margin-bottom margin-xsmall">
-                    <a href="https://www.linkedin.com/in/filipsasic/" target="_blank" class="link-flex w-inline-block"><img src="/images/Vector.svg" loading="lazy" alt class="icon-1x1-xsmall">
+                    <a href="https://www.linkedin.com/in/filipsasic/" target="_blank" class="link-flex w-inline-block"><img src="/images/Vector.svg" loading="lazy" alt="" aria-hidden="true" class="icon-1x1-xsmall">
                       <div class="hide-desktop">LinkedIn profile</div>
                     </a>
                   </div>

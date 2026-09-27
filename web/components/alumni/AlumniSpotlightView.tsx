@@ -35,7 +35,11 @@ export default function AlumniSpotlightView({
 }: AlumniSpotlightViewProps) {
   const name = displayName(alumni);
   const image = alumni.profilePicture || PLACEHOLDER;
-  const alt = alumni.profilePictureAlt || name;
+  const alt =
+    alumni.profilePictureAlt ||
+    [name, alumni.ventureName ? `founder of ${alumni.ventureName}` : "", "EGC alum"]
+      .filter(Boolean)
+      .join(", ");
   const questions = [
     { q: "Why did you start this venture?", a: alumni.whyStarted },
     { q: "Have you successfully fundraised?", a: alumni.fundraised },
@@ -147,7 +151,12 @@ export default function AlumniSpotlightView({
                             <div className="layout179_image-wrapper">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
-                                alt={item.profilePictureAlt || itemName}
+                                alt={
+                                  item.profilePictureAlt ||
+                                  [itemName, item.ventureName ? `founder of ${item.ventureName}` : "", "EGC alum"]
+                                    .filter(Boolean)
+                                    .join(", ")
+                                }
                                 loading="lazy"
                                 src={item.profilePicture || PLACEHOLDER}
                                 className="img-100"
@@ -178,6 +187,7 @@ export default function AlumniSpotlightView({
                       src="/images/arrow-left.svg"
                       loading="lazy"
                       alt=""
+                      aria-hidden="true"
                       className="testimonial15_arrow-icon"
                     />
                   </div>
@@ -187,6 +197,7 @@ export default function AlumniSpotlightView({
                       src="/images/arrow-left.svg"
                       loading="lazy"
                       alt=""
+                      aria-hidden="true"
                       className="testimonial15_arrow-icon right"
                     />
                   </div>
