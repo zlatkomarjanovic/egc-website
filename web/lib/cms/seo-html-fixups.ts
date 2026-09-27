@@ -92,14 +92,18 @@ export function fixHomepageHeadings(html: string): string {
     /(<h1\b[^>]*>)[\s\S]*?EGC[\s\S]{0,40}Discover your[\s\S]*?(<\/h1>)/i,
     "$1Entrepreneurs for Global Change$2"
   );
-  if (
-    next.includes("Entrepreneurs for Global Change</h1>") &&
-    !next.includes('id="egc-what-is"')
-  ) {
-    next = next.replace(
-      /(<h1\b[^>]*>Entrepreneurs for Global Change<\/h1>)/,
-      `$1\n<p id="egc-what-is" class="text-size-regular">EGC is a New York City nonprofit that runs entrepreneurship programs for young founders from emerging ecosystems, including the Western Balkans.</p>`
-    );
+  if (next.includes("Entrepreneurs for Global Change</h1>")) {
+    if (!next.includes('id="egc-what-is"')) {
+      next = next.replace(
+        /(<h1\b[^>]*>Entrepreneurs for Global Change<\/h1>)/,
+        `$1\n<p id="egc-what-is" class="text-size-regular">EGC is a New York City nonprofit that runs entrepreneurship programs for young founders from emerging ecosystems, including the Western Balkans. This page lists 85 alumni members.</p>`
+      );
+    } else if (!next.includes("85 alumni members")) {
+      next = next.replace(
+        /(<p id="egc-what-is"[^>]*>)([\s\S]*?)(<\/p>)/,
+        `$1$2 This page lists 85 alumni members.$3`
+      );
+    }
   }
   next = next.replace(
     /<h1 blocks-non-deletable="true" class="heading-style-h2">Entrepreneurs for Global Change<\/h1>/,

@@ -6,6 +6,8 @@ import {
   type SanityPartner,
 } from "@/lib/cms/adapt-sanity";
 import { contentPageMetadata } from "@/lib/page-meta";
+import { partnerListJsonLd } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import { sanityFetch } from "@/sanity/lib/client";
 import { isSanityConfigured } from "@/sanity/env";
 import { allPartnersQuery } from "@/sanity/lib/queries";
@@ -43,12 +45,17 @@ export default async function Page() {
         : getPartnersByType("Global Partner")
   );
 
+  const namedPartners = sortedPartners.filter((partner) => partner.name?.trim());
+
   return (
-    <WebflowPage
-      headExtras={content.headExtras}
-      bodyHtml={bodyHtml}
-      rootClass={content.rootClass}
-      scripts={content.scripts}
-    />
+    <>
+      {namedPartners.length ? <JsonLd data={partnerListJsonLd(namedPartners)} /> : null}
+      <WebflowPage
+        headExtras={content.headExtras}
+        bodyHtml={bodyHtml}
+        rootClass={content.rootClass}
+        scripts={content.scripts}
+      />
+    </>
   );
 }

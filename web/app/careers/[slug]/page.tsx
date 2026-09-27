@@ -96,14 +96,16 @@ export default async function CareerDetailPage({
 
   return (
     <>
-      <JsonLd
-        data={jobJsonLd({
-          ...loaded.job,
-          descriptionText: [loaded.job.excerpt, portableToPlain(loaded.body)]
-            .filter(Boolean)
-            .join("\n\n"),
-        })}
-      />
+      {isJobOpen(loaded.job) ? (
+        <JsonLd
+          data={jobJsonLd({
+            ...loaded.job,
+            descriptionText: [loaded.job.excerpt, portableToPlain(loaded.body)]
+              .filter(Boolean)
+              .join("\n\n"),
+          })}
+        />
+      ) : null}
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },

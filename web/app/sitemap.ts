@@ -111,7 +111,16 @@ type DatedSlug = {
   updatedAt?: string;
   postedAt?: string;
   applicationDeadline?: string;
+  startDate?: string;
+  endDate?: string;
 };
+
+function isoLastmod(value?: string): string | undefined {
+  if (!value || !/^\d{4}-\d{2}-\d{2}/.test(value)) return undefined;
+  const ms = Date.parse(value);
+  if (Number.isNaN(ms) || new Date(ms).getUTCFullYear() < 2013) return undefined;
+  return value;
+}
 
 function contentLastmod(published?: string, updated?: string, created?: string): SitemapDate | undefined {
   if (updated) {
@@ -168,6 +177,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
               slug: job.slug,
               postedAt: job.postedAt,
               applicationDeadline: job.applicationDeadline,
+              startDate: job.startDate,
+              endDate: job.endDate,
               updatedAt: job.updatedAt,
             }))
           ),
@@ -201,6 +212,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             slug,
             postedAt: job?.postedAt,
             applicationDeadline: job?.applicationDeadline,
+            startDate: job?.startDate,
+            endDate: job?.endDate,
             updatedAt: job?.updatedAt,
           };
         });
@@ -209,8 +222,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((job) => job.slug && isJobOpen(job))
       .map((job) => ({
         url: absoluteUrl(`/careers/${job.slug}`),
-        ...(job.postedAt || job.updatedAt
-          ? { lastModified: job.postedAt || job.updatedAt }
+        ...(isoLastmod(job.postedAt) || isoLastmod(job.updatedAt)
+          ? { lastModified: isoLastmod(job.postedAt) || isoLastmod(job.updatedAt) }
           : {}),
         changeFrequency: "weekly" as const,
         priority: 0.6,

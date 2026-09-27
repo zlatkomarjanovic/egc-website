@@ -97,6 +97,8 @@ export const jobSlugsQuery = groq`*[_type == "job" && defined(slug.current)]{
   "slug": slug.current,
   postedAt,
   applicationDeadline,
+  startDate,
+  endDate,
   "updatedAt": _updatedAt
 }`;
 

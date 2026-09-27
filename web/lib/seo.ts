@@ -418,10 +418,17 @@ export function jobJsonLd(job: CmsJob) {
   const balkansRemote = /balkan|western balkans/i.test(location) && /remote|hybrid|online/i.test(location);
   const remote = /remote|hybrid|online/i.test(location);
   const country = countryCodeFromLocation(location);
+  const yearHint =
+    (job.startDate && /^\d{4}/.test(job.startDate) ? Number(job.startDate.slice(0, 4)) : undefined) ||
+    (job.endDate && /^\d{4}/.test(job.endDate) ? Number(job.endDate.slice(0, 4)) : undefined);
   const postedRaw = job.postedAt && /^\d{4}-\d{2}-\d{2}/.test(job.postedAt) ? job.postedAt : undefined;
+  const validThrough = jobDeadlineIso(job.applicationDeadline, yearHint);
   const datePosted =
-    postedRaw && Date.parse(postedRaw) <= Date.now() ? postedRaw : undefined;
-  const validThrough = jobDeadlineIso(job.applicationDeadline);
+    postedRaw &&
+    Date.parse(postedRaw) <= Date.now() &&
+    (!validThrough || Date.parse(postedRaw) <= Date.parse(validThrough))
+      ? postedRaw
+      : undefined;
 
   return {
     "@context": "https://schema.org",
@@ -601,6 +608,27 @@ export function collectionJsonLd(
         url: absoluteUrl(item.path),
       })),
     },
+  };
+}
+
+export function partnerListJsonLd(
+  partners: Array<{ name: string; website?: string }>
+) {
+  const named = partners.filter((partner) => partner.name?.trim());
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "EGC partners",
+    numberOfItems: named.length,
+    itemListElement: named.map((partner, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Organization",
+        name: partner.name,
+        ...(partner.website ? { url: partner.website } : {}),
+      },
+    })),
   };
 }
 
