@@ -64,6 +64,8 @@ export const openJobsQuery = groq`
     type,
     postedAt,
     applicationDeadline,
+    startDate,
+    endDate,
     applicationLink,
     coverImage,
     "updatedAt": _updatedAt

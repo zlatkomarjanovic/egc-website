@@ -1,7 +1,7 @@
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
 import { injectCareersList } from "@/lib/cms/collection-html";
-import { getAllJobs } from "@/lib/cms/jobs";
+import { getAllJobs, getOpenJobs } from "@/lib/cms/jobs";
 import {
   sanityJobToCmsJob,
   type SanityJob,
@@ -26,8 +26,9 @@ export default async function Page() {
   const sanityJobs = isSanityConfigured
     ? await sanityFetch<SanityJob[]>(openJobsQuery, {}, [])
     : null;
-  const jobs =
-    sanityJobs !== null ? sanityJobs.map(sanityJobToCmsJob) : getAllJobs();
+  const jobs = getOpenJobs(
+    sanityJobs !== null ? sanityJobs.map(sanityJobToCmsJob) : getAllJobs()
+  );
   const bodyHtml = injectCareersList(content.bodyHtml, jobs);
 
   return (

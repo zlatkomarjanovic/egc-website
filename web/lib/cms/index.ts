@@ -1,5 +1,5 @@
 export { getAllPosts, getCategoriesWithPosts, getFeaturedPosts, getPostBySlug, getPostSlugs, getRelatedPosts } from "./posts";
-export { getAllJobs, getJobBySlug, getJobSlugs, isJobOpen, jobDeadlineIso } from "./jobs";
+export { getAllJobs, getJobBySlug, getJobSlugs, getOpenJobs, isJobOpen, jobDeadlineIso } from "./jobs";
 export { getAllPartners, getPartnersByType } from "./partners";
 export { getAllMentors } from "./mentors";
 export {

@@ -38,14 +38,23 @@ export function isJobOpen(
   job: { applicationDeadline?: string; startDate?: string; endDate?: string },
   now = Date.now()
 ): boolean {
+  // Array.filter(isJobOpen) passes the index as the second argument.
+  const timestamp = typeof now === "number" && now > 1e11 ? now : Date.now();
   const yearHint = yearFromIso(job.startDate) || yearFromIso(job.endDate);
   const deadline = jobDeadlineIso(job.applicationDeadline, yearHint);
   const start = jobDeadlineIso(job.startDate);
   const end = jobDeadlineIso(job.endDate);
-  if (end && Date.parse(end) < now) return false;
-  if (deadline && Date.parse(deadline) < now) return false;
-  if (start && Date.parse(start) < now) return false;
+  if (end && Date.parse(end) < timestamp) return false;
+  if (deadline && Date.parse(deadline) < timestamp) return false;
+  if (start && Date.parse(start) < timestamp) return false;
   return true;
+}
+
+export function getOpenJobs<T extends Parameters<typeof isJobOpen>[0]>(
+  jobs: T[],
+  now = Date.now()
+): T[] {
+  return jobs.filter((job) => isJobOpen(job, now));
 }
 
 export function employmentTypeForSchema(raw?: string): string {

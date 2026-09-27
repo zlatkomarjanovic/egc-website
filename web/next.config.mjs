@@ -55,6 +55,21 @@ const nextConfig = {
 
     return [
       {
+        source: "/careers",
+        destination: "/about-us/careers",
+        permanent: true,
+      },
+      {
+        source: "/career",
+        destination: "/about-us/careers",
+        permanent: true,
+      },
+      {
+        source: "/about",
+        destination: "/about-us",
+        permanent: true,
+      },
+      {
         source: `/about-us/insights/:slug(${insightsCategorySlug})`,
         destination: "/about-us/insights",
         permanent: true,
