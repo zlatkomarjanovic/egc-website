@@ -88,20 +88,60 @@ export function disableHeroFadeOut(html: string): string {
   );
 }
 
+const HERO_COPY_STYLE =
+  "opacity:1;transform:none;color:#fff;-webkit-text-fill-color:#fff";
+
+const HERO_COPY_CSS = `<style id="egc-hero-copy">
+html body header.section_hero h1,
+html body header.section_hero h1 *,
+html body header.section_hero p,
+html body header.section_hero p *,
+html body header.section_hero .text-size-regular,
+html body header.section_hero .text-size-medium,
+html body header.section_hero .text-size-18px,
+html body header.section_hero .text-color-alternate,
+html body header.section_hero .text-wrap,
+html body header.section_hero .subtext-slider {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  opacity: 1 !important;
+  transform: none !important;
+  word-spacing: normal;
+  white-space: normal;
+}
+</style>`;
+
 /**
  * Hero H1s and subtitles ship with inline opacity:0 and wait for IX2.
- * If that interaction never fires, the bottom paragraph stays invisible
- * on the dark overlay. Force them on.
+ * Size classes like .text-size-18px also force color:#000, which disappears
+ * on the dark overlay. Paint the copy white in the markup, not only in CSS.
  */
 export function revealHeroCopy(html: string): string {
   return html.replace(
     /<(header|section)(\b[^>]*\bsection_hero\b[^>]*)>([\s\S]*?)<\/\1>/gi,
     (_full, tag: string, attrs: string, inner: string) => {
-      const revealed = inner.replace(/\sstyle="([^"]*)"/gi, (_style, value: string) => {
-        if (!/opacity\s*:/i.test(value)) return ` style="${value}"`;
-        return ' style="opacity:1;transform:none"';
+      let next = inner.replace(/\sstyle="([^"]*)"/gi, (_style, value: string) => {
+        if (!/opacity\s*:|translate3d|color\s*:/i.test(value)) return ` style="${value}"`;
+        return ` style="${HERO_COPY_STYLE}"`;
       });
-      return `<${tag}${attrs}>${revealed}</${tag}>`;
+      next = next.replace(/<(h1|h2|p)(\b[^>]*)>/gi, (_match, name: string, raw: string) => {
+        let nextAttrs = String(raw);
+        if (!/\bstyle=/i.test(nextAttrs)) {
+          nextAttrs += ` style="${HERO_COPY_STYLE}"`;
+        }
+        if (!/text-color-white|text-color-alternate/.test(nextAttrs)) {
+          if (/\bclass="/i.test(nextAttrs)) {
+            nextAttrs = nextAttrs.replace(/\bclass="/i, 'class="text-color-white ');
+          } else {
+            nextAttrs += ' class="text-color-white"';
+          }
+        }
+        return `<${name}${nextAttrs}>`;
+      });
+      if (!next.includes('id="egc-hero-copy"')) {
+        next = HERO_COPY_CSS + next;
+      }
+      return `<${tag}${attrs}>${next}</${tag}>`;
     }
   );
 }
@@ -302,6 +342,60 @@ export function fixFooterJunk(html: string): string {
     );
 }
 
+const CELINE_ADVISOR_CARD = `<div class="w-layout-grid layout3_component">
+                <div class="layout3_content" style="opacity:1">
+                  <div class="margin-bottom margin-xsmall">
+                    <a href="https://www.linkedin.com/in/celinekrzan" target="_blank" class="link-flex w-inline-block"><img src="/images/Vector.svg" loading="lazy" alt="" aria-hidden="true" class="icon-1x1-xsmall">
+                      <div class="hide-desktop">LinkedIn profile</div>
+                    </a>
+                  </div>
+                  <div class="margin-bottom margin-xxsmall">
+                    <div class="tagline-light">Clinical Assistant Professor of Entrepreneurship, UB</div>
+                  </div>
+                  <div class="margin-bottom margin-xxsmall">
+                    <h2 class="heading-style-h3"><strong>Celine Krzan</strong></h2>
+                  </div>
+                  <div class="margin-bottom margin-small">
+                    <p class="text-size-regular">Celine is a Clinical Assistant Professor of Entrepreneurship at the University at Buffalo School of Management. She designed and facilitated the BOLD Fellowship for emerging founders from the Western Balkans, and coaches startups through NSF I-Corps and UB entrepreneurial programs.</p>
+                  </div>
+                </div>
+                <div class="layout3_image-wrapper" style="opacity:1"><img src="/images/celine-krzan.jpg" loading="lazy" alt="Celine Krzan, Clinical Assistant Professor of Entrepreneurship at University at Buffalo" class="layout3_image"></div>
+              </div>`;
+
+function insertAfterLastLayoutCard(html: string, card: string): string {
+  const start = html.lastIndexOf(BOARD_CARD_START);
+  if (start < 0) return html;
+
+  let index = start;
+  let depth = 0;
+  while (index < html.length) {
+    const nextOpen = html.indexOf("<div", index);
+    const nextClose = html.indexOf("</div>", index);
+    if (nextClose < 0) break;
+
+    if (nextOpen >= 0 && nextOpen < nextClose) {
+      depth += 1;
+      index = nextOpen + 4;
+      continue;
+    }
+
+    depth -= 1;
+    index = nextClose + 6;
+    if (depth === 0) {
+      return html.slice(0, index) + "\n" + card + html.slice(index);
+    }
+  }
+
+  return html;
+}
+
+/** Add Celine Krzan to the advisory zig-zag after the last existing card. */
+export function addCelineAdvisor(html: string): string {
+  if (html.includes("Celine Krzan")) return html;
+  if (!html.includes("Emina Poricanin") || !html.includes("Sinisa Babcic")) return html;
+  return insertAfterLastLayoutCard(html, CELINE_ADVISOR_CARD);
+}
+
 /** Move Filip Sasic onto the board and drop Brian Pasalich. */
 export function reshapeBoardDirectors(html: string): string {
   if (!html.includes("layout3_component")) return html;
@@ -321,6 +415,7 @@ export function reshapeBoardDirectors(html: string): string {
 
 export function applyWebflowHtmlFixups(html: string): string {
   return applySeoHtmlFixups(
+    addCelineAdvisor(
     reshapeBoardDirectors(
       hideOurTeamLinks(
         fixScaleTimelineIcons(
@@ -335,6 +430,7 @@ export function applyWebflowHtmlFixups(html: string): string {
           )
         )
       )
+    )
     )
   );
 }

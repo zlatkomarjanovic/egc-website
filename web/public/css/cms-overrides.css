@@ -34,16 +34,21 @@
   opacity: 1 !important;
 }
 
-.section_hero h1,
-.section_hero p,
-.section_hero .text-size-regular,
-.section_hero .text-size-18px,
-.section_hero .text-size-medium,
-.section_hero .text-color-alternate,
-.section_hero .text-color-white {
+html body header.section_hero h1,
+html body header.section_hero h1 *,
+html body header.section_hero p,
+html body header.section_hero p *,
+html body header.section_hero .text-size-regular,
+html body header.section_hero .text-size-18px,
+html body header.section_hero .text-size-medium,
+html body header.section_hero .text-color-alternate,
+html body header.section_hero .text-color-white,
+html body header.section_hero .text-wrap,
+html body header.section_hero .subtext-slider {
   opacity: 1 !important;
   transform: none !important;
   color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .section_hero .subtext-slider .w-slider-mask {

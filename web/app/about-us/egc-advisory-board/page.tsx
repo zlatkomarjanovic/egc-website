@@ -1,7 +1,7 @@
 import JsonLd from "@/components/JsonLd";
 import WebflowPage from "@/components/WebflowPage";
 import { contentPageMetadata } from "@/lib/page-meta";
-import { breadcrumbJsonLd, peopleJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, getSiteUrl, peopleJsonLd } from "@/lib/seo";
 import content from "./content.json";
 
 export const metadata = contentPageMetadata(
@@ -17,6 +17,12 @@ const ADVISORS = [
   { name: "Manas Gosavi", jobTitle: "Advisor" },
   { name: "Milana Kuzmanovic", jobTitle: "Advisor" },
   { name: "Sinisa Babcic", jobTitle: "Advisor" },
+  {
+    name: "Celine Krzan",
+    jobTitle: "Clinical Assistant Professor of Entrepreneurship, UB",
+    sameAs: "https://www.linkedin.com/in/celinekrzan",
+    image: `${getSiteUrl()}/images/celine-krzan.jpg`,
+  },
 ];
 
 export default function Page() {
