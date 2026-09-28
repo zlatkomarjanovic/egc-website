@@ -20,7 +20,7 @@ import content from "./content.json";
 const CAREERS_DESCRIPTION = PAGE_META["/about-us/careers"].description;
 
 export const metadata = contentPageMetadata("/about-us/careers", content.metadata);
-export const revalidate = 60;
+export const revalidate = false;
 
 export default async function Page() {
   const sanityJobs = isSanityConfigured

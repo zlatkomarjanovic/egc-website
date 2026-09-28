@@ -12,7 +12,7 @@ import { allMentorsQuery } from "@/sanity/lib/queries";
 import content from "./content.json";
 
 export const metadata = contentPageMetadata("/become-an-egc-mentor", content.metadata);
-export const revalidate = 60;
+export const revalidate = false;
 
 export default async function Page() {
   const sanityMentors = isSanityConfigured

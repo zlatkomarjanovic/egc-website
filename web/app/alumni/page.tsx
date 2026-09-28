@@ -10,7 +10,7 @@ import { alumniPath, breadcrumbJsonLd, collectionJsonLd } from "@/lib/seo";
 import content from "../about-us/mission-and-vision/content.json";
 
 export const metadata = contentPageMetadata("/alumni", content.metadata);
-export const revalidate = 60;
+export const revalidate = false;
 
 export default async function Page() {
   const alumni = await loadAlumniSpotlightsForFellowship();

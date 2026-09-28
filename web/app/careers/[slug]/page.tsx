@@ -25,7 +25,7 @@ import { jobBySlugQuery, jobSlugsQuery } from "@/sanity/lib/queries";
 import { notFound } from "next/navigation";
 import content from "../../about-us/careers/content.json";
 
-export const revalidate = 60;
+export const revalidate = false;
 
 type JobParam = { slug: string };
 

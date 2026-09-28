@@ -15,7 +15,7 @@ const PATH = "/programs/bold-fellowship/general";
 const DESCRIPTION = PAGE_META[PATH].description;
 
 export const metadata = contentPageMetadata(PATH, content.metadata);
-export const revalidate = 60;
+export const revalidate = false;
 
 export default async function Page() {
   const alumni = await loadAlumniSpotlightsForFellowship();

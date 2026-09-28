@@ -14,7 +14,7 @@ const PROGRAMS = [
 ];
 
 export const metadata = contentPageMetadata("/", content.metadata);
-export const revalidate = 60;
+export const revalidate = false;
 
 export default async function Page() {
   return (

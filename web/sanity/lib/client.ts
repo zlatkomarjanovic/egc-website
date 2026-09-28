@@ -33,7 +33,7 @@ export async function sanityFetch<T>(
   if (!client) return fallback;
   try {
     return await client.fetch<T>(query, params, {
-      next: { revalidate: 60 },
+      next: { revalidate: false },
     });
   } catch (err) {
     console.error("[sanity] fetch failed:", err);

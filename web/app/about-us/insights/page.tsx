@@ -26,7 +26,7 @@ import content from "./content.json";
 
 const INSIGHTS_DESCRIPTION = PAGE_META["/about-us/insights"].description;
 
-export const revalidate = 60;
+export const revalidate = false;
 
 type InsightsSearch = { category?: string; q?: string };
 

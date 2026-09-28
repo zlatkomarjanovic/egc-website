@@ -31,7 +31,7 @@ import {
 import { notFound } from "next/navigation";
 import content from "../../programs/bold-fellowship/general/content.json";
 
-export const revalidate = 60;
+export const revalidate = false;
 
 type AlumniParam = { slug: string };
 

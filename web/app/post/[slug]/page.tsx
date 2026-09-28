@@ -31,7 +31,7 @@ import { allPostsQuery, postBySlugQuery, postSlugsQuery } from "@/sanity/lib/que
 import { notFound } from "next/navigation";
 import content from "../../about-us/insights/content.json";
 
-export const revalidate = 60;
+export const revalidate = false;
 
 type PostParam = { slug: string };
 
