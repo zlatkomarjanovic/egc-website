@@ -1,7 +1,11 @@
 declare module "cloudflare:workers" {
   export const env: {
     EGC_SUBMISSIONS?: {
-      put(key: string, value: string): Promise<void>;
+      prepare(sql: string): {
+        bind(...values: string[]): {
+          run(): Promise<{ success: boolean }>;
+        };
+      };
     };
   };
 }

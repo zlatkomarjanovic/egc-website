@@ -16,16 +16,6 @@
   "version_metadata": {
     "binding": "CF_VERSION_METADATA"
   },
-  "kv_namespaces": [
-    {
-      "binding": "VINEXT_KV_CACHE",
-      "id": "896575fea605491fb44b0082934edf51"
-    },
-    {
-      "binding": "EGC_SUBMISSIONS",
-      "id": "892dec318f7a49cfa406864979cab1b6"
-    }
-  ],
   "account_id": "f31a4cf45b22e72341e3c81ab4572726",
   "vars": {
     "NEXT_PUBLIC_SITE_URL": "https://www.egcnyc.org",
@@ -47,5 +37,13 @@
   "observability": {
     "enabled": true,
     "head_sampling_rate": 0.1
-  }
+  },
+  "d1_databases": [
+    {
+      "database_name": "egc-submissions",
+      "binding": "EGC_SUBMISSIONS",
+      "database_id": "9ecbef51-9c4b-4b94-9626-5ac63a27d5e8"
+    }
+  ],
+  "preview_urls": false
 }
