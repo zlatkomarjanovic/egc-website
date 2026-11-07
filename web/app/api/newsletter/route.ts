@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { rateLimit } from "@/lib/rate-limit";
+import { storeSubmission } from "@/lib/submission-store";
 import { getClientIp, isSameOrigin, stripControlChars } from "@/lib/security";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Newsletter subscribe endpoint — provider-ready but not yet wired to a form
+ * Newsletter subscribe endpoint, provider-ready but not yet wired to a form
  * (the site currently links to the LinkedIn newsletter). Supports ConvertKit/Kit
- * out of the box; falls back to logging until credentials are configured.
+ * out of the box; saves requests in a private inbox until credentials are configured.
  *
  * Env to enable Kit:  KIT_API_KEY, KIT_FORM_ID
  */
@@ -51,7 +52,9 @@ export async function POST(request: Request) {
   const kitForm = process.env.KIT_FORM_ID;
 
   if (!kitKey || !kitForm) {
-    console.warn("[newsletter] Kit not configured — logging subscriber.", { email, name });
+    if (!(await storeSubmission("newsletter", { email, name }))) {
+      return reject(503, "Could not save your request. Please try again later.");
+    }
     return NextResponse.json({ ok: true });
   }
 

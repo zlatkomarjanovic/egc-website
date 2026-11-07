@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { rateLimit } from "@/lib/rate-limit";
+import { storeSubmission } from "@/lib/submission-store";
 import {
   escapeHtml,
   getClientIp,
@@ -82,12 +83,9 @@ export async function POST(request: Request) {
   };
 
   if (!apiKey) {
-    // Not configured yet: don't lose the message — log it and report success so
-    // the live form keeps working. Set RESEND_API_KEY in Vercel to enable email.
-    console.warn(
-      "[contact] RESEND_API_KEY not set — logging submission instead of emailing.",
-      { name, email, subject, message }
-    );
+    if (!(await storeSubmission("contact", { name, email, subject, message }))) {
+      return reject(503, "Could not save your message. Please email info@egcnyc.org.");
+    }
     return NextResponse.json({ ok: true });
   }
 
