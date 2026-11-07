@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "egc-website",
+  "compatibility_date": "2026-11-07",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "main": "vinext/server/fetch-handler",
+  "assets": {
+    "directory": "dist/client",
+    "html_handling": "none",
+    "not_found_handling": "none",
+    "binding": "ASSETS",
+    "run_worker_first": false
+  },
+  "version_metadata": {
+    "binding": "CF_VERSION_METADATA"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "VINEXT_KV_CACHE",
+      "id": "896575fea605491fb44b0082934edf51"
+    }
+  ],
+  "account_id": "f31a4cf45b22e72341e3c81ab4572726",
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://www.egcnyc.org",
+    "NEXT_PUBLIC_SANITY_PROJECT_ID": "nn9xx2r4",
+    "NEXT_PUBLIC_SANITY_DATASET": "production",
+    "NEXT_PUBLIC_SANITY_API_VERSION": "2024-10-01"
+  }
+}

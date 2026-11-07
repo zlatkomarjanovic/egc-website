@@ -8,7 +8,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:pages": "node ../scripts/generate-pages.mjs"
+    "generate:pages": "node ../scripts/generate-pages.mjs",
+    "dev:vinext": "vite dev --port 3001",
+    "build:vinext": "vite build",
+    "start:vinext": "wrangler dev --config dist/server/wrangler.json",
+    "deploy:vinext": "vinext-cloudflare deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",
@@ -16,10 +20,13 @@
     "@vercel/analytics": "^2.0.1",
     "next": "15.5.26",
     "next-sanity": "^11.6.13",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "latest",
+    "react-dom": "latest",
     "resend": "^4.5.1",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "vinext": "latest",
+    "react-server-dom-webpack": "latest",
+    "@vinext/cloudflare": "latest"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
@@ -27,9 +34,15 @@
     "@types/react-dom": "^19.1.0",
     "eslint": "^9.18.0",
     "eslint-config-next": "15.5.26",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vite": "latest",
+    "@vitejs/plugin-react": "latest",
+    "@vitejs/plugin-rsc": "latest",
+    "@cloudflare/vite-plugin": "1",
+    "wrangler": "latest"
   },
   "engines": {
     "node": "22.x"
-  }
+  },
+  "type": "module"
 }
