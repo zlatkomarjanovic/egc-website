@@ -28,5 +28,20 @@
     "NEXT_PUBLIC_SANITY_PROJECT_ID": "nn9xx2r4",
     "NEXT_PUBLIC_SANITY_DATASET": "production",
     "NEXT_PUBLIC_SANITY_API_VERSION": "2024-10-01"
+  },
+  "workers_dev": true,
+  "routes": [
+    {
+      "custom_domain": true,
+      "pattern": "egcnyc.org"
+    },
+    {
+      "custom_domain": true,
+      "pattern": "www.egcnyc.org"
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1
   }
 }
